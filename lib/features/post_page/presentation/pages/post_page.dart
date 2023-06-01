@@ -71,11 +71,7 @@ class _PostPageState extends State<PostPage> {
                   'currentUser': widget.currentUser,
                 });
               },
-              child: Icon(
-                FontAwesomeIcons.arrowRight,
-                color: Colors.blue,
-                size: 24,
-              ),
+              child: Icon(FontAwesomeIcons.arrowRight, color: colorBlue, size: 20)
             ),
           ),
         ],

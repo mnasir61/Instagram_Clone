@@ -7,10 +7,13 @@ import 'package:instagram_clone/features/global/styles/style.dart';
 
 class CurrentUserMoreOptionsModelSheetData extends StatefulWidget {
   final VoidCallback onTapToEditPost;
-  const CurrentUserMoreOptionsModelSheetData({Key? key, required this.onTapToEditPost}) : super(key: key);
+
+  const CurrentUserMoreOptionsModelSheetData({Key? key, required this.onTapToEditPost})
+      : super(key: key);
 
   @override
-  State<CurrentUserMoreOptionsModelSheetData> createState() => _CurrentUserMoreOptionsModelSheetDataState();
+  State<CurrentUserMoreOptionsModelSheetData> createState() =>
+      _CurrentUserMoreOptionsModelSheetDataState();
 }
 
 class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOptionsModelSheetData> {
@@ -74,110 +77,76 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
                 verticalSize(30),
                 DividerWidget(),
                 verticalSize(20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(CupertinoIcons.archivebox),
-                          horizontalSize(15),
-                          Text(
-                            "Archive",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.w500, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      verticalSize(25),
-                      Row(
-                        children: [
-                          Icon(CupertinoIcons.heart_slash),
-                          horizontalSize(15),
-                          Text(
-                            "Hide like count",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.w500, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      verticalSize(25),
-                      Row(
-                        children: [
-                          Icon(FontAwesomeIcons.commentSlash),
-                          horizontalSize(15),
-                          Text(
-                            "Turn off commenting",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.w500, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      verticalSize(25),
-                      GestureDetector(
+                Column(
+                  children: [
+                    _modelSheetButton(
+                        onTap: (){},
+                        icon: CupertinoIcons.archivebox,
+                        text: "Archive"),
+                    _modelSheetButton(
+                        onTap: () {}, icon: CupertinoIcons.heart_slash, text: "Hide likes count"),
+                    _modelSheetButton(
+                        onTap: (){},
+                        icon: FontAwesomeIcons.commentSlash,
+                        text: "Turn off commenting"),
+                    _modelSheetButton(
                         onTap: widget.onTapToEditPost,
-                        child: Row(
-                          children: [
-                            Icon(FluentIcons.edit_16_regular),
-                            horizontalSize(15),
-                            Text(
-                              "Edit",
-                              style: Styles.titleLine2.copyWith(
-                                  color: Styles.colorBlack, fontWeight: FontWeight.w500, fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
-                      verticalSize(25),
-                      Row(
-                        children: [
-                          Icon(CupertinoIcons.pin),
-                          horizontalSize(15),
-                          Text(
-                            "Pin to your profile",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.w500, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      verticalSize(25),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.share_outlined,
-                          ),
-                          horizontalSize(15),
-                          Text(
-                            "Post to other apps...",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.w500, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      verticalSize(25),
-                      Row(
-                        children: [
-                          Icon(
-                            CupertinoIcons.delete_simple,
-                            color: Colors.red,
-                          ),
-                          horizontalSize(15),
-                          Text(
-                            "Delete",
-                            style: Styles.titleLine2.copyWith(
-                                color: Colors.red, fontWeight: FontWeight.w500, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      verticalSize(25),
-                    ],
-                  ),
+                        icon: FluentIcons.edit_16_regular,
+                        text: "Edit"),
+                    _modelSheetButton(
+                        onTap: () {}, icon: CupertinoIcons.pin, text: "Pin to your profile"),
+                    _modelSheetButton(
+                        onTap: () {}, icon: Icons.share_outlined, text: "Post to other apps..."),
+                    _modelSheetButton(
+                        onTap: () {}, icon: CupertinoIcons.delete_simple, text: "Delete"),
+                    // Row(
+                    //   children: [
+                    //     Icon(
+                    //       CupertinoIcons.delete_simple,
+                    //       color: Colors.red,
+                    //     ),
+                    //     horizontalSize(15),
+                    //     Text(
+                    //       "Delete",
+                    //       style: Styles.titleLine2.copyWith(
+                    //           color: Colors.red, fontWeight: FontWeight.w500, fontSize: 16),
+                    //     ),
+                    //   ],
+                    // ),
+                    verticalSize(25),
+                  ],
                 ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  _modelSheetButton({VoidCallback? onTap, IconData? icon, String? text}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: "$text" == "Delete" ? Colors.red : Colors.black,
+            ),
+            horizontalSize(15),
+            Text(
+              "$text",
+              style: Styles.titleLine2.copyWith(
+                color: "$text" == "Delete" ? Colors.red : Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

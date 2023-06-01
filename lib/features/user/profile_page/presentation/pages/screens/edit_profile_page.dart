@@ -6,10 +6,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/core/error_message.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
-import 'package:instagram_clone/features/user/data/remote_data_sources/firebase_storage_provider.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/upload_image_to_storage_usecase.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
+import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class EditProfilePage extends StatefulWidget {
   final UserEntity currentUser;
@@ -74,7 +75,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
-                onTap: _updateUserProfileData, child: Icon(FontAwesomeIcons.check, color: colorBlue)),
+                onTap: _updateUserProfileData,
+                child: _isUpdating == true
+                    ? Center(
+                        child: Container(height: 30, width: 30, child: CircularProgressIndicator()))
+                    : Icon(FontAwesomeIcons.check, color: colorBlue)),
           ),
         ],
       ),
@@ -153,14 +158,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  //
+  // _updateUserProfileData() {
+  //   setState(() => _isUpdating = true);
+  //   if (image == null) {
+  //     _updateUserProfile("");
+  //   } else {
+  //     StorageProviderRemoteDataSource.uploadFile(file: image!).then((imageUrl) {
+  //       _updateUserProfile(imageUrl);
+  //     });
+  //   }
+  // }
   _updateUserProfileData() {
     setState(() => _isUpdating = true);
     if (image == null) {
       _updateUserProfile("");
     } else {
-      StorageProviderRemoteDataSource.uploadFile(file: image!).then((imageUrl) {
-        _updateUserProfile(imageUrl);
-      });
+      di
+          .sl<UploadImageToStorageUseCase>()
+          .call(image!, false, "profileImage")
+          .then((profileUrl) => _updateUserProfile(profileUrl));
     }
   }
 

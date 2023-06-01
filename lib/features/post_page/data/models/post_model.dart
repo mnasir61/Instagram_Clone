@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagram_clone/features/home_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
 
 class PostModel extends PostEntity {
   final String? postId;
@@ -45,7 +45,7 @@ class PostModel extends PostEntity {
       username: snapshot['username'],
       description: snapshot['description'],
       postImageUrl: snapshot['postImageUrl'],
-      likes: snapshot['likes'],
+      likes: List.from(snap.get("likes")),
       totalLikes: snapshot['totalLikes'],
       totalComments: snapshot['totalComments'],
       createdAt: snapshot['createdAt'],

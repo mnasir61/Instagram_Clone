@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../entities/user_entity.dart';
 
 abstract class UserRepository {
@@ -22,4 +24,5 @@ abstract class UserRepository {
   Stream<List<UserEntity>> getUsers();
   Stream<List<UserEntity>> getSingleUser(String uid);
 
+  Future<String> uploadImageToStorage(File? file, bool isPost, String childName);
 }

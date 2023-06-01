@@ -1,38 +1,20 @@
-import 'dart:io';
+
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagram_clone/features/post_page/presentation/cubit/post_cubit.dart';
+import 'package:instagram_clone/features/post_page/presentation/pages/widgets/upload_post_main_widget.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
-
-class UploadPostPage extends StatelessWidget {
+import 'package:instagram_clone/main_injection_container.dart' as di;
+class UploadPost extends StatelessWidget {
   final String selectedImagePath;
   final UserEntity currentUser;
-
-  const UploadPostPage({
-    Key? key,
-    required this.selectedImagePath,
-    required this.currentUser,
-  }) : super(key: key);
+  const UploadPost({Key? key, required this.selectedImagePath, required this.currentUser}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    File imageFile = File(selectedImagePath);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Upload Page"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Selected Image Path:",
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 10),
-            Image.file(imageFile),
-          ],
-        ),
-      ),
-    );
+    return BlocProvider<PostCubit>(
+      create: (context)=>di.sl<PostCubit>(),
+        child: UploadPostMainWidget(selectedImagePath: selectedImagePath, currentUser: currentUser));
   }
 }

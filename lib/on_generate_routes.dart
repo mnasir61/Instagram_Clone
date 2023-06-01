@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/comment_page/presentation/comment_section_page.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post_page/presentation/pages/post_page.dart';
+import 'package:instagram_clone/features/post_page/presentation/pages/widgets/upload_post_main_widget.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_in_page.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_up_page.dart';
@@ -19,42 +21,57 @@ class OnGenerateRoute {
     switch (settings.name) {
       case PageConsts.signInPage:
         {
-          return routeBuilder(child:SignInPage());
+          return routeBuilder(child: SignInPage());
         }
       case PageConsts.signUpPage:
         {
-          return routeBuilder(child:SignUpPage());
+          return routeBuilder(child: SignUpPage());
         }
       case PageConsts.mainPage:
         if (args is String) {
           return routeBuilder(child: MainPage(uid: args));
         } else {
-          return routeBuilder(child: NoPageFound(),
+          return routeBuilder(
+            child: NoPageFound(),
           );
         }
       case PageConsts.commentSectionPage:
         {
-          return routeBuilder(child:CommentSectionPage());
+          return routeBuilder(child: CommentSectionPage());
         }
       case PageConsts.notificationPage:
         {
-          return routeBuilder(child:NotificationPage());
+          return routeBuilder(child: NotificationPage());
         }
       case PageConsts.editPostPage:
-        {
-          return routeBuilder(child:EditPostPage());
-        }
+        if (args is PostEntity) {
+          return routeBuilder(
+              child: EditPostPage(
+            posts: args,
+          ));
+        } else
+          routeBuilder(child: NoPageFound());
       case PageConsts.editProfilePage:
-        if(args is UserEntity){
-          return routeBuilder(child:EditProfilePage(currentUser: args,));
-        }else routeBuilder(child: NoPageFound());
+        if (args is UserEntity) {
+          return routeBuilder(
+              child: EditProfilePage(
+            currentUser: args,
+          ));
+        } else
+          routeBuilder(child: NoPageFound());
       case PageConsts.uploadPostPage:
-        if (args is Map<String, dynamic> && args.containsKey('selectedImagePath') && args.containsKey('currentUser')) {
+        if (args is Map<String, dynamic> &&
+            args.containsKey('selectedImagePath') &&
+            args.containsKey('currentUser')) {
           final selectedImagePath = args['selectedImagePath'] as String;
           final currentUser = args['currentUser'] as UserEntity;
-          return routeBuilder(child:UploadPostPage( selectedImagePath: selectedImagePath,
-            currentUser: currentUser,));
-        }else routeBuilder(child: NoPageFound());
+          return routeBuilder(
+              child: UploadPostMainWidget(
+            selectedImagePath: selectedImagePath,
+            currentUser: currentUser,
+          ));
+        } else
+          routeBuilder(child: NoPageFound());
       default:
         {
           NoPageFound();

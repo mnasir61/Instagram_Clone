@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:instagram_clone/features/global/divider_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
-
+import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+import 'package:timeago/timeago.dart' as timeago;
 class EditPostPage extends StatefulWidget {
-  const EditPostPage({Key? key}) : super(key: key);
+  final PostEntity posts;
+
+  const EditPostPage({Key? key, required this.posts}) : super(key: key);
 
   @override
   State<EditPostPage> createState() => _EditPostPageState();
 }
 
 class _EditPostPageState extends State<EditPostPage> {
-  TextEditingController editInfoController = TextEditingController();
+  TextEditingController _editInfoController = TextEditingController();
+
+  bool _isUpdate= false;
 
   @override
+  void initState() {
+    _editInfoController =TextEditingController(text: widget.posts.description);
+    super.initState();
+  }
+  @override
   void dispose() {
-    editInfoController.dispose();
+    _editInfoController.dispose();
     super.dispose();
   }
 
@@ -38,19 +48,20 @@ class _EditPostPageState extends State<EditPostPage> {
                         Row(
                           children: [
                             Container(
-                              height: 35,
-                              width: 35,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: Image.asset("assets/local/default_profile.png"),
-                            ),
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                ),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(30),
+                                    child: profileWidget(imageUrl: "${widget.posts.userProfileUrl}"))),
                             horizontalSize(10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "user_dead0_o",
+                                  "${widget.posts.username}",
                                   style: Styles.titleLine2
                                       .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.w800),
                                 ),
@@ -63,7 +74,7 @@ class _EditPostPageState extends State<EditPostPage> {
                           ],
                         ),
                         Text(
-                          "105w",
+                          "${timeago.format(widget.posts.createdAt!.toDate())}",
                           style: Styles.titleLine2.copyWith(
                               color: Styles.colorBlack.withOpacity(.5), fontWeight: FontWeight.w500),
                         ),
@@ -76,14 +87,11 @@ class _EditPostPageState extends State<EditPostPage> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * .45,
-                child: Image.asset(
-                  "assets/local/instagram_post.png",
-                  fit: BoxFit.cover,
-                ),
+                child: profileWidget(imageUrl: "${widget.posts.postImageUrl}")
               ),
               verticalSize(10),
               TextFormField(
-                controller: editInfoController,
+                controller: _editInfoController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
                   border: InputBorder.none,

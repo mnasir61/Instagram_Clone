@@ -7,23 +7,17 @@ import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/show_bottom_model_sheet_widgets_data/current_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/show_bottom_model_sheet_widgets_data/more_options_show_bottom_model_sheet_widget_data.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
 
 class SinglePostWidget extends StatefulWidget {
-  final String? userImagePath;
-  final String? usernameText;
-  final String? imagePostPath;
-  final String? totalLikesText;
-  final String? descriptionText;
-  final String? totalCommentsText;
+  final PostEntity posts;
 
   const SinglePostWidget(
       {Key? key,
-      this.userImagePath,
-      this.usernameText,
-      this.imagePostPath,
-      this.totalLikesText,
-      this.descriptionText,
-      this.totalCommentsText})
+      required this.posts})
       : super(key: key);
 
   @override
@@ -39,12 +33,6 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        verticalSize(5),
-        Container(
-          height: .25,
-          width: MediaQuery.of(context).size.width,
-          color: Styles.colorGray1.withOpacity(.5),
-        ),
         verticalSize(10),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -56,16 +44,19 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   Row(
                     children: [
                       Container(
-                        height: 35,
-                        width: 35,
+                        height: 40,
+                        width: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                         ),
-                        child: Image.asset("${widget.userImagePath}"),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: profileWidget(imageUrl: "${widget.posts.userProfileUrl}"),
+                        )
                       ),
                       horizontalSize(10),
                       Text(
-                        "${widget.usernameText}",
+                        "${widget.posts.username}",
                         style: Styles.titleLine2
                             .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.w800),
                       )
@@ -100,7 +91,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * .35,
           // decoration: BoxDecoration(color: Colors.grey),
-          child: Image.asset("${widget.imagePostPath}", fit: BoxFit.cover),
+          child: profileWidget(imageUrl: "${widget.posts.postImageUrl}"),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -119,7 +110,9 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                             _isLike = !_isLike;
                           });
                         },
-                        child: _isLike==true?Icon(Icons.favorite,color: Colors.red,size: 28):Icon(Icons.favorite_border,size: 28),
+                        child: _isLike == true
+                            ? Icon(Icons.favorite, color: Colors.red, size: 28)
+                            : Icon(Icons.favorite_border, size: 28),
                       ),
                       horizontalSize(15),
                       GestureDetector(
@@ -140,20 +133,20 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
               ),
               verticalSize(10),
               Text(
-                "${widget.totalLikesText}",
+                "${widget.posts.totalLikes} Likes",
                 style:
                     Styles.titleLine2.copyWith(color: Styles.colorBlack, fontWeight: FontWeight.w500),
               ),
               verticalSize(5),
               ExpandableText(
-                "${widget.descriptionText}",
+                "${widget.posts.description}",
                 expandText: 'more',
                 collapseText: "less",
                 maxLines: 2,
                 linkColor: Styles.colorBlack.withOpacity(.5),
                 animation: true,
                 collapseOnTextTap: true,
-                prefixText: widget.usernameText,
+                prefixText: widget.posts.username,
                 // onPrefixTap: () => showProfile(widget.usernameText),
                 prefixStyle: TextStyle(fontWeight: FontWeight.bold),
                 // onHashtagTap: (name) => showHashtag(name),
@@ -175,11 +168,15 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   Navigator.pushNamed(context, PageConsts.commentSectionPage);
                 },
                 child: Text(
-                  "${widget.totalCommentsText}",
+                  "View all ${widget.posts.totalComments} Comments",
                   style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
                 ),
               ),
               verticalSize(5),
+              Text(
+                "${timeago.format(widget.posts.createdAt!.toDate())}",
+                style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
+              ),
             ],
           ),
         ),
@@ -227,7 +224,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
       builder: (BuildContext context) {
         return CurrentUserMoreOptionsModelSheetData(
           onTapToEditPost: () {
-            Navigator.pushNamed(context, PageConsts.editPostPage);
+            Navigator.pushNamed(context, PageConsts.editPostPage,arguments: widget.posts);
           },
         );
       },

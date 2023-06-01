@@ -1,7 +1,7 @@
 
 
-import 'package:instagram_clone/features/home_page/domain/entities/post_entity.dart';
-import 'package:instagram_clone/features/home_page/domain/repositories/post_repository.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post_page/domain/repositories/post_repository.dart';
 
 class CreatePostUseCase{
   final PostRepository repository;

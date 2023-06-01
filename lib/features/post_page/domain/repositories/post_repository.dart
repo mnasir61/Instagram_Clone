@@ -1,4 +1,7 @@
-import 'package:instagram_clone/features/home_page/domain/entities/post_entity.dart';
+import 'dart:io';
+
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+
 
 abstract class PostRepository {
   Future<void> createPost(PostEntity post);

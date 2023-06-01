@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/core/error_message.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/add_new_story_home_widget.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/single_post_widget.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/view_story_widget.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post_page/presentation/cubit/post_cubit.dart';
+import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -40,46 +47,85 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBarWidget(),
-      backgroundColor: Styles.colorWhite,
-      body: ListView(
-        controller: _scrollController,
-        children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        appBar: _appBarWidget(),
+        backgroundColor: Styles.colorWhite,
+        body: BlocProvider<PostCubit>(
+          create: (context) => di.sl<PostCubit>()..getPosts(post: PostEntity()),
+          child: BlocBuilder<PostCubit, PostState>(
+            builder: (context, postState) {
+              if (postState is PostLoading) {
+                Center(
+                  child: CircularProgressIndicator(),
+                );
+                if (postState is PostFailure) {
+                  toast("Some failures occurred while getting post");
+                }
+              }
+              if (postState is PostLoaded) {
+                if (postState.posts.isEmpty) {
+                  Text("There is no post");
+                }
+                return ListView(
+                  controller: _scrollController,
                   children: [
-                    verticalSize(10),
-                    Row(
+                    Column(
                       children: [
-                        AddNewStoryHomeWidget(
-                            imageUrl: "assets/local/default_profile.png", username: "New"),
-                        horizontalSize(15),
-                        ViewStoryWidget(
-                            imageUrl: "assets/local/default_profile.png", username: "M.Nasir"),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              verticalSize(10),
+                              Row(
+                                children: [
+                                  AddNewStoryHomeWidget(
+                                      imageUrl: "assets/local/default_profile.png", username: "New"),
+                                  horizontalSize(15),
+                                  ViewStoryWidget(
+                                      imageUrl: "assets/local/default_profile.png",
+                                      username: "M.Nasir"),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSize(5),
+                        Container(
+                          height: .25,
+                          width: MediaQuery.of(context).size.width,
+                          color: Styles.colorGray1.withOpacity(.5),
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: ScrollPhysics(),
+                          itemCount: postState.posts.length > 0 ? postState.posts.length : 1,
+                          itemBuilder: (context, index) {
+                            if (postState.posts.isEmpty) {
+                              return Center(child: Text('No posts available'));
+                            } else {
+                              final posts = postState.posts[index];
+                              return SinglePostWidget(
+                                posts: posts,
+                              );
+                            }
+                          },
+                        ),
                       ],
                     ),
                   ],
-                ),
-              ),
-              SinglePostWidget(
-                userImagePath: "assets/local/default_profile.png",
-                usernameText: "John Doe",
-                imagePostPath: "assets/local/instagram_post.png",
-                totalLikesText: "37 Likes",
-                descriptionText:
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.Nullam euismod justo sed mauris varius, sed posuere risus pharetra.Quisque vehicula nulla nec sem gravida convallis.",
-                totalCommentsText: "View all 6 comments",
-              ),
-            ],
+                );
+              }
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            },
           ),
-        ],
-      ),
-    );
+        ));
   }
+
+  // _bodyWidget(PostEntity posts){
+  //   return
+  // }
 
   _appBarWidget() {
     return AppBar(

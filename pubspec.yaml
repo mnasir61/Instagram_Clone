@@ -43,7 +43,10 @@ dependencies:
   #Service Locator
   get_it: ^7.6.0
   flutter_storage_path: ^1.0.4
+  flutter_image_compress: any
+  timeago: any
 
+  shimmer: ^3.0.0
   shared_preferences: any
 
   flutter_svg: ^2.0.5

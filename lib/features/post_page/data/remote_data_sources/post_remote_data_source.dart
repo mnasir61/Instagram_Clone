@@ -1,4 +1,8 @@
-import 'package:instagram_clone/features/home_page/domain/entities/post_entity.dart';
+import 'dart:io';
+
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+
+
 
 abstract class PostRemoteDataSource {
   Future<void> createPost(PostEntity post);
@@ -10,4 +14,5 @@ abstract class PostRemoteDataSource {
   Future<void> deletePost(PostEntity post);
 
   Future<void> likePost(PostEntity post);
+
 }

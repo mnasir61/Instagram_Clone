@@ -1,5 +1,6 @@
 import 'package:instagram_clone/features/user/data/repositories/user_repository_impl.dart';
 import 'package:instagram_clone/features/user/domain/repositories/user_repository.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/upload_image_to_storage_usecase.dart';
 import 'package:instagram_clone/main_injection_container.dart';
 
 import '../data/remote_data_sources/firebase_remote_data_source.dart';
@@ -57,6 +58,9 @@ Future<void> userInjectionContainer() async {
   sl.registerLazySingleton<GetUsersUseCase>(() => GetUsersUseCase(repository: sl.call()));
 
   sl.registerLazySingleton<UpdateUserUseCase>(() => UpdateUserUseCase(repository: sl.call()));
+//storage UseCase
+  sl.registerLazySingleton<UploadImageToStorageUseCase>(
+      () => UploadImageToStorageUseCase(repository: sl.call()));
 
   //Repository
 
@@ -66,5 +70,8 @@ Future<void> userInjectionContainer() async {
 
   //RemoteDataSource
   sl.registerLazySingleton<FirebaseRemoteDataSource>(() => FirebaseRemoteDataSourceImpl(
-      fireStore: sl.call(), firebaseAuth: sl.call(), googleSignIn: sl.call()));
+      fireStore: sl.call(),
+      firebaseAuth: sl.call(),
+      googleSignIn: sl.call(),
+      firebaseStorage: sl.call()));
 }

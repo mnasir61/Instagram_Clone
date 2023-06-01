@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:instagram_clone/features/home_page/domain/entities/post_entity.dart';
-import 'package:instagram_clone/features/home_page/domain/use_cases/create_post_usecase.dart';
-import 'package:instagram_clone/features/home_page/domain/use_cases/delete_post_usecase.dart';
-import 'package:instagram_clone/features/home_page/domain/use_cases/like_post_usecase.dart';
-import 'package:instagram_clone/features/home_page/domain/use_cases/read_post_usecase.dart';
-import 'package:instagram_clone/features/home_page/domain/use_cases/update_post_usecase.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post_page/domain/use_cases/create_post_usecase.dart';
+import 'package:instagram_clone/features/post_page/domain/use_cases/delete_post_usecase.dart';
+import 'package:instagram_clone/features/post_page/domain/use_cases/like_post_usecase.dart';
+import 'package:instagram_clone/features/post_page/domain/use_cases/read_post_usecase.dart';
+import 'package:instagram_clone/features/post_page/domain/use_cases/update_post_usecase.dart';
 
 part 'post_state.dart';
 

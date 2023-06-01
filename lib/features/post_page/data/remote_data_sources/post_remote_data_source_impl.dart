@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:instagram_clone/features/home_page/data/models/post_model.dart';
-import 'package:instagram_clone/features/home_page/data/remote_data_sources/post_remote_data_source.dart';
-import 'package:instagram_clone/features/home_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post_page/data/models/post_model.dart';
+import 'package:instagram_clone/features/post_page/data/remote_data_sources/post_remote_data_source.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
@@ -10,7 +10,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
   final FirebaseFirestore fireStore;
   final FirebaseStorage firebaseStorage;
 
-  PostRemoteDataSourceImpl({required this.fireStore, required this.firebaseStorage});
+  PostRemoteDataSourceImpl( {required this.fireStore, required this.firebaseStorage});
 
   @override
   Future<void> createPost(PostEntity post) async {
