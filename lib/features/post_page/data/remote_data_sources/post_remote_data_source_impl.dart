@@ -85,8 +85,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
     final postCollectionRef = fireStore.collection("post");
     Map<String, dynamic> postInfo = Map();
     if (post.description != "" && post.description != null) postInfo["description"] = post.description;
-    if (post.postImageUrl != "" && post.postImageUrl != null)
-      postInfo["postImageUrl"] = post.postImageUrl;
+    if (post.postImageUrl != "" && post.postImageUrl != null) postInfo["postImageUrl"] = post.postImageUrl;
 
     postCollectionRef.doc(post.postId).update(postInfo);
   }

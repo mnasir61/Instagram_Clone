@@ -18,7 +18,10 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
   final FirebaseStorage firebaseStorage;
 
   FirebaseRemoteDataSourceImpl(
-      {required this.firebaseStorage,required this.googleSignIn, required this.fireStore, required this.firebaseAuth});
+      {required this.firebaseStorage,
+      required this.googleSignIn,
+      required this.fireStore,
+      required this.firebaseAuth});
 
   @override
   Future<void> forgotPassword(String email) async {
@@ -129,7 +132,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         followings: 0,
         likes: 0,
         totalLikes: 0,
-         totalPosts: 0,
+        totalPosts: 0,
         profileUrl: "",
         accountType: "member",
       );
@@ -173,8 +176,10 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
     if (user.profileUrl != "" && user.profileUrl != null) userInfo['profileUrl'] = user.profileUrl;
     if (user.username != "" && user.username != null) userInfo['username'] = user.username;
     if (user.fullName != "" && user.fullName != null) userInfo['fullName'] = user.fullName;
-    if (user.currentUserProfession != "" && user.currentUserProfession != null) userInfo['currentUserProfession'] = user.currentUserProfession;
-    if (user.currentUserBio != "" && user.currentUserBio != null) userInfo['currentUserBio'] = user.currentUserBio;
+    if (user.currentUserProfession != "" && user.currentUserProfession != null)
+      userInfo['currentUserProfession'] = user.currentUserProfession;
+    if (user.currentUserBio != "" && user.currentUserBio != null)
+      userInfo['currentUserBio'] = user.currentUserBio;
 
     userCollection.doc(user.uid).update(userInfo);
   }
@@ -185,9 +190,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
     throw UnimplementedError();
   }
 
-  @override
   Future<String> uploadImageToStorage(File? file, bool isPost, String childName) async {
-
     Reference ref = firebaseStorage.ref().child(childName).child(firebaseAuth.currentUser!.uid);
 
     if (isPost) {
@@ -197,8 +200,13 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
 
     final uploadTask = ref.putFile(file!);
 
-    final imageUrl = (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
-
-    return await imageUrl;
+    try {
+      await uploadTask;
+      final imageUrl = await ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return '';
+    }
   }
 }

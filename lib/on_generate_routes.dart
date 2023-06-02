@@ -10,7 +10,7 @@ import 'package:instagram_clone/features/user/presentation/pages/sign_up_page.da
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/screens/edit_profile_page.dart';
 
 import 'features/app/main_page/presentation/pages/main_page.dart';
-import 'features/home_page/presentation/pages/edit_post_page.dart';
+import 'features/post_page/presentation/pages/edit_post_page.dart';
 import 'features/home_page/presentation/pages/notification_page/notification_page.dart';
 import 'features/post_page/presentation/pages/upload_post_page.dart';
 

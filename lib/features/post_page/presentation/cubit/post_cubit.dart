@@ -33,7 +33,7 @@ class PostCubit extends Cubit<PostState> {
       streamResponse.listen((posts) {
         emit(PostLoaded(posts: posts));
       });
-    } on SocketException catch (_) {
+    } on SocketException catch(_) {
       emit(PostFailure());
     } catch (_) {
       emit(PostFailure());
@@ -83,4 +83,5 @@ class PostCubit extends Cubit<PostState> {
       emit(PostFailure());
     }
   }
+
 }

@@ -7,8 +7,9 @@ import 'package:instagram_clone/features/global/styles/style.dart';
 
 class CurrentUserMoreOptionsModelSheetData extends StatefulWidget {
   final VoidCallback onTapToEditPost;
+  final VoidCallback onTapToDeletePost;
 
-  const CurrentUserMoreOptionsModelSheetData({Key? key, required this.onTapToEditPost})
+  const CurrentUserMoreOptionsModelSheetData({Key? key, required this.onTapToEditPost, required this.onTapToDeletePost})
       : super(key: key);
 
   @override
@@ -98,7 +99,7 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
                     _modelSheetButton(
                         onTap: () {}, icon: Icons.share_outlined, text: "Post to other apps..."),
                     _modelSheetButton(
-                        onTap: () {}, icon: CupertinoIcons.delete_simple, text: "Delete"),
+                        onTap: widget.onTapToDeletePost, icon: CupertinoIcons.delete_simple, text: "Delete"),
                     // Row(
                     //   children: [
                     //     Icon(

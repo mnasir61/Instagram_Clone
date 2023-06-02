@@ -1,6 +1,7 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
@@ -8,17 +9,17 @@ import 'package:instagram_clone/features/home_page/presentation/pages/home_page/
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/show_bottom_model_sheet_widgets_data/more_options_show_bottom_model_sheet_widget_data.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/widgets/show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
 import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post_page/presentation/cubit/post_cubit.dart';
+import 'package:instagram_clone/features/post_page/presentation/pages/widgets/like_animation_widget.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
 import 'package:timeago/timeago.dart' as timeago;
-
+import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class SinglePostWidget extends StatefulWidget {
   final PostEntity posts;
 
-  const SinglePostWidget(
-      {Key? key,
-      required this.posts})
-      : super(key: key);
+  const SinglePostWidget({Key? key, required this.posts}) : super(key: key);
 
   @override
   State<SinglePostWidget> createState() => _SinglePostWidgetState();
@@ -28,6 +29,17 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
   bool isExpanded = false;
   final int maxLines = 2;
   bool _isLike = false;
+
+  bool _isLikeAnimating = false;
+  String _currentUid = "";
+
+  @override
+  void initState() {
+    di.sl<GetCurrentUidUseCase>().call().then((value) {
+      _currentUid = value;
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,16 +56,15 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   Row(
                     children: [
                       Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: profileWidget(imageUrl: "${widget.posts.userProfileUrl}"),
-                        )
-                      ),
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: profileWidget(imageUrl: "${widget.posts.userProfileUrl}"),
+                          )),
                       horizontalSize(10),
                       Text(
                         "${widget.posts.username}",
@@ -87,11 +98,41 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
           width: MediaQuery.of(context).size.width,
           color: Styles.colorGray1.withOpacity(.5),
         ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * .35,
-          // decoration: BoxDecoration(color: Colors.grey),
-          child: profileWidget(imageUrl: "${widget.posts.postImageUrl}"),
+        GestureDetector(
+          onDoubleTap: () {
+            _likePost();
+            setState(() {
+              _isLikeAnimating = true;
+            });
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * .35,
+                // decoration: BoxDecoration(color: Colors.grey),
+                child: profileWidget(imageUrl: "${widget.posts.postImageUrl}"),
+              ),
+              AnimatedOpacity(
+                duration: Duration(milliseconds: 200),
+                opacity: _isLikeAnimating ? 1 : 0,
+                child: LikeAnimationWidget(
+                    duration: Duration(milliseconds: 300),
+                    isLikeAnimation: _isLikeAnimating,
+                    onLikeFinish: () {
+                      setState(() {
+                        _isLikeAnimating = false;
+                      });
+                    },
+                    child: Icon(
+                      Icons.favorite,
+                      size: 75,
+                      color: Colors.red,
+                    )),
+              )
+            ],
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -105,15 +146,14 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isLike = !_isLike;
-                          });
-                        },
-                        child: _isLike == true
-                            ? Icon(Icons.favorite, color: Colors.red, size: 28)
-                            : Icon(Icons.favorite_border, size: 28),
-                      ),
+                          onTap: _likePost,
+                          child: Icon(
+                            widget.posts.likes!.contains(_currentUid)
+                                ? Icons.favorite
+                                : Icons.favorite_outline,
+                            color:
+                                widget.posts.likes!.contains(_currentUid) ? Colors.red : Styles.colorBlack,size: 28,
+                          )),
                       horizontalSize(15),
                       GestureDetector(
                           onTap: () {
@@ -224,10 +264,31 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
       builder: (BuildContext context) {
         return CurrentUserMoreOptionsModelSheetData(
           onTapToEditPost: () {
-            Navigator.pushNamed(context, PageConsts.editPostPage,arguments: widget.posts);
+            Navigator.pushNamed(context, PageConsts.editPostPage, arguments: widget.posts)
+                .then((value) {
+              Future.delayed(Duration(milliseconds: 300));
+              Navigator.pop(context);
+            });
           },
+          onTapToDeletePost: _deletePost,
         );
       },
     );
+  }
+
+  _deletePost() {
+    BlocProvider.of<PostCubit>(context)
+        .deletePost(
+            post: PostEntity(
+          postId: widget.posts.postId,
+        ))
+        .then((value) => Navigator.pop(context));
+  }
+
+  _likePost() {
+    BlocProvider.of<PostCubit>(context).likePost(
+        post: PostEntity(
+      postId: widget.posts.postId,
+    ));
   }
 }

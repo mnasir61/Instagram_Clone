@@ -13,7 +13,7 @@ class PostLoaded extends PostState {
 
   PostLoaded({required this.posts});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [posts];
 }
 class PostLoading extends PostState {
   @override

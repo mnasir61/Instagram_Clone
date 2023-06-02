@@ -25,24 +25,24 @@ class _HomePageState extends State<HomePage> {
   ScrollController _scrollController = ScrollController();
   double _elevation = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_scrollListener);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollListener() {
-    setState(() {
-      _elevation = _scrollController.offset > 0 ? 0.4 : 0;
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _scrollController.addListener(_scrollListener);
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   _scrollController.removeListener(_scrollListener);
+  //   _scrollController.dispose();
+  //   super.dispose();
+  // }
+  //
+  // void _scrollListener() {
+  //   setState(() {
+  //     _elevation = _scrollController.offset > 0 ? 0.4 : 0;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -54,16 +54,16 @@ class _HomePageState extends State<HomePage> {
           child: BlocBuilder<PostCubit, PostState>(
             builder: (context, postState) {
               if (postState is PostLoading) {
-                Center(
+                return Center(
                   child: CircularProgressIndicator(),
                 );
-                if (postState is PostFailure) {
-                  toast("Some failures occurred while getting post");
-                }
+              }
+              if (postState is PostFailure) {
+                toast("Some failures occurred while getting post");
               }
               if (postState is PostLoaded) {
                 if (postState.posts.isEmpty) {
-                  Text("There is no post");
+                  return Text("There is no post");
                 }
                 return ListView(
                   controller: _scrollController,
@@ -95,19 +95,18 @@ class _HomePageState extends State<HomePage> {
                           width: MediaQuery.of(context).size.width,
                           color: Styles.colorGray1.withOpacity(.5),
                         ),
-                        ListView.builder(
+                        postState.posts.isEmpty?_noPostsYetWidget():ListView.builder(
                           shrinkWrap: true,
                           physics: ScrollPhysics(),
-                          itemCount: postState.posts.length > 0 ? postState.posts.length : 1,
+                          itemCount: postState.posts.length,
                           itemBuilder: (context, index) {
-                            if (postState.posts.isEmpty) {
-                              return Center(child: Text('No posts available'));
-                            } else {
                               final posts = postState.posts[index];
-                              return SinglePostWidget(
-                                posts: posts,
+                              return BlocProvider(
+                                create: (context) => di.sl<PostCubit>(),
+                                child: SinglePostWidget(
+                                  posts: posts,
+                                ),
                               );
-                            }
                           },
                         ),
                       ],
@@ -123,9 +122,14 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  // _bodyWidget(PostEntity posts){
-  //   return
-  // }
+  Widget _noPostsYetWidget() {
+    return Column(
+      children: [
+        verticalSize(200),
+        Text("No Posts Yet", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),),
+      ],
+    );
+  }
 
   _appBarWidget() {
     return AppBar(

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/global/circular_progress_indicator_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/home_page/presentation/pages/home_page/presentation/home_page.dart';
+import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post_page/presentation/pages/post_page.dart';
 import 'package:instagram_clone/features/reels_page/presentation/pages/reels_page.dart';
 import 'package:instagram_clone/features/search_page/presentation/pages/search_page.dart';
@@ -13,7 +14,7 @@ import 'package:instagram_clone/features/user/profile_page/presentation/pages/pr
 
 class MainPage extends StatefulWidget {
   final String uid;
-  const MainPage({Key? key, required this.uid}) : super(key: key);
+  const MainPage({Key? key, required this.uid,}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -27,6 +28,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
+
     BlocProvider.of<  GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
     super.initState();
   }

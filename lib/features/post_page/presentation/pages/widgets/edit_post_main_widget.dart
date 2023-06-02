@@ -1,32 +1,63 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:instagram_clone/core/error_message.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post_page/presentation/cubit/post_cubit.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/upload_image_to_storage_usecase.dart';
 import 'package:timeago/timeago.dart' as timeago;
-class EditPostPage extends StatefulWidget {
+import 'package:instagram_clone/main_injection_container.dart' as di;
+
+class EditPostMainWidget extends StatefulWidget {
   final PostEntity posts;
 
-  const EditPostPage({Key? key, required this.posts}) : super(key: key);
+  const EditPostMainWidget({Key? key, required this.posts}) : super(key: key);
 
   @override
-  State<EditPostPage> createState() => _EditPostPageState();
+  State<EditPostMainWidget> createState() => _EditPostMainWidgetState();
 }
 
-class _EditPostPageState extends State<EditPostPage> {
-  TextEditingController _editInfoController = TextEditingController();
+class _EditPostMainWidgetState extends State<EditPostMainWidget> {
+  TextEditingController? _descriptionController;
 
-  bool _isUpdate= false;
+  bool _isUpdate = false;
 
   @override
   void initState() {
-    _editInfoController =TextEditingController(text: widget.posts.description);
+    _descriptionController = TextEditingController(text: widget.posts.description);
     super.initState();
   }
+
   @override
   void dispose() {
-    _editInfoController.dispose();
+    _descriptionController!.dispose();
     super.dispose();
+  }
+
+  File? _image;
+  bool? _uploading = false;
+
+  Future selectImage() async {
+    try {
+      final pickedFile = await ImagePicker.platform.getImage(source: ImageSource.gallery);
+
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+        } else {
+          print("no image has been selected");
+        }
+      });
+    } catch (e) {
+      toast("some error occurred $e");
+    }
   }
 
   @override
@@ -84,14 +115,38 @@ class _EditPostPageState extends State<EditPostPage> {
                   ],
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * .45,
-                child: profileWidget(imageUrl: "${widget.posts.postImageUrl}")
+              Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * .45,
+                    child: profileWidget(imageUrl: widget.posts.postImageUrl, image: _image),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: InkWell(
+                      onTap: selectImage,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                        height: 35,
+                        width: 35,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.withOpacity(.7),
+                        ),
+                        child: Icon(
+                          FluentIcons.edit_16_filled,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               verticalSize(10),
               TextFormField(
-                controller: _editInfoController,
+                controller: _descriptionController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(horizontal: 10),
                   border: InputBorder.none,
@@ -126,12 +181,52 @@ class _EditPostPageState extends State<EditPostPage> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 15.0),
-          child: Icon(
-            FontAwesomeIcons.check,
-            color: Colors.blue,
+          child: GestureDetector(
+            onTap: _updatePost,
+            child: _isUpdate == true
+                ? Center(child: Container(height: 30, width: 30, child: CircularProgressIndicator()))
+                : Icon(
+                    FontAwesomeIcons.check,
+                    color: Colors.blue,
+                  ),
           ),
         ),
       ],
     );
+  }
+
+  _updatePost() async {
+    setState(() {
+      _isUpdate = true;
+    });
+    if (_image == null) {
+      _submitUpdatePost(image: widget.posts.postImageUrl!);
+    } else {
+      di
+          .sl<UploadImageToStorageUseCase>()
+          .call(_image!, true, "posts")
+          .then((imageUrl) => _submitUpdatePost(image: imageUrl));
+    }
+  }
+
+  _submitUpdatePost({required String image}) {
+    BlocProvider.of<PostCubit>(context)
+        .updatePost(
+            post: PostEntity(
+          creatorId: widget.posts.creatorId,
+          postId: widget.posts.postId,
+          postImageUrl: image,
+          description: _descriptionController!.text,
+              createdAt: Timestamp.now(),
+        ))
+        .then((value) => _clear());
+  }
+
+  _clear() {
+    setState(() {
+      _descriptionController!.clear();
+      _isUpdate = false;
+      Navigator.pop(context);
+    });
   }
 }
