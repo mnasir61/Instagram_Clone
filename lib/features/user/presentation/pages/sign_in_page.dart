@@ -39,10 +39,6 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Styles.bgColorWhite,
-          elevation: 0,
-        ),
         backgroundColor: Styles.bgColorWhite,
         body: BlocConsumer<CredentialCubit, CredentialState>(
           listener: (context, credentialState) {
@@ -75,7 +71,7 @@ class _SignInPageState extends State<SignInPage> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: EdgeInsets.only(top: 15, right: 15, left: 15, bottom: 30),
+        padding: EdgeInsets.only(top: 60, right: 15, left: 15, bottom: 30),
         child: Column(
           children: [
             Expanded(

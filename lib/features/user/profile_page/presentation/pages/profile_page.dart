@@ -1,8 +1,10 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/add_new_story.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_menu_model_sheet_data_widget.dart';
@@ -11,6 +13,7 @@ import 'package:instagram_clone/features/user/profile_page/presentation/pages/wi
 
 class ProfilePage extends StatefulWidget {
   final UserEntity currentUser;
+
   const ProfilePage({Key? key, required this.currentUser}) : super(key: key);
 
   @override
@@ -43,8 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50),
-                      child: profileWidget(
-                       imageUrl: widget.currentUser.profileUrl),
+                      child: profileWidget(imageUrl: widget.currentUser.profileUrl),
                     ),
                   ),
                   Row(
@@ -109,8 +111,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               verticalSize(10),
               Text(
-                "${widget.currentUser.fullName}",
-                style: Styles.titleLine2.copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
+                "${widget.currentUser.fullName==""?widget.currentUser.username:widget.currentUser.fullName}",
+                style:
+                    Styles.titleLine2.copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
               ),
               Text(
                 "${widget.currentUser.currentUserProfession}",
@@ -149,9 +152,13 @@ class _ProfilePageState extends State<ProfilePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _singleProfileButtonWidget(context: context, text: "Edit Profile",onTap: (){
-                    Navigator.pushNamed(context, PageConsts.editProfilePage,arguments: widget.currentUser);
-                  }),
+                  _singleProfileButtonWidget(
+                      context: context,
+                      text: "Edit Profile",
+                      onTap: () {
+                        Navigator.pushNamed(context, PageConsts.editProfilePage,
+                            arguments: widget.currentUser);
+                      }),
                   _singleProfileButtonWidget(context: context, text: "Share Profile"),
                   _singleProfileButtonWidget(context: context, text: "Contact"),
                 ],
@@ -161,24 +168,36 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   StoryWidget(imageUrl: "assets/local/default_profile.png", username: "Nasir"),
-                 horizontalSize(20),
+                  horizontalSize(20),
                   AddNewStory(),
                 ],
               ),
               verticalSize(25),
 
               verticalSize(15),
-              GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 5),
-                itemCount: 12,
-                shrinkWrap: true,
-                physics: ScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Container(
-                    height: 100,
-                    width: MediaQuery.of(context).size.width * 45,
-                    decoration: BoxDecoration(color: Colors.grey),
+              BlocBuilder<PostCubit, PostState>(
+                builder: (context, postState) {
+                  if (postState is PostLoaded) {
+                    final posts = postState.posts
+                        .where((post) => post.creatorId == widget.currentUser.uid)
+                        .toList();
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 5),
+                      itemCount: posts.length,
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 100,
+                          width: MediaQuery.of(context).size.width * 45,
+                          child: profileWidget(imageUrl: posts[index].postImageUrl),
+                        );
+                      },
+                    );
+                  }
+                  return Center(
+                    child: Text("Posts Loading error"),
                   );
                 },
               ),
@@ -189,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _singleProfileButtonWidget({required BuildContext context, String? text,VoidCallback? onTap}) {
+  _singleProfileButtonWidget({required BuildContext context, String? text, VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -228,7 +247,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Padding(
           padding: const EdgeInsets.only(right: 15.0, left: 15),
           child: GestureDetector(
-            onTap: (){
+            onTap: () {
               _profileMenuModelSheet(context);
             },
             child: Icon(

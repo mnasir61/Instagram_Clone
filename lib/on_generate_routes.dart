@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
-import 'package:instagram_clone/features/home_page/presentation/pages/comment_page/presentation/comment_section_page.dart';
-import 'package:instagram_clone/features/post_page/domain/entities/post_entity.dart';
-import 'package:instagram_clone/features/post_page/presentation/pages/post_page.dart';
-import 'package:instagram_clone/features/post_page/presentation/pages/widgets/upload_post_main_widget.dart';
+import 'package:instagram_clone/features/home/notification_page/notification_page.dart';
+import 'package:instagram_clone/features/post/comment_page/presentation/comment_section_page.dart';
+import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/post/presentation/pages/edit_post_page.dart';
+import 'package:instagram_clone/features/post/presentation/pages/widgets/upload_post_main_widget.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_in_page.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_up_page.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/screens/edit_profile_page.dart';
 
 import 'features/app/main_page/presentation/pages/main_page.dart';
-import 'features/post_page/presentation/pages/edit_post_page.dart';
-import 'features/home_page/presentation/pages/notification_page/notification_page.dart';
-import 'features/post_page/presentation/pages/upload_post_page.dart';
 
 class OnGenerateRoute {
   static Route<dynamic>? route(RouteSettings settings) {
@@ -36,9 +35,10 @@ class OnGenerateRoute {
           );
         }
       case PageConsts.commentSectionPage:
-        {
-          return routeBuilder(child: CommentSectionPage());
-        }
+        if (args is AppEntity) {
+          return routeBuilder(child: CommentSectionPage(appEntity: args,));
+        } else
+          return routeBuilder(child: NoPageFound());
       case PageConsts.notificationPage:
         {
           return routeBuilder(child: NotificationPage());
@@ -60,15 +60,9 @@ class OnGenerateRoute {
         } else
           routeBuilder(child: NoPageFound());
       case PageConsts.uploadPostPage:
-        if (args is Map<String, dynamic> &&
-            args.containsKey('selectedImagePath') &&
-            args.containsKey('currentUser')) {
-          final selectedImagePath = args['selectedImagePath'] as String;
-          final currentUser = args['currentUser'] as UserEntity;
+        if (args is AppEntity) {
           return routeBuilder(
-              child: UploadPostMainWidget(
-            selectedImagePath: selectedImagePath,
-            currentUser: currentUser,
+              child: UploadPostMainWidget(appEntity: args,
           ));
         } else
           routeBuilder(child: NoPageFound());
