@@ -1,7 +1,8 @@
 
-import 'package:instagram_clone/features/post/comment_page/data/remote_data_source/comment_remote_data_source.dart';
-import 'package:instagram_clone/features/post/comment_page/domain/entity/comment_entity.dart';
-import 'package:instagram_clone/features/post/comment_page/domain/repository/comment_repository.dart';
+
+import 'package:instagram_clone/features/comment/data/remote_data_source/comment_remote_data_source.dart';
+import 'package:instagram_clone/features/comment/domain/entity/comment_entity.dart';
+import 'package:instagram_clone/features/comment/domain/repository/comment_repository.dart';
 
 class CommentRepositoryImpl implements CommentRepository {
   final CommentRemoteDataSource remoteDataSource;

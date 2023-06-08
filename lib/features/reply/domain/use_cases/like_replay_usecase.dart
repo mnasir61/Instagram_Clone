@@ -1,6 +1,6 @@
 
-import 'package:instagram_clone/features/post/reply/domain/entities/reply_entity.dart';
-import 'package:instagram_clone/features/post/reply/domain/repositories/replay_repository.dart';
+import 'package:instagram_clone/features/reply/domain/entities/reply_entity.dart';
+import 'package:instagram_clone/features/reply/domain/repositories/replay_repository.dart';
 
 class LikeReplyUseCase {
   final ReplyRepository repository;

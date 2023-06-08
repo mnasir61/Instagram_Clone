@@ -1,5 +1,6 @@
 
-import 'package:instagram_clone/features/post/comment_page/domain/entity/comment_entity.dart';
+
+import 'package:instagram_clone/features/comment/domain/entity/comment_entity.dart';
 
 abstract class CommentRemoteDataSource {
   Future<void> createComment(CommentEntity comment);

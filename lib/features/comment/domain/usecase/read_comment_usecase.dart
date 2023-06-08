@@ -2,8 +2,9 @@
 
 
 
-import 'package:instagram_clone/features/post/comment_page/domain/entity/comment_entity.dart';
-import 'package:instagram_clone/features/post/comment_page/domain/repository/comment_repository.dart';
+
+import 'package:instagram_clone/features/comment/domain/entity/comment_entity.dart';
+import 'package:instagram_clone/features/comment/domain/repository/comment_repository.dart';
 
 class ReadCommentUseCase{
   final CommentRepository repository;

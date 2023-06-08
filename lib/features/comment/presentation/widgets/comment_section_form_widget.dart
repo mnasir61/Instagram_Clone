@@ -9,13 +9,13 @@ import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 
 class CommentSectionFormWidget extends StatefulWidget {
   final UserEntity currentUser;
-  final PostEntity posts;
   final TextEditingController? controller;
   final FocusNode? focusNode;
+  final bool? isHintText;
   final void Function(String)? onFieldSubmit;
 
   const CommentSectionFormWidget(
-      {Key? key, this.controller, this.focusNode, this.onFieldSubmit, required this.currentUser, required this.posts})
+      {Key? key, this.controller, this.focusNode, this.onFieldSubmit, required this.currentUser, this.isHintText=false})
       : super(key: key);
 
   @override
@@ -23,6 +23,9 @@ class CommentSectionFormWidget extends StatefulWidget {
 }
 
 class _CommentSectionFormWidgetState extends State<CommentSectionFormWidget> {
+
+
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -58,7 +61,7 @@ class _CommentSectionFormWidgetState extends State<CommentSectionFormWidget> {
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       border: InputBorder.none,
-                      hintText: "Add a comment for ${widget.posts.username}",
+                      hintText: widget.isHintText==false?"Add a comment":"Add a Reply",
                       hintStyle:
                           Styles.titleLine1.copyWith(color: Styles.colorWhiteMid, fontSize: 14)),
                 ),

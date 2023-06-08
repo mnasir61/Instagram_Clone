@@ -1,7 +1,8 @@
 
-import 'package:instagram_clone/features/post/reply/data/remote_data_sources/replay_remote_data_source.dart';
-import 'package:instagram_clone/features/post/reply/domain/entities/reply_entity.dart';
-import 'package:instagram_clone/features/post/reply/domain/repositories/replay_repository.dart';
+
+import 'package:instagram_clone/features/reply/data/remote_data_sources/replay_remote_data_source.dart';
+import 'package:instagram_clone/features/reply/domain/entities/reply_entity.dart';
+import 'package:instagram_clone/features/reply/domain/repositories/replay_repository.dart';
 
 class ReplyRepositoryImpl implements ReplyRepository{
   final ReplyRemoteDataSource remoteDataSource;

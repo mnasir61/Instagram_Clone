@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/core/app_entity.dart';
+import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
@@ -16,8 +17,8 @@ class UploadPostMainWidget extends StatefulWidget {
   final AppEntity appEntity;
 
   const UploadPostMainWidget({
-    Key? key, required this.appEntity,
-
+    Key? key,
+    required this.appEntity,
   }) : super(key: key);
 
   @override
@@ -118,7 +119,7 @@ class _UploadPostMainWidgetState extends State<UploadPostMainWidget> {
     setState(() {
       _isUpdating = false;
       _descController.clear();
-      Navigator.pop(context);
+      Navigator.pushNamedAndRemoveUntil(context, PageConsts.homePage, (route) => false);
     });
   }
 }

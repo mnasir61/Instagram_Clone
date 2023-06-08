@@ -7,7 +7,7 @@ Widget profileWidget({String? imageUrl, File? image}) {
   if (image == null) {
     if (imageUrl == null || imageUrl == "")
       return Image.asset(
-        'assets/profile_default.png',
+        'assets/local/default_profile.png',
         fit: BoxFit.cover,
       );
     else
@@ -18,7 +18,7 @@ Widget profileWidget({String? imageUrl, File? image}) {
           return CircularProgressIndicator();
         },
         errorWidget: (context, url, error) => Image.asset(
-          'assets/profile_default.png',
+          'assets/local/default_profile.png',
           fit: BoxFit.cover,
         ),
       );

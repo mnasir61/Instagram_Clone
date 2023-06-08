@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagram_clone/features/post/reply/domain/entities/reply_entity.dart';
+import 'package:instagram_clone/features/reply/domain/entities/reply_entity.dart';
 
 class ReplyModel extends ReplyEntity {
   final String? creatorUid;
@@ -37,14 +37,14 @@ class ReplyModel extends ReplyEntity {
     var snapshot = snap.data() as Map<String, dynamic>;
     return ReplyModel(
       creatorUid: snapshot["creatorUid"],
-      replyId: snapshot["ReplyId"],
+      replyId: snapshot["replyId"],
       commentId: snapshot["commentId"],
       postId: snapshot["postId"],
       description: snapshot["description"],
       username: snapshot["username"],
       userProfileUrl: snapshot["userProfileUrl"],
       createdAt: snapshot["createdAt"],
-      likes: snapshot["likes"],
+      likes: List.from(snap.get("likes")),
     );
   }
 

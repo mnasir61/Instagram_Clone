@@ -2,9 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/app/main_page/presentation/pages/main_page.dart';
-import 'package:instagram_clone/features/post/comment_page/presentation/cubit/comment_cubit.dart';
+import 'package:instagram_clone/features/comment/presentation/cubit/comment_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/read_single_post/read_single_post_cubit.dart';
+import 'package:instagram_clone/features/reply/presentation/cubit/reply_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/auth/auth_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/credentials/credential_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_single_user/get_single_user_cubit.dart';
@@ -43,6 +44,9 @@ class InstagramClone extends StatelessWidget {
         ),
         BlocProvider<ReadSinglePostCubit>(
           create: (context) => di.sl<ReadSinglePostCubit>(),
+        ),
+        BlocProvider<ReplyCubit>(
+          create: (context) => di.sl<ReplyCubit>(),
         )
       ],
       child: _materialAppBuilder(),

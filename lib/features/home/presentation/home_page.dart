@@ -5,12 +5,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/core/error_message.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
-import 'package:instagram_clone/features/home/home_page/presentation/widgets/add_new_story_home_widget.dart';
-import 'package:instagram_clone/features/home/home_page/presentation/widgets/single_post_widget.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
+import 'widgets/add_new_story_home_widget.dart';
+import 'widgets/single_post_widget.dart';
 import 'widgets/view_story_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -63,9 +63,6 @@ class _HomePageState extends State<HomePage> {
                 toast("Some failures occurred while getting post");
               }
               if (postState is PostLoaded) {
-                if (postState.posts.isEmpty) {
-                  return Text("There is no post");
-                }
                 return ListView(
                   controller: _scrollController,
                   children: [
@@ -96,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                           width: MediaQuery.of(context).size.width,
                           color: Styles.colorGray1.withOpacity(.5),
                         ),
-                        postState.posts.isEmpty?_noPostsYetWidget():ListView.builder(
+                        postState.posts.isEmpty?_noPostWidget():ListView.builder(
                           shrinkWrap: true,
                           physics: ScrollPhysics(),
                           itemCount: postState.posts.length,
@@ -123,12 +120,17 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  Widget _noPostsYetWidget() {
-    return Column(
-      children: [
-        verticalSize(200),
-        Text("No Posts Yet", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),),
-      ],
+  _noPostWidget() {
+    return Center(
+      child: Column(
+        children: [
+          verticalSize(250),
+          Text(
+            "No post yet",
+            style: Styles.titleLine1.copyWith(fontSize: 25, color: Colors.black.withOpacity(.3)),
+          ),
+        ],
+      ),
     );
   }
 

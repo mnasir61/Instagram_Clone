@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:instagram_clone/features/post/reply/domain/entities/reply_entity.dart';
-import 'package:instagram_clone/features/post/reply/domain/use_cases/create_replay_usecase.dart';
-import 'package:instagram_clone/features/post/reply/domain/use_cases/delete_replay_usecase.dart';
-import 'package:instagram_clone/features/post/reply/domain/use_cases/like_replay_usecase.dart';
-import 'package:instagram_clone/features/post/reply/domain/use_cases/read_replay_usecase.dart';
-import 'package:instagram_clone/features/post/reply/domain/use_cases/update_replay_usecase.dart';
+import 'package:instagram_clone/features/reply/domain/entities/reply_entity.dart';
+import 'package:instagram_clone/features/reply/domain/use_cases/create_replay_usecase.dart';
+import 'package:instagram_clone/features/reply/domain/use_cases/delete_replay_usecase.dart';
+import 'package:instagram_clone/features/reply/domain/use_cases/like_replay_usecase.dart';
+import 'package:instagram_clone/features/reply/domain/use_cases/read_replay_usecase.dart';
+import 'package:instagram_clone/features/reply/domain/use_cases/update_replay_usecase.dart';
 
 part 'reply_state.dart';
 
@@ -73,9 +73,9 @@ class ReplyCubit extends Cubit<ReplyState> {
       streamResponse.listen((reply) {
         emit(ReplyLoaded(replies: reply));
       });
-    } on SocketException catch (e) {
+    } on SocketException catch (_) {
       emit(ReplyFailure());
-    } catch (e) {
+    } catch (_) {
       emit(ReplyFailure());
     }
   }

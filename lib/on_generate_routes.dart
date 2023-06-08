@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/app_entity.dart';
+import 'package:instagram_clone/features/comment/presentation/comment_section_page.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
-import 'package:instagram_clone/features/home/notification_page/notification_page.dart';
-import 'package:instagram_clone/features/post/comment_page/presentation/comment_section_page.dart';
+import 'package:instagram_clone/features/home/presentation/home_page.dart';
+import 'package:instagram_clone/features/notification/notification_page.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/pages/edit_post_page.dart';
 import 'package:instagram_clone/features/post/presentation/pages/widgets/upload_post_main_widget.dart';
@@ -33,6 +34,10 @@ class OnGenerateRoute {
           return routeBuilder(
             child: NoPageFound(),
           );
+        }
+      case PageConsts.homePage:
+        {
+          return routeBuilder(child: HomePage());
         }
       case PageConsts.commentSectionPage:
         if (args is AppEntity) {

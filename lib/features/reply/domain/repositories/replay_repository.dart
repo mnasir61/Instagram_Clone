@@ -1,4 +1,5 @@
-import 'package:instagram_clone/features/post/reply/domain/entities/reply_entity.dart';
+
+import 'package:instagram_clone/features/reply/domain/entities/reply_entity.dart';
 
 abstract class ReplyRepository {
   Future<void> createReply(ReplyEntity reply);

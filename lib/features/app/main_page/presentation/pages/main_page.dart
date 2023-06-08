@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/global/circular_progress_indicator_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
-import 'package:instagram_clone/features/home/home_page/presentation/home_page.dart';
+import 'package:instagram_clone/features/home/presentation/home_page.dart';
 import 'package:instagram_clone/features/post/presentation/pages/post_page.dart';
 import 'package:instagram_clone/features/reels/presentation/pages/reels_page.dart';
 import 'package:instagram_clone/features/search/presentation/pages/search_page.dart';

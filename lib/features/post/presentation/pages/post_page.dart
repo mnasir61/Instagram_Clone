@@ -67,7 +67,7 @@ class _PostPageState extends State<PostPage> {
             padding: const EdgeInsets.only(right: 15.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, PageConsts.uploadPostPage, arguments:AppEntity(currentUser: widget.currentUser,selectedImagePath: selectedImage));
+                Navigator.pushNamed(context, PageConsts.uploadPostPage, arguments:AppEntity(currentUser: widget.currentUser,selectedImagePath: selectedImage,));
               },
               child: Icon(FontAwesomeIcons.arrowRight, color: colorBlue, size: 20)
             ),

@@ -10,4 +10,5 @@ class PageConsts{
   static const String editPostPage = "editPostPage";
   static const String editProfilePage = "editProfilePage";
   static const String uploadPostPage = "uploadPostPage";
+  static const String homePage = "homePage";
 }

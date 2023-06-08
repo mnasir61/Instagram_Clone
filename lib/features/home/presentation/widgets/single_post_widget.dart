@@ -6,8 +6,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/core/app_entity.dart';
-import 'package:instagram_clone/features/home/home_page/presentation/widgets/show_bottom_model_sheet_widgets_data/current_user_more_options_show_bottom_model_sheet_widget_data.dart';
-import 'package:instagram_clone/features/home/home_page/presentation/widgets/show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/pages/widgets/like_animation_widget.dart';
@@ -16,7 +14,9 @@ import 'package:instagram_clone/features/user/profile_page/presentation/pages/wi
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
+import 'show_bottom_model_sheet_widgets_data/current_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'show_bottom_model_sheet_widgets_data/more_options_show_bottom_model_sheet_widget_data.dart';
+import 'show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
 
 class SinglePostWidget extends StatefulWidget {
   final PostEntity posts;
@@ -37,10 +37,12 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
 
   @override
   void initState() {
-    di.sl<GetCurrentUidUseCase>().call().then((value) {
-      _currentUid = value;
-    });
     super.initState();
+    di.sl<GetCurrentUidUseCase>().call().then((value) {
+      setState(() {
+        _currentUid = value;
+      });
+    });
   }
 
   @override
@@ -58,21 +60,26 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   Row(
                     children: [
                       Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: profileWidget(
+                            imageUrl: "${widget.posts.userProfileUrl}",
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: profileWidget(imageUrl: "${widget.posts.userProfileUrl}"),
-                          )),
+                        ),
+                      ),
                       horizontalSize(10),
                       Text(
                         "${widget.posts.username}",
-                        style: Styles.titleLine2
-                            .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.w800),
-                      )
+                        style: Styles.titleLine2.copyWith(
+                          color: Styles.colorBlack,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ],
                   ),
                   GestureDetector(
@@ -113,26 +120,28 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * .35,
-                // decoration: BoxDecoration(color: Colors.grey),
-                child: profileWidget(imageUrl: "${widget.posts.postImageUrl}"),
+                child: profileWidget(
+                  imageUrl: "${widget.posts.postImageUrl}",
+                ),
               ),
               AnimatedOpacity(
                 duration: Duration(milliseconds: 200),
                 opacity: _isLikeAnimating ? 1 : 0,
                 child: LikeAnimationWidget(
-                    duration: Duration(milliseconds: 300),
-                    isLikeAnimation: _isLikeAnimating,
-                    onLikeFinish: () {
-                      setState(() {
-                        _isLikeAnimating = false;
-                      });
-                    },
-                    child: Icon(
-                      Icons.favorite,
-                      size: 75,
-                      color: Colors.red,
-                    )),
-              )
+                  duration: Duration(milliseconds: 300),
+                  isLikeAnimation: _isLikeAnimating,
+                  onLikeFinish: () {
+                    setState(() {
+                      _isLikeAnimating = false;
+                    });
+                  },
+                  child: Icon(
+                    Icons.favorite,
+                    size: 75,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -148,28 +157,35 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   Row(
                     children: [
                       GestureDetector(
-                          onTap: _likePost,
-                          child: Icon(
-                            widget.posts.likes!.contains(_currentUid)
-                                ? Icons.favorite
-                                : Icons.favorite_outline,
-                            color: widget.posts.likes!.contains(_currentUid)
-                                ? Colors.red
-                                : Styles.colorBlack,
-                            size: 28,
-                          )),
+                        onTap: _likePost,
+                        child: Icon(
+                          widget.posts.likes?.contains(_currentUid) == true
+                              ? Icons.favorite
+                              : Icons.favorite_outline,
+                          color: widget.posts.likes?.contains(_currentUid) == true
+                              ? Colors.red
+                              : Styles.colorBlack,
+                          size: 28,
+                        ),
+                      ),
                       horizontalSize(15),
                       GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, PageConsts.commentSectionPage,arguments: AppEntity(uid: _currentUid,postId: widget.posts.postId));
-                          },
-                          child: Icon(FontAwesomeIcons.comment)),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            PageConsts.commentSectionPage,
+                            arguments: AppEntity(uid: _currentUid, postId: widget.posts.postId),
+                          );
+                        },
+                        child: Icon(FontAwesomeIcons.comment),
+                      ),
                       horizontalSize(15),
                       GestureDetector(
-                          onTap: () {
-                            _shareShowBottomModelSheet(context);
-                          },
-                          child: Icon(FontAwesomeIcons.paperPlane)),
+                        onTap: () {
+                          _shareShowBottomModelSheet(context);
+                        },
+                        child: Icon(FontAwesomeIcons.paperPlane),
+                      ),
                     ],
                   ),
                   GestureDetector(onTap: () {}, child: Icon(FontAwesomeIcons.bookmark)),
@@ -178,8 +194,10 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
               verticalSize(10),
               Text(
                 "${widget.posts.totalLikes} Likes",
-                style:
-                    Styles.titleLine2.copyWith(color: Styles.colorBlack, fontWeight: FontWeight.w500),
+                style: Styles.titleLine2.copyWith(
+                  color: Styles.colorBlack,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               verticalSize(5),
               ExpandableText(
@@ -191,17 +209,13 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                 animation: true,
                 collapseOnTextTap: true,
                 prefixText: widget.posts.username,
-                // onPrefixTap: () => showProfile(widget.usernameText),
                 prefixStyle: TextStyle(fontWeight: FontWeight.bold),
-                // onHashtagTap: (name) => showHashtag(name),
                 hashtagStyle: TextStyle(
                   color: Color(0xFF066A9E),
                 ),
-                // onMentionTap: (username) => showProfile(username),
                 mentionStyle: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
-                // onUrlTap: (url) => launchUrl(url),
                 urlStyle: TextStyle(
                   decoration: TextDecoration.underline,
                 ),
@@ -209,7 +223,11 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
               verticalSize(5),
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, PageConsts.commentSectionPage,arguments: AppEntity(uid: _currentUid,postId: widget.posts.postId));
+                  Navigator.pushNamed(
+                    context,
+                    PageConsts.commentSectionPage,
+                    arguments: AppEntity(uid: _currentUid, postId: widget.posts.postId),
+                  );
                 },
                 child: Text(
                   "View all ${widget.posts.totalComments} Comments",
@@ -218,7 +236,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
               ),
               verticalSize(5),
               Text(
-                "${timeago.format(widget.posts.createdAt!.toDate())}",
+                "${timeago.format(widget.posts.createdAt?.toDate() ?? DateTime.now())}",
                 style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
               ),
             ],

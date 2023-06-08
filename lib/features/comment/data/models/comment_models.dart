@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagram_clone/features/post/comment_page/domain/entity/comment_entity.dart';
+import 'package:instagram_clone/features/comment/domain/entity/comment_entity.dart';
 
 class CommentModel extends CommentEntity {
   final String? description;
