@@ -7,10 +7,12 @@ import 'package:instagram_clone/features/notification/notification_page.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/pages/edit_post_page.dart';
 import 'package:instagram_clone/features/post/presentation/pages/widgets/upload_post_main_widget.dart';
+import 'package:instagram_clone/features/search/presentation/pages/post_detail_page.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_in_page.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_up_page.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/screens/edit_profile_page.dart';
+import 'package:instagram_clone/features/user/profile_page/presentation/single_user_profile_page.dart';
 
 import 'features/app/main_page/presentation/pages/main_page.dart';
 
@@ -34,10 +36,6 @@ class OnGenerateRoute {
           return routeBuilder(
             child: NoPageFound(),
           );
-        }
-      case PageConsts.homePage:
-        {
-          return routeBuilder(child: HomePage());
         }
       case PageConsts.commentSectionPage:
         if (args is AppEntity) {
@@ -71,6 +69,14 @@ class OnGenerateRoute {
           ));
         } else
           routeBuilder(child: NoPageFound());
+      case PageConsts.postDetailPage:
+        if(args is String){
+          return routeBuilder(child: PostDetailPage(postId: args,));
+        }else routeBuilder(child: NoPageFound());
+      case PageConsts.singleUserProfilePage:
+        if(args is String){
+          return routeBuilder(child: SingleUserProfilePage(otherUser: args,));
+        }else routeBuilder(child: NoPageFound());
       default:
         {
           NoPageFound();

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/add_new_story.dart';
@@ -21,7 +22,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // String truncatedText = "Story".length > 12 ? "Story".substring(0, 12) + "..." : "Story Text is here";
+  @override
+  void initState() {
+    BlocProvider.of<PostCubit>(context).getPosts(post: PostEntity());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               verticalSize(10),
               Text(
-                "${widget.currentUser.fullName==""?widget.currentUser.username:widget.currentUser.fullName}",
+                "${widget.currentUser.fullName == "" ? widget.currentUser.username : widget.currentUser.fullName}",
                 style:
                     Styles.titleLine2.copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
               ),
@@ -188,16 +193,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       shrinkWrap: true,
                       physics: ScrollPhysics(),
                       itemBuilder: (context, index) {
-                        return Container(
-                          height: 100,
-                          width: MediaQuery.of(context).size.width * 45,
-                          child: profileWidget(imageUrl: posts[index].postImageUrl),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, PageConsts.postDetailPage,
+                                arguments: posts[index].postId);
+                          },
+                          child: Container(
+                            height: 100,
+                            width: MediaQuery.of(context).size.width * 45,
+                            child: profileWidget(imageUrl: posts[index].postImageUrl),
+                          ),
                         );
                       },
                     );
                   }
                   return Center(
-                    child: Text("Posts Loading error"),
+                    child: CircularProgressIndicator(),
                   );
                 },
               ),

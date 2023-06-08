@@ -6,10 +6,10 @@ class AppEntity {
   final UserEntity? currentUser;
   final PostEntity? postEntity;
 
-
+  final String? otherUser;
   final String? uid;
   final String? postId;
   final String? selectedImagePath;
 
-  AppEntity({this.selectedImagePath, this.currentUser, this.postEntity, this.uid, this.postId});
+  AppEntity({this.otherUser, this.selectedImagePath, this.currentUser, this.postEntity, this.uid, this.postId});
 }

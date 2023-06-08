@@ -57,34 +57,40 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: profileWidget(
-                            imageUrl: "${widget.posts.userProfileUrl}",
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, PageConsts.singleUserProfilePage,arguments: widget.posts.creatorId);
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: profileWidget(
+                              imageUrl: "${widget.posts.userProfileUrl}",
+                            ),
                           ),
                         ),
-                      ),
-                      horizontalSize(10),
-                      Text(
-                        "${widget.posts.username}",
-                        style: Styles.titleLine2.copyWith(
-                          color: Styles.colorBlack,
-                          fontWeight: FontWeight.w800,
+                        horizontalSize(10),
+                        Text(
+                          "${widget.posts.username}",
+                          style: Styles.titleLine2.copyWith(
+                            color: Styles.colorBlack,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
-                      _currentUserMoreOptionsShowBottomModelSheet(context);
+                      widget.posts.creatorId==_currentUid? _currentUserMoreOptionsShowBottomModelSheet(context):_moreOptionShowBottomModelSheetWidget(
+                          context);
                     },
                     child: Container(
                       height: 40,
@@ -138,7 +144,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   child: Icon(
                     Icons.favorite,
                     size: 75,
-                    color: Colors.red,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -182,7 +188,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                       horizontalSize(15),
                       GestureDetector(
                         onTap: () {
-                          _shareShowBottomModelSheet(context);
+                        _shareShowBottomModelSheet(context);
                         },
                         child: Icon(FontAwesomeIcons.paperPlane),
                       ),

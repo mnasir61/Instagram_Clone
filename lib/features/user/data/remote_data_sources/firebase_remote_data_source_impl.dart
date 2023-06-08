@@ -189,7 +189,6 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
     // TODO: implement verifyEmail
     throw UnimplementedError();
   }
-
   Future<String> uploadImageToStorage(File? file, bool isPost, String childName) async {
     Reference ref = firebaseStorage.ref().child(childName).child(firebaseAuth.currentUser!.uid);
 
@@ -209,4 +208,5 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
       return '';
     }
   }
+
 }

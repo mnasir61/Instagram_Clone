@@ -61,7 +61,6 @@ class _CommentsAndRepliesWidgetState extends State<CommentsAndRepliesWidget> {
       postId: widget.comment.postId,
       commentId: widget.comment.commentId,
     ));
-
   }
 
   @override
@@ -70,7 +69,7 @@ class _CommentsAndRepliesWidgetState extends State<CommentsAndRepliesWidget> {
       children: [
         InkWell(
           onLongPress: () {
-            _deleteCommentBottomModelSheet();
+            widget.comment.creatorId == _currentUid ? _deleteCommentBottomModelSheet() : SizedBox();
           },
           child: Column(
             children: [
@@ -130,7 +129,7 @@ class _CommentsAndRepliesWidgetState extends State<CommentsAndRepliesWidget> {
                     Column(
                       children: [
                         GestureDetector(
-                          onTap:(){
+                          onTap: () {
                             _likeComment(comment: widget.comment);
                           },
                           child: Icon(
@@ -182,7 +181,9 @@ class _CommentsAndRepliesWidgetState extends State<CommentsAndRepliesWidget> {
                               maintainState: true,
                               child: InkWell(
                                 onLongPress: () {
-                                  _deleteReplyBottomModelSheet(reply: replies);
+                                  replies.creatorUid == _currentUid
+                                      ? _deleteReplyBottomModelSheet(reply: replies)
+                                      : SizedBox();
                                 },
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 60.0, top: 10, right: 15),

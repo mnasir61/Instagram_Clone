@@ -31,7 +31,16 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
       final postDocRef = await postCollectionRef.doc(post.postId).get();
 
       if (!postDocRef.exists) {
-        postCollectionRef.doc(post.postId).set(newPost);
+        postCollectionRef.doc(post.postId).set(newPost).then((value) {
+          final userCollection = fireStore.collection("users").doc(post.creatorId);
+
+          userCollection.get().then((value) {
+            if(value.exists){
+              final totalPosts = value.get("totalPosts");
+              userCollection.update({"totalPosts":totalPosts+1});
+            }
+          });
+        });
       } else {
         postCollectionRef.doc(post.postId).update(newPost);
       }
@@ -44,7 +53,16 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
   Future<void> deletePost(PostEntity post) async {
     final postCollectionRef = fireStore.collection("posts");
     try {
-      postCollectionRef.doc(post.postId).delete();
+      postCollectionRef.doc(post.postId).delete().then((value) {
+        final userCollection = fireStore.collection("users").doc(post.creatorId);
+
+        userCollection.get().then((value) {
+          if(value.exists){
+            final totalPosts = value.get("totalPosts");
+            userCollection.update({"totalPosts":totalPosts-1});
+          }
+        });
+      });
     } catch (e) {
       print("post cannot delete: $e");
     }
