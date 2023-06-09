@@ -8,6 +8,7 @@ import 'package:instagram_clone/features/post/presentation/cubit/read_single_pos
 import 'package:instagram_clone/features/reply/presentation/cubit/reply_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/auth/auth_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/credentials/credential_cubit.dart';
+import 'package:instagram_clone/features/user/presentation/cubit/get_other_single_user/get_other_single_user_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_single_user/get_single_user_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_in_page.dart';
@@ -47,7 +48,10 @@ class InstagramClone extends StatelessWidget {
         ),
         BlocProvider<ReplyCubit>(
           create: (context) => di.sl<ReplyCubit>(),
-        )
+        ),
+        BlocProvider<GetOtherSingleUserCubit>(
+          create: (context) => di.sl<GetOtherSingleUserCubit>(),
+        ),
       ],
       child: _materialAppBuilder(),
     );

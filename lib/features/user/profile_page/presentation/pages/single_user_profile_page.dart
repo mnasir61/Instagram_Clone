@@ -6,9 +6,9 @@ import 'package:instagram_clone/features/user/profile_page/presentation/pages/wi
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class SingleUserProfilePage extends StatelessWidget {
-  final String otherUser;
+  final String otherUserUid;
 
-  const SingleUserProfilePage({Key? key, required this.otherUser}) : super(key: key);
+  const SingleUserProfilePage({Key? key, required this.otherUserUid}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +19,6 @@ class SingleUserProfilePage extends StatelessWidget {
       BlocProvider<PostCubit>(
         create: (context) => di.sl<PostCubit>(),
       )
-    ], child: SingleUserProfileMainWidgetPage(otherUser: otherUser));
+    ], child: SingleUserProfileMainWidgetPage(otherUserUid: otherUserUid));
   }
 }

@@ -8,16 +8,19 @@ import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
+import 'package:instagram_clone/features/user/presentation/cubit/get_other_single_user/get_other_single_user_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_single_user/get_single_user_cubit.dart';
+import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/add_new_story.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_menu_model_sheet_data_widget.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/story_widget.dart';
-import 'package:instagram_clone/main_injection_container.dart'as di;
-class SingleUserProfileMainWidgetPage extends StatefulWidget {
-  final String otherUser;
+import 'package:instagram_clone/main_injection_container.dart' as di;
 
-  const SingleUserProfileMainWidgetPage({Key? key, required this.otherUser}) : super(key: key);
+class SingleUserProfileMainWidgetPage extends StatefulWidget {
+  final String otherUserUid;
+
+  const SingleUserProfileMainWidgetPage({Key? key, required this.otherUserUid}) : super(key: key);
 
   @override
   State<SingleUserProfileMainWidgetPage> createState() => _SingleUserProfileMainWidgetPage();
@@ -25,9 +28,10 @@ class SingleUserProfileMainWidgetPage extends StatefulWidget {
 
 class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidgetPage> {
   String _currentUid = "";
+
   @override
   void initState() {
-    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.otherUser);
+    BlocProvider.of<GetOtherSingleUserCubit>(context).getOtherSingleUser(otherUid: widget.otherUserUid);
     BlocProvider.of<PostCubit>(context).getPosts(post: PostEntity());
     di.sl<GetCurrentUidUseCase>().call().then((value) {
       setState(() {
@@ -37,14 +41,12 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GetSingleUserCubit, GetSingleUserState>(
+    return BlocBuilder<GetOtherSingleUserCubit, GetOtherSingleUserState>(
       builder: (context, userState) {
-        if (userState is GetSingleUserLoaded) {
-          final singleUser = userState.singleUser;
+        if (userState is GetSingleOtherUserLoaded) {
+          final singleUser = userState.otherUser;
           return Scaffold(
             appBar: _appBarWidget(singleUser: singleUser),
             backgroundColor: Styles.colorWhite,
@@ -94,7 +96,7 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
                             Column(
                               children: [
                                 Text(
-                                  "${singleUser.followers}",
+                                  "${singleUser.totalFollowers}",
                                   style: Styles.titleLine1.copyWith(
                                       color: Styles.colorBlack,
                                       fontWeight: FontWeight.bold,
@@ -114,7 +116,7 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
                             Column(
                               children: [
                                 Text(
-                                  "${singleUser.followings}",
+                                  "${singleUser.totalFollowings}",
                                   style: Styles.titleLine1.copyWith(
                                       color: Styles.colorBlack,
                                       fontWeight: FontWeight.bold,
@@ -175,20 +177,63 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
                       ),
                     ),
                     verticalSize(10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _singleProfileButtonWidget(
-                            context: context,
-                            text: "Edit Profile",
-                            onTap: () {
-                              Navigator.pushNamed(context, PageConsts.editProfilePage,
-                                  arguments: singleUser);
-                            }),
-                        _singleProfileButtonWidget(context: context, text: "Share Profile"),
-                        _singleProfileButtonWidget(context: context, text: "Contact"),
-                      ],
-                    ),
+                    singleUser.uid!.contains(_currentUid)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _singleProfileButtonWidget(
+                                  context: context,
+                                  textColor: Styles.colorBlack,
+                                  backgroundColor: Styles.colorWhiteMid.withOpacity(.3),
+                                  buttonsPerRow: 3,
+                                  text: "Edit Profile",
+                                  onTap: () {
+                                    Navigator.pushNamed(context, PageConsts.editProfilePage,
+                                        arguments: singleUser);
+                                  }),
+                              _singleProfileButtonWidget(
+                                  textColor: Styles.colorBlack,
+                                  backgroundColor: Styles.colorWhiteMid.withOpacity(.3),
+                                  buttonsPerRow: 3,
+                                  context: context,
+                                  text: "Share Profile"),
+                              _singleProfileButtonWidget(
+                                  textColor: Styles.colorBlack,
+                                  backgroundColor: Styles.colorWhiteMid.withOpacity(.3),
+                                  buttonsPerRow: 3,
+                                  context: context,
+                                  text: "Contact"),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _currentUid == singleUser.uid ? Container(): _singleProfileButtonWidget(
+                                  backgroundColor: singleUser.followers!.contains(_currentUid)
+                                      ? Styles.colorWhiteMid.withOpacity(.3)
+                                      : colorBlue,
+                                  context: context,
+                                  buttonsPerRow: 2,
+                                  text: singleUser.followers!.contains(_currentUid)
+                                      ? "Following"
+                                      : "Follow",
+                                  onTap: () {
+                                    BlocProvider.of<GetUsersCubit>(context).followUnfollow(
+                                      user: UserEntity(
+                                        uid: _currentUid,
+                                        otherUid: widget.otherUserUid
+                                      )
+                                    );
+                                    print("followed");
+                                  }),
+                              _singleProfileButtonWidget(
+                                  textColor: Styles.colorBlack,
+                                  backgroundColor: Styles.colorWhiteMid.withOpacity(.3),
+                                  buttonsPerRow: 2,
+                                  context: context,
+                                  text: "Message"),
+                            ],
+                          ),
                     verticalSize(25),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -205,7 +250,7 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
                       builder: (context, postState) {
                         if (postState is PostLoaded) {
                           final posts = postState.posts
-                              .where((post) => post.creatorId == widget.otherUser)
+                              .where((post) => post.creatorId == widget.otherUserUid)
                               .toList();
                           return GridView.builder(
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -215,8 +260,9 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
                             physics: ScrollPhysics(),
                             itemBuilder: (context, index) {
                               return GestureDetector(
-                                onTap: (){
-                                  Navigator.pushNamed(context, PageConsts.postDetailPage,arguments: posts[index].postId);
+                                onTap: () {
+                                  Navigator.pushNamed(context, PageConsts.postDetailPage,
+                                      arguments: posts[index].postId);
                                 },
                                 child: Container(
                                   height: 100,
@@ -228,7 +274,7 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
                           );
                         }
                         return Center(
-                          child:CircularProgressIndicator(),
+                          child: CircularProgressIndicator(),
                         );
                       },
                     ),
@@ -245,21 +291,34 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
     );
   }
 
-  _singleProfileButtonWidget({required BuildContext context, String? text, VoidCallback? onTap}) {
+  _singleProfileButtonWidget({
+    required BuildContext context,
+    String? text,
+    VoidCallback? onTap,
+    int buttonsPerRow = 0,
+    Color? backgroundColor,
+    Color? textColor,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final buttonWidth = screenWidth / buttonsPerRow * 0.9;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 33,
-        width: MediaQuery.of(context).size.width * .3,
+        width: buttonWidth,
         decoration: BoxDecoration(
-          color: Styles.colorWhiteMid.withOpacity(.3),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
           child: Text(
             "$text",
-            style: Styles.titleLine2
-                .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold, fontSize: 15),
+            style: Styles.titleLine2.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
           ),
         ),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 final primaryColor = Colors.white;
-final colorBlue = Color.fromRGBO(0, 97, 224,1);
+final colorBlue = Color.fromRGBO(5, 107, 241, 1.0);
 
 class Styles {
   //App Colors

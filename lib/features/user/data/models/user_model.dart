@@ -17,8 +17,10 @@ class UserModel extends UserEntity {
   final num? likes;
   final num? totalLikes;
   final num? totalPosts;
-  final num? followers;
-  final num? followings;
+  final num? totalFollowers;
+  final num? totalFollowings;
+  final List? followers;
+  final List? followings;
   final String? currentUserBio;
   final String? currentUserProfession;
 
@@ -27,10 +29,12 @@ class UserModel extends UserEntity {
       this.likes,
         this.currentUserProfession,
         this.currentUserBio,
-      this.followers,
+      this.totalFollowers,
+        this.followings,
+        this.followers,
       this.totalLikes,
       this.totalPosts,
-      this.followings,
+      this.totalFollowings,
       this.username,
       this.email,
       this.profileUrl,
@@ -56,8 +60,8 @@ class UserModel extends UserEntity {
             likes: likes,
             totalLikes: totalLikes,
             totalPosts: totalPosts,
-            followers: followers,
-            followings: followings);
+            totalFollowers: totalFollowers,
+            totalFollowings: totalFollowings);
 
   factory UserModel.fromSnapshot(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
@@ -76,10 +80,12 @@ class UserModel extends UserEntity {
       likes: snapshot['likes'],
       totalLikes: snapshot['totalLikes'],
       totalPosts: snapshot['totalPosts'],
-      followers: snapshot['followers'],
-      followings: snapshot['followings'],
+      totalFollowers: snapshot['totalFollowers'],
+      totalFollowings: snapshot['totalFollowings'],
       currentUserProfession: snapshot['currentUserProfession'],
       currentUserBio: snapshot['currentUserBio'],
+      followers: List.from(snap.get("followers")),
+      followings: List.from(snap.get("followings")),
     );
   }
 
@@ -98,10 +104,12 @@ class UserModel extends UserEntity {
       "likes": likes,
       "totalLikes": totalLikes,
       "totalPosts": totalPosts,
-      "followers": followers,
-      "followings": followings,
+      "totalFollowers": totalFollowers,
+      "totalFollowings": totalFollowings,
       "currentUserProfession": currentUserProfession,
       "currentUserBio": currentUserBio,
+      "followers": followers,
+      "followings": followings,
     };
   }
 }

@@ -16,8 +16,10 @@ class UserEntity extends Equatable {
   final num? likes;
   final num? totalLikes;
   final num? totalPosts;
-  final num? followers;
-  final num? followings;
+  final num? totalFollowers;
+  final num? totalFollowings;
+  final List? followers;
+  final List? followings;
   final String? currentUserBio;
   final String? currentUserProfession;
 
@@ -32,8 +34,10 @@ class UserEntity extends Equatable {
       this.currentUserProfession,
       this.totalLikes,
       this.totalPosts,
-      this.followers,
-      this.followings,
+        this.followings,
+        this.followers,
+      this.totalFollowers,
+      this.totalFollowings,
       this.uid,
       this.username,
       this.password,
@@ -65,8 +69,10 @@ class UserEntity extends Equatable {
         likes,
         totalLikes,
         totalPosts,
-        followers,
-        followers,
+        totalFollowers,
+        totalFollowers,
+    followers,
+    followings,
         currentUserBio,
         currentUserProfession
       ];

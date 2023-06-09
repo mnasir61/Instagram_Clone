@@ -77,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Column(
                         children: [
                           Text(
-                            "${widget.currentUser.followers}",
+                            "${widget.currentUser.totalFollowers}",
                             style: Styles.titleLine1.copyWith(
                                 color: Styles.colorBlack, fontWeight: FontWeight.bold, fontSize: 19),
                           ),
@@ -95,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Column(
                         children: [
                           Text(
-                            "${widget.currentUser.followings}",
+                            "${widget.currentUser.totalFollowings}",
                             style: Styles.titleLine1.copyWith(
                                 color: Styles.colorBlack, fontWeight: FontWeight.bold, fontSize: 19),
                           ),

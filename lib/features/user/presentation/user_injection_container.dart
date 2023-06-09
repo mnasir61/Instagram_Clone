@@ -1,6 +1,9 @@
 import 'package:instagram_clone/features/user/data/repositories/user_repository_impl.dart';
 import 'package:instagram_clone/features/user/domain/repositories/user_repository.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/follow_unfollow_user_usecase.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/get_other_single_user_usecase.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/upload_image_to_storage_usecase.dart';
+import 'package:instagram_clone/features/user/presentation/cubit/get_other_single_user/get_other_single_user_cubit.dart';
 import 'package:instagram_clone/main_injection_container.dart';
 
 import '../data/remote_data_sources/firebase_remote_data_source.dart';
@@ -23,21 +26,26 @@ import 'cubit/user/get_single_user/get_single_user_cubit.dart';
 import 'cubit/user/get_users_cubit.dart';
 
 Future<void> userInjectionContainer() async {
-  //Cubit
+  //Cubit Auth
   sl.registerFactory<AuthCubit>(() => AuthCubit(
       getCurrentUidUseCase: sl.call(), isSignInUseCase: sl.call(), signOutUseCase: sl.call()));
 
+  //Cubit Other User
+  sl.registerFactory<GetOtherSingleUserCubit>(
+      () => GetOtherSingleUserCubit(getOtherSingleUserUseCase: sl.call()));
+  //Cubit Credential
   sl.registerFactory<CredentialCubit>(() => CredentialCubit(
       signUpUseCase: sl.call(),
       signInUseCase: sl.call(),
       forgotPasswordUseCase: sl.call(),
       signInWithGoogleUseCase: sl.call()));
-
+//Cubit GetUsers
   sl.registerFactory<GetUsersCubit>(() => GetUsersCubit(
         getUsersUseCase: sl.call(),
         updateUserUseCase: sl.call(),
+        followUnfollowUserUseCase: sl.call(),
       ));
-
+//Cubit GetSingleUser
   sl.registerFactory<GetSingleUserCubit>(() => GetSingleUserCubit(
         getSingleUserUseCase: sl.call(),
       ));
@@ -58,6 +66,10 @@ Future<void> userInjectionContainer() async {
   sl.registerLazySingleton<GetUsersUseCase>(() => GetUsersUseCase(repository: sl.call()));
 
   sl.registerLazySingleton<UpdateUserUseCase>(() => UpdateUserUseCase(repository: sl.call()));
+  sl.registerLazySingleton<FollowUnfollowUserUseCase>(
+      () => FollowUnfollowUserUseCase(repository: sl.call()));
+  sl.registerLazySingleton<GetOtherSingleUserUseCase>(
+      () => GetOtherSingleUserUseCase(repository: sl.call()));
 //storage UseCase
   sl.registerLazySingleton<UploadImageToStorageUseCase>(
       () => UploadImageToStorageUseCase(repository: sl.call()));

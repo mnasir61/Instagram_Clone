@@ -50,4 +50,11 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<String> uploadImageToStorage(File? file, bool isPost, String childName) async =>
       remoteDataSource.uploadImageToStorage(file, isPost, childName);
+
+  @override
+  Future<void> followUnfollowUser(UserEntity user) async => remoteDataSource.followUnfollowUser(user);
+
+  @override
+  Stream<List<UserEntity>> getOtherSingleUser(String otherUid) =>
+      remoteDataSource.getOtherSingleUser(otherUid);
 }

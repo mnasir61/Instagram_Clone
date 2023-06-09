@@ -39,24 +39,26 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
     final uid = await getCurrentUid();
     userCollection.doc(uid).get().then((userDoc) {
       final newUser = UserModel(
-              uid: uid,
-              username: user.username,
-              email: user.email,
-              profileUrl: user.profileUrl,
-              token: user.token,
-              accountType: user.accountType,
-              isOnline: user.isOnline,
-              fullName: user.fullName,
-              totalNotifications: user.totalNotifications,
-              likes: user.likes,
-              currentUserProfession: user.currentUserProfession,
-              currentUserBio: user.currentUserBio,
-              totalLikes: user.totalLikes,
-              totalPosts: user.totalPosts,
-              followings: user.followings,
-              followers: user.followers,
-              dateOfBirth: user.dateOfBirth)
-          .toDocument();
+        uid: uid,
+        username: user.username,
+        email: user.email,
+        profileUrl: user.profileUrl,
+        token: user.token,
+        accountType: user.accountType,
+        isOnline: user.isOnline,
+        fullName: user.fullName,
+        totalNotifications: user.totalNotifications,
+        likes: user.likes,
+        currentUserProfession: user.currentUserProfession,
+        currentUserBio: user.currentUserBio,
+        totalLikes: user.totalLikes,
+        totalPosts: user.totalPosts,
+        followings: user.followings,
+        followers: user.followers,
+        totalFollowings: user.totalFollowings,
+        totalFollowers: user.totalFollowers,
+        dateOfBirth: user.dateOfBirth,
+      ).toDocument();
       if (!userDoc.exists) {
         userCollection.doc(uid).set(newUser);
         return;
@@ -128,8 +130,11 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         token: "",
         dateOfBirth: "",
         totalNotifications: 0,
-        followers: 0,
-        followings: 0,
+        currentUserBio: "",
+        currentUserProfession: "",
+        fullName: "",
+        followers: [],
+        followings: [],
         likes: 0,
         totalLikes: 0,
         totalPosts: 0,
@@ -189,6 +194,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
     // TODO: implement verifyEmail
     throw UnimplementedError();
   }
+
   Future<String> uploadImageToStorage(File? file, bool isPost, String childName) async {
     Reference ref = firebaseStorage.ref().child(childName).child(firebaseAuth.currentUser!.uid);
 
@@ -209,4 +215,87 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
     }
   }
 
+  @override
+  Future<void> followUnfollowUser(UserEntity user) async {
+    final userCollection = fireStore.collection("users");
+
+    final myDocRef = await userCollection.doc(user.uid).get();
+    final otherUserDocRef = await userCollection.doc(user.otherUid).get();
+
+    if (myDocRef.exists && otherUserDocRef.exists) {
+      List myFollowingList = myDocRef.get("followings");
+      List otherUserFollowingList = otherUserDocRef.get("Followers");
+
+      //My Following List
+      if (myFollowingList.contains(user.otherUid)) {
+        userCollection.doc(user.uid).update({
+          "followings": FieldValue.arrayRemove([user.otherUid])
+        }).then((value) {
+          final userCollection = fireStore.collection("users").doc(user.uid);
+
+          userCollection.get().then((value) {
+            if (value.exists) {
+              final totalFollowing = value.get('totalFollowings');
+              userCollection.update({"totalFollowings": totalFollowing - 1});
+              return;
+            }
+          });
+        });
+      } else {
+        userCollection.doc(user.uid).update({
+          "followings": FieldValue.arrayUnion([user.otherUid])
+        }).then((value) {
+          final userCollection = fireStore.collection("users").doc(user.uid);
+
+          userCollection.get().then((value) {
+            if (value.exists) {
+              final totalFollowing = value.get('totalFollowings');
+              userCollection.update({"totalFollowings": totalFollowing + 1});
+              return;
+            }
+          });
+        });
+      }
+
+      // Other User Following List
+      if (otherUserFollowingList.contains(user.uid)) {
+        userCollection.doc(user.otherUid).update({
+          "followers": FieldValue.arrayRemove([user.uid])
+        }).then((value) {
+          final userCollection = fireStore.collection("users").doc(user.otherUid);
+
+          userCollection.get().then((value) {
+            if (value.exists) {
+              final totalFollowers = value.get('totalFollowers');
+              userCollection.update({"totalFollowers": totalFollowers - 1});
+              return;
+            }
+          });
+        });
+      } else {
+        userCollection.doc(user.otherUid).update({
+          "followers": FieldValue.arrayUnion([user.uid])
+        }).then((value) {
+          final userCollection = fireStore.collection("users").doc(user.otherUid);
+
+          userCollection.get().then((value) {
+            if (value.exists) {
+              final totalFollowers = value.get('totalFollowers');
+              userCollection.update({"totalFollowers": totalFollowers + 1});
+              return;
+            }
+          });
+        });
+      }
+    }
+  }
+
+  @override
+  Stream<List<UserEntity>> getOtherSingleUser(String otherUid) {
+    final userCollection = fireStore.collection("users").where("uid",isEqualTo:otherUid ).limit(1);
+
+    return userCollection
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList());
+  }
 }
