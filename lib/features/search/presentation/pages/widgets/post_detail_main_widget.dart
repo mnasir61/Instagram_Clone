@@ -21,7 +21,10 @@ import 'package:instagram_clone/main_injection_container.dart' as di;
 class PostDetailMainWidget extends StatefulWidget {
   final String postId;
 
-  const PostDetailMainWidget({Key? key, required this.postId,}) : super(key: key);
+  const PostDetailMainWidget({
+    Key? key,
+    required this.postId,
+  }) : super(key: key);
 
   @override
   State<PostDetailMainWidget> createState() => _PostDetailMainWidgetState();
@@ -53,10 +56,18 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: GestureDetector(onTap: (){
-          Navigator.pop(context);
-        },child: Icon(FontAwesomeIcons.arrowLeft,color: Colors.black,)),
-        title: Text("Post Detail",style: TextStyle(color: Colors.black),),
+        leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              FontAwesomeIcons.arrowLeft,
+              color: Colors.black,
+            )),
+        title: Text(
+          "Post Detail",
+          style: TextStyle(color: Colors.black),
+        ),
       ),
       backgroundColor: Colors.white,
       body: BlocBuilder<ReadSinglePostCubit, ReadSinglePostState>(
@@ -99,8 +110,8 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              singlePost .creatorId == _currentUid
-                                  ? _currentUserMoreOptionsShowBottomModelSheet(context,singlePost)
+                              singlePost.creatorId == _currentUid
+                                  ? _currentUserMoreOptionsShowBottomModelSheet(context, singlePost)
                                   : _moreOptionShowBottomModelSheetWidget(context);
                             },
                             child: Container(
@@ -191,8 +202,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
                                   Navigator.pushNamed(
                                     context,
                                     PageConsts.commentSectionPage,
-                                    arguments:
-                                        AppEntity(uid: _currentUid, postId: singlePost.postId),
+                                    arguments: AppEntity(uid: _currentUid, postId: singlePost.postId),
                                   );
                                 },
                                 child: Icon(FontAwesomeIcons.comment),
@@ -300,7 +310,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
     );
   }
 
-  void _currentUserMoreOptionsShowBottomModelSheet(BuildContext context,PostEntity posts) {
+  void _currentUserMoreOptionsShowBottomModelSheet(BuildContext context, PostEntity posts) {
     showModalBottomSheet(
       useSafeArea: true,
       showDragHandle: true,
@@ -312,8 +322,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
       builder: (BuildContext context) {
         return CurrentUserMoreOptionsModelSheetData(
           onTapToEditPost: () {
-            Navigator.pushNamed(context, PageConsts.editPostPage, arguments: posts)
-                .then((value) {
+            Navigator.pushNamed(context, PageConsts.editPostPage, arguments: posts).then((value) {
               Future.delayed(Duration(milliseconds: 300));
               Navigator.pop(context);
             });

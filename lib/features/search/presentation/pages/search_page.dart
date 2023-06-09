@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/search/presentation/pages/widgets/search_page_main_widget.dart';
+import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class SearchPage extends StatelessWidget {
@@ -12,6 +13,9 @@ class SearchPage extends StatelessWidget {
     return MultiBlocProvider(providers: [
       BlocProvider<PostCubit>(
         create: (context) => di.sl<PostCubit>(),
+      ),
+      BlocProvider<GetUsersCubit>(
+        create: (context) => di.sl<GetUsersCubit>(),
       ),
     ], child: SearchPageMainWidget());
   }

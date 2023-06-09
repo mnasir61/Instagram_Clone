@@ -83,7 +83,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
   }
 
   @override
-  Stream<List<UserEntity>> getUsers() {
+  Stream<List<UserEntity>> getUsers(UserEntity user) {
     final userCollection = fireStore.collection(FirebaseCollectionConst.users);
 
     return userCollection

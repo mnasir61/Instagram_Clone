@@ -15,10 +15,10 @@ class GetUsersCubit extends Cubit<GetUsersState> {
     required this.updateUserUseCase
 }) : super(GetUsersInitial());
 
-  Future<void> getAllUsers() async {
+  Future<void> getAllUsers({required UserEntity user}) async {
     try {
 
-      final streamResponse = getUsersUseCase.call();
+      final streamResponse = getUsersUseCase.call(user);
       streamResponse.listen((users) {
         emit(GetUsersLoaded(users: users));
       });
