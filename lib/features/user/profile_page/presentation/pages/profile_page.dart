@@ -61,7 +61,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           Text(
                             "${widget.currentUser.totalPosts}",
                             style: Styles.titleLine1.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.bold, fontSize: 19),
+                                color: Styles.colorBlack,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 19),
                           ),
                           verticalSize(2),
                           Text(
@@ -74,22 +76,30 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                       horizontalSize(30),
-                      Column(
-                        children: [
-                          Text(
-                            "${widget.currentUser.totalFollowers}",
-                            style: Styles.titleLine1.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.bold, fontSize: 19),
-                          ),
-                          verticalSize(2),
-                          Text(
-                            "Followers",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack.withOpacity(.9),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15),
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, PageConsts.followersPage,
+                              arguments: widget.currentUser);
+                        },
+                        child: Column(
+                          children: [
+                            Text(
+                              "${widget.currentUser.totalFollowers}",
+                              style: Styles.titleLine1.copyWith(
+                                  color: Styles.colorBlack,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 19),
+                            ),
+                            verticalSize(2),
+                            Text(
+                              "Followers",
+                              style: Styles.titleLine2.copyWith(
+                                  color: Styles.colorBlack.withOpacity(.9),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15),
+                            ),
+                          ],
+                        ),
                       ),
                       horizontalSize(30),
                       Column(
@@ -97,7 +107,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           Text(
                             "${widget.currentUser.totalFollowings}",
                             style: Styles.titleLine1.copyWith(
-                                color: Styles.colorBlack, fontWeight: FontWeight.bold, fontSize: 19),
+                                color: Styles.colorBlack,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 19),
                           ),
                           verticalSize(2),
                           Text(
@@ -116,18 +128,14 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               verticalSize(10),
               Text(
-                "${widget.currentUser.fullName == "" ? widget.currentUser.username : widget.currentUser.fullName}",
-                style:
-                    Styles.titleLine2.copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
+                "${widget.currentUser.fullName!.isEmpty ? widget.currentUser.username : widget.currentUser.fullName}",
+                style: Styles.titleLine2
+                    .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
               ),
               Text(
                 "${widget.currentUser.currentUserProfession}",
                 style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
               ),
-              // Text(
-              //   "${widget.currentUser.currentUserBio}",
-              //   style: Styles.titleLine2.copyWith(color: Styles.colorBlack),
-              // ),
               SizedBox(height: 2),
               ExpandableText(
                 "${widget.currentUser.currentUserBio}",
@@ -178,7 +186,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               verticalSize(25),
-
               verticalSize(15),
               BlocBuilder<PostCubit, PostState>(
                 builder: (context, postState) {

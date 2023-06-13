@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/global/circular_progress_indicator_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/home/presentation/home_page.dart';
 import 'package:instagram_clone/features/post/presentation/pages/post_page.dart';
 import 'package:instagram_clone/features/reels/presentation/pages/reels_page.dart';
@@ -13,7 +14,11 @@ import 'package:instagram_clone/features/user/profile_page/presentation/pages/pr
 
 class MainPage extends StatefulWidget {
   final String uid;
-  const MainPage({Key? key, required this.uid,}) : super(key: key);
+
+  const MainPage({
+    Key? key,
+    required this.uid,
+  }) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -24,20 +29,19 @@ class _MainPageState extends State<MainPage> {
   int _currentPageIndex = 0;
   GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
 
-
   @override
   void initState() {
-
-    BlocProvider.of<  GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
+    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GetSingleUserCubit,GetSingleUserState>(
-      builder: (context,state){
-        if(state is GetSingleUserLoaded){
+    return BlocBuilder<GetSingleUserCubit, GetSingleUserState>(
+      builder: (context, state) {
+        if (state is GetSingleUserLoaded) {
           final currentUser = state.singleUser;
-          return  Scaffold(
+          return Scaffold(
             key: _scaffoldState,
             bottomNavigationBar: BottomNavigationBar(
               backgroundColor: Colors.white,
@@ -55,7 +59,6 @@ class _MainPageState extends State<MainPage> {
               unselectedLabelStyle: TextStyle(color: Colors.grey, fontSize: 12),
               showUnselectedLabels: false,
               showSelectedLabels: false,
-
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
@@ -77,14 +80,30 @@ class _MainPageState extends State<MainPage> {
                   label: "Reels",
                   activeIcon: Icon(FluentSystemIcons.ic_fluent_video_clip_filled),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(FluentSystemIcons.ic_fluent_person_regular),
-                  label: "Profile",
-                  activeIcon: Icon(FluentSystemIcons.ic_fluent_person_filled),
-                ),
+                currentUser.profileUrl == "" || currentUser.profileUrl == null
+                    ? BottomNavigationBarItem(
+                        icon: Icon(FluentSystemIcons.ic_fluent_person_regular),
+                        label: "Profile",
+                        activeIcon: Icon(FluentSystemIcons.ic_fluent_person_filled),
+                      )
+                    : BottomNavigationBarItem(
+                        label: "Profile",
+                        icon: Container(
+                          height: 27,
+                          width: 27,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                            border: Border.all(color: Colors.black,width: 2)
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: profileWidget(imageUrl: currentUser.profileUrl),
+                          ),
+                        ),
+                      ),
               ],
             ),
-            body: _switchPage(_currentPageIndex,currentUser),
+            body: _switchPage(_currentPageIndex, currentUser),
           );
         }
         return CircularProgressIndicatorWidget();
@@ -92,7 +111,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  _switchPage(int index,UserEntity currentUser) {
+  _switchPage(int index, UserEntity currentUser) {
     switch (index) {
       case 0:
         {
@@ -104,7 +123,9 @@ class _MainPageState extends State<MainPage> {
         }
       case 2:
         {
-          return PostPage(currentUser: currentUser,);
+          return PostPage(
+            currentUser: currentUser,
+          );
         }
       case 3:
         {
@@ -112,7 +133,9 @@ class _MainPageState extends State<MainPage> {
         }
       case 4:
         {
-          return ProfilePage(currentUser: currentUser,);
+          return ProfilePage(
+            currentUser: currentUser,
+          );
         }
     }
   }

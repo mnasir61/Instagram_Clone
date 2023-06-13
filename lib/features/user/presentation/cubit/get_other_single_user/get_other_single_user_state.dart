@@ -4,26 +4,26 @@ abstract class GetOtherSingleUserState extends Equatable {
   const GetOtherSingleUserState();
 }
 
-class GetSingleOtherUserInitial extends GetOtherSingleUserState {
+class GetOtherSingleUserInitial extends GetOtherSingleUserState {
   @override
   List<Object> get props => [];
 }
 
-class GetSingleOtherUserLoaded extends GetOtherSingleUserState {
+class GetOtherSingleUserLoaded extends GetOtherSingleUserState {
   final UserEntity otherUser;
 
-  GetSingleOtherUserLoaded({required this.otherUser});
+  GetOtherSingleUserLoaded({required this.otherUser});
 
   @override
   List<Object> get props => [otherUser];
 }
 
-class GetSingleOtherUserLoading extends GetOtherSingleUserState {
+class GetOtherSingleUserLoading extends GetOtherSingleUserState {
   @override
   List<Object> get props => [];
 }
 
-class GetSingleOtherUserFailure extends GetOtherSingleUserState {
+class GetOtherSingleUserFailure extends GetOtherSingleUserState {
   @override
   List<Object> get props => [];
 }

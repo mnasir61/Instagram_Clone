@@ -10,19 +10,19 @@ part 'get_other_single_user_state.dart';
 class GetOtherSingleUserCubit extends Cubit<GetOtherSingleUserState> {
   final GetOtherSingleUserUseCase getOtherSingleUserUseCase;
 
-  GetOtherSingleUserCubit({required this.getOtherSingleUserUseCase}) : super(GetSingleOtherUserInitial());
+  GetOtherSingleUserCubit({required this.getOtherSingleUserUseCase}) : super(GetOtherSingleUserInitial());
 
   Future<void> getOtherSingleUser({required String otherUid}) async {
-    emit(GetSingleOtherUserLoading());
+    emit(GetOtherSingleUserLoading());
     try {
       final streamResponse = getOtherSingleUserUseCase.call(otherUid);
       streamResponse.listen((users) {
-        emit(GetSingleOtherUserLoaded(otherUser: users.first));
+        emit(GetOtherSingleUserLoaded(otherUser: users.first));
       });
     } on SocketException catch (e) {
-      emit(GetSingleOtherUserFailure());
+      emit(GetOtherSingleUserFailure());
     } catch (e) {
-      emit(GetSingleOtherUserFailure());
+      emit(GetOtherSingleUserFailure());
     }
   }
 }

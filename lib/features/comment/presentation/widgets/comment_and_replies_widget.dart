@@ -446,6 +446,10 @@ class _CommentsAndRepliesWidgetState extends State<CommentsAndRepliesWidget> {
         commentId: comment.commentId,
         postId: comment.postId,
       ),
-    );
+    ).then((value) {
+      setState(() {
+
+      });
+    });
   }
 }

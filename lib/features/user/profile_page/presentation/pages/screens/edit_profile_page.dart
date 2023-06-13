@@ -12,6 +12,7 @@ import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
+
 class EditProfilePage extends StatefulWidget {
   final UserEntity currentUser;
 
@@ -70,7 +71,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: Icon(FontAwesomeIcons.xmark, color: Styles.colorBlack)),
+            child: Icon(FontAwesomeIcons.times, color: Styles.colorBlack)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
@@ -78,7 +79,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 onTap: _updateUserProfileData,
                 child: _isUpdating == true
                     ? Center(
-                        child: Container(height: 30, width: 30, child: CircularProgressIndicator()))
+                    child: Container(height: 30, width: 30, child: CircularProgressIndicator()))
                     : Icon(FontAwesomeIcons.check, color: colorBlue)),
           ),
         ],
@@ -122,6 +123,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   labelText: "Username",
                   maxLines: 1,
                   controller: _usernameController,
+                  validator: _validateUsername,
                 ),
                 SizedBox(height: 10),
                 _formFieldWidget(
@@ -146,53 +148,95 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  _formFieldWidget(
-      {TextEditingController? controller, int? maxLines, String? hintText, String? labelText}) {
+  _formFieldWidget({
+    TextEditingController? controller,
+    int? maxLines,
+    String? hintText,
+    String? labelText,
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       decoration: InputDecoration(
-          hintText: "$hintText",
-          labelText: "$labelText",
-          contentPadding: EdgeInsets.symmetric(horizontal: 0)),
+        hintText: "$hintText",
+        labelText: "$labelText",
+        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+      ),
+      validator: validator,
     );
   }
 
-  //
-  // _updateUserProfileData() {
-  //   setState(() => _isUpdating = true);
-  //   if (image == null) {
-  //     _updateUserProfile("");
-  //   } else {
-  //     StorageProviderRemoteDataSource.uploadFile(file: image!).then((imageUrl) {
-  //       _updateUserProfile(imageUrl);
-  //     });
-  //   }
-  // }
+  String? _validateUsername(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Username is required";
+    } else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+      return "Username can only contain letters, numbers, and underscores";
+    } else if (value.length < 4 || value.length > 20) {
+      return "Username must be between 4 and 20 characters";
+    } else if (_isUsernameAlreadyUsed(value)) {
+      return "Username is already used by another user";
+    }
+    return null;
+  }
+
+  bool _isUsernameAlreadyUsed(String username) {
+    final usersState = context.read<GetUsersCubit>().state;
+    if (usersState is GetUsersLoaded) {
+      final users = usersState.users;
+      for (final user in users) {
+        if (user.username?.toLowerCase() == username.toLowerCase() &&
+            user.uid != widget.currentUser.uid) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   _updateUserProfileData() {
-    setState(() => _isUpdating = true);
-    if (image == null) {
-      _updateUserProfile("");
-    } else {
-      di
-          .sl<UploadImageToStorageUseCase>()
-          .call(image!, false, "profileImage")
-          .then((profileUrl) => _updateUserProfile(profileUrl));
+    if (!_isUpdating) {
+      if (_usernameController.text.trim() != widget.currentUser.username &&
+          _isUsernameAlreadyUsed(_usernameController.text.trim())) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text("Username already used"),
+            content: Text("Username is already used by another user. Please choose a different username."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("OK"),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
+      setState(() => _isUpdating = true);
+      if (image == null) {
+        _updateUserProfile("");
+      } else {
+        di
+            .sl<UploadImageToStorageUseCase>()
+            .call(image!, false, "profileImage")
+            .then((profileUrl) => _updateUserProfile(profileUrl));
+      }
     }
   }
 
   _updateUserProfile(String profileUrl) {
-    BlocProvider.of<GetUsersCubit>(context)
-        .updateUser(
-            user: UserEntity(
-          uid: widget.currentUser.uid,
-          username: _usernameController.text,
-          fullName: _nameController.text,
-          currentUserProfession: _currentUserProfessionController.text,
-          currentUserBio: _currentUserBioController.text,
-          profileUrl: profileUrl,
-        ))
-        .then((value) => _clear());
+    final updatedUser = UserEntity(
+      uid: widget.currentUser.uid,
+      username: _usernameController.text.trim(),
+      fullName: _nameController.text.trim(),
+      currentUserProfession: _currentUserProfessionController.text.trim(),
+      currentUserBio: _currentUserBioController.text.trim(),
+      profileUrl: profileUrl,
+    );
+
+    BlocProvider.of<GetUsersCubit>(context).updateUser(user: updatedUser).then((value) => _clear());
   }
 
   _clear() {

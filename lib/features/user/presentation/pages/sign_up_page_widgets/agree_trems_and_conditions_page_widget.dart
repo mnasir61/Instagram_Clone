@@ -121,22 +121,6 @@ class _AgreeTermsAndConditionsPageWidgetState extends State<AgreeTermsAndConditi
               ],
             ),
           ),
-          Column(
-            children: [
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, PageConsts.signInPage, (route) => false);
-                  },
-                  child: Text(
-                    "Already have an account?",
-                    style: Styles.titleLine2.copyWith(color: colorBlue, fontWeight: FontWeight.w500),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );

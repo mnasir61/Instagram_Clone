@@ -44,47 +44,52 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<CredentialCubit, CredentialState>(
+        listener: (context, credentialState) {
+          if (credentialState is CredentialLoaded) {
+            BlocProvider.of<AuthCubit>(context).loggedIn();
+          }
+          if (credentialState is CredentialFailure) {
+            print("Something went wrong");
+          }
+        },
+        builder: (context, credentialState) {
+          if (credentialState is CredentialLoading) {
+            return CircularProgressIndicatorWidget();
+          }
+          if (credentialState is CredentialLoaded) {
+            return BlocBuilder<AuthCubit, AuthState>(builder: (context, authState) {
+              if (authState is Authenticated) {
+                return MainPage(
+                  uid: authState.uid,
+                );
+              } else {
+                return _appBarWidget();
+              }
+            });
+          }
+          return _appBarWidget();
+        },
+      );
+  }
+
+  _appBarWidget() {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Styles.bgColorWhite,
-          elevation: 0,
-          leading: GestureDetector(
-            onTap: onBackPressed,
-            child: Icon(
-              FontAwesomeIcons.arrowLeft,
-              color: Styles.colorBlack,
-              size: 18,
-            ),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: onBackPressed,
+          child: Icon(
+            FontAwesomeIcons.arrowLeft,
+            color: Styles.colorBlack,
+            size: 18,
           ),
         ),
-        backgroundColor: Styles.bgColorWhite,
-        body: BlocConsumer<CredentialCubit, CredentialState>(
-          listener: (context, credentialState) {
-            if (credentialState is CredentialLoaded) {
-              BlocProvider.of<AuthCubit>(context).loggedIn();
-            }
-            if (credentialState is CredentialFailure) {
-              print("Something went wrong");
-            }
-          },
-          builder: (context, credentialState) {
-            if (credentialState is CredentialLoading) {
-              return CircularProgressIndicatorWidget();
-            }
-            if (credentialState is CredentialLoaded) {
-              return BlocBuilder<AuthCubit, AuthState>(builder: (context, authState) {
-                if (authState is Authenticated) {
-                  return MainPage(
-                    uid: authState.uid,
-                  );
-                } else {
-                  return _switchPage(_currentPageIndex);
-                }
-              });
-            }
-            return _switchPage(_currentPageIndex);
-          },
-        ));
+      ),
+      backgroundColor: Colors.white,
+      body: _switchPage(_currentPageIndex),
+    );
   }
 
   _switchPage(int index) {

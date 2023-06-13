@@ -77,20 +77,16 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
   @override
   Stream<List<UserEntity>> getSingleUser(String uid) {
     final userCollection =
-        fireStore.collection(FirebaseCollectionConst.users).where("uid", isEqualTo: uid).limit(1);
+        fireStore.collection("users").where("uid", isEqualTo: uid).limit(1);
 
-    return userCollection
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList());
+    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList());
   }
 
   @override
   Stream<List<UserEntity>> getUsers(UserEntity user) {
-    final userCollection = fireStore.collection(FirebaseCollectionConst.users);
+    final userCollection = fireStore.collection("users");
 
-    return userCollection
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList());
+    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
   }
 
   @override
@@ -176,6 +172,8 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
   Future<void> updateUser(UserEntity user) async {
     final userCollection = fireStore.collection(FirebaseCollectionConst.users);
 
+
+
     Map<String, dynamic> userInfo = Map();
 
     if (user.profileUrl != "" && user.profileUrl != null) userInfo['profileUrl'] = user.profileUrl;
@@ -224,9 +222,9 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
 
     if (myDocRef.exists && otherUserDocRef.exists) {
       List myFollowingList = myDocRef.get("followings");
-      List otherUserFollowingList = otherUserDocRef.get("Followers");
+      List otherUserFollowersList = otherUserDocRef.get("followers");
 
-      //My Following List
+      // My Following List
       if (myFollowingList.contains(user.otherUid)) {
         userCollection.doc(user.uid).update({
           "followings": FieldValue.arrayRemove([user.otherUid])
@@ -235,8 +233,8 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
 
           userCollection.get().then((value) {
             if (value.exists) {
-              final totalFollowing = value.get('totalFollowings');
-              userCollection.update({"totalFollowings": totalFollowing - 1});
+              final totalFollowings = value.get('totalFollowings');
+              userCollection.update({"totalFollowings": totalFollowings - 1});
               return;
             }
           });
@@ -249,8 +247,8 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
 
           userCollection.get().then((value) {
             if (value.exists) {
-              final totalFollowing = value.get('totalFollowings');
-              userCollection.update({"totalFollowings": totalFollowing + 1});
+              final totalFollowings = value.get('totalFollowings');
+              userCollection.update({"totalFollowings": totalFollowings + 1});
               return;
             }
           });
@@ -258,7 +256,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
       }
 
       // Other User Following List
-      if (otherUserFollowingList.contains(user.uid)) {
+      if (otherUserFollowersList.contains(user.uid)) {
         userCollection.doc(user.otherUid).update({
           "followers": FieldValue.arrayRemove([user.uid])
         }).then((value) {
@@ -292,7 +290,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
 
   @override
   Stream<List<UserEntity>> getOtherSingleUser(String otherUid) {
-    final userCollection = fireStore.collection("users").where("uid",isEqualTo:otherUid ).limit(1);
+    final userCollection = fireStore.collection("users").where("uid", isEqualTo: otherUid).limit(1);
 
     return userCollection
         .snapshots()

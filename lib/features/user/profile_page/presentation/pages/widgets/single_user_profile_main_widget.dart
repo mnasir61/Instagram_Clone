@@ -31,7 +31,8 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
 
   @override
   void initState() {
-    BlocProvider.of<GetOtherSingleUserCubit>(context).getOtherSingleUser(otherUid: widget.otherUserUid);
+    BlocProvider.of<GetOtherSingleUserCubit>(context)
+        .getOtherSingleUser(otherUid: widget.otherUserUid);
     BlocProvider.of<PostCubit>(context).getPosts(post: PostEntity());
     di.sl<GetCurrentUidUseCase>().call().then((value) {
       setState(() {
@@ -45,7 +46,7 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
   Widget build(BuildContext context) {
     return BlocBuilder<GetOtherSingleUserCubit, GetOtherSingleUserState>(
       builder: (context, userState) {
-        if (userState is GetSingleOtherUserLoaded) {
+        if (userState is GetOtherSingleUserLoaded) {
           final singleUser = userState.otherUser;
           return Scaffold(
             appBar: _appBarWidget(singleUser: singleUser),
@@ -208,22 +209,22 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _currentUid == singleUser.uid ? Container(): _singleProfileButtonWidget(
+                              _singleProfileButtonWidget(
+                                  textColor: singleUser.followers!.contains(_currentUid)
+                                      ? Colors.black
+                                      : Colors.white,
                                   backgroundColor: singleUser.followers!.contains(_currentUid)
                                       ? Styles.colorWhiteMid.withOpacity(.3)
                                       : colorBlue,
                                   context: context,
                                   buttonsPerRow: 2,
                                   text: singleUser.followers!.contains(_currentUid)
-                                      ? "Following"
+                                      ? "Following..."
                                       : "Follow",
                                   onTap: () {
                                     BlocProvider.of<GetUsersCubit>(context).followUnfollow(
-                                      user: UserEntity(
-                                        uid: _currentUid,
-                                        otherUid: widget.otherUserUid
-                                      )
-                                    );
+                                        user: UserEntity(
+                                            uid: _currentUid, otherUid: widget.otherUserUid));
                                     print("followed");
                                   }),
                               _singleProfileButtonWidget(

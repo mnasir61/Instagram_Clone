@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
-import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
-import 'package:instagram_clone/features/user/presentation/cubit/credentials/credential_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/pages/widgets/container_button.dart';
 import 'package:instagram_clone/features/user/presentation/pages/widgets/text_field_widget.dart';
 
