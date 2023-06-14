@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
@@ -10,6 +10,7 @@ import '../widgets/profile_widget.dart';
 
 class FollowersPage extends StatelessWidget {
   final UserEntity user;
+
   const FollowersPage({Key? key, required this.user}) : super(key: key);
 
   @override
@@ -17,7 +18,15 @@ class FollowersPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Followers"),
+        leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(FontAwesomeIcons.arrowLeft, color: Colors.black, size: 20)),
+        title: Text(
+          "Followers",
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
       ),
       body: Padding(
@@ -25,42 +34,50 @@ class FollowersPage extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: user.followers!.isEmpty? _noFollowersWidget() : ListView.builder(itemCount: user.followers!.length,itemBuilder: (context, index) {
-
-                return StreamBuilder<List<UserEntity>>(
-                    stream: di.sl<GetSingleUserUseCase>().call(user.followers![index]),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData == false) {
-                        return CircularProgressIndicator();
-                      }
-                      if (snapshot.data!.isEmpty) {
-                        return Container();
-                      }
-                      final singleUserData = snapshot.data!.first;
-                      return  GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, PageConsts.singleUserProfilePage, arguments: singleUserData.uid);
-
-                        },
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.symmetric(vertical: 10),
-                              width: 40,
-                              height: 40,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: profileWidget(imageUrl: singleUserData.profileUrl),
-                              ),
-                            ),
-                            horizontalSize(10),
-                            Text("${singleUserData.username}", style: TextStyle(color: primaryColor, fontSize: 15, fontWeight: FontWeight.w600),)
-                          ],
-                        ),
-                      );
-                    }
-                );
-              }),
+              child: user.followers!.isEmpty
+                  ? _noFollowersWidget()
+                  : ListView.builder(
+                      itemCount: user.followers!.length,
+                      itemBuilder: (context, index) {
+                        return StreamBuilder<List<UserEntity>>(
+                            stream: di.sl<GetSingleUserUseCase>().call(user.followers![index]),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData == false) {
+                                return CircularProgressIndicator();
+                              }
+                              if (snapshot.data!.isEmpty) {
+                                return Container();
+                              }
+                              final singleUserData = snapshot.data!.first;
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(context, PageConsts.singleUserProfilePage,
+                                      arguments: singleUserData.uid);
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(vertical: 10),
+                                      width: 40,
+                                      height: 40,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: profileWidget(imageUrl: singleUserData.profileUrl),
+                                      ),
+                                    ),
+                                    horizontalSize(10),
+                                    Text(
+                                      "${singleUserData.username}",
+                                      style: TextStyle(
+                                          color: primaryColor,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600),
+                                    )
+                                  ],
+                                ),
+                              );
+                            });
+                      }),
             )
           ],
         ),
@@ -70,7 +87,10 @@ class FollowersPage extends StatelessWidget {
 
   _noFollowersWidget() {
     return Center(
-      child: Text("No Followers", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),),
+      child: Text(
+        "No Followers",
+        style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }

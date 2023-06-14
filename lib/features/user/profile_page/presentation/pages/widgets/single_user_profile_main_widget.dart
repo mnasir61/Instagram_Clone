@@ -9,7 +9,6 @@ import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/get_other_single_user/get_other_single_user_cubit.dart';
-import 'package:instagram_clone/features/user/presentation/cubit/user/get_single_user/get_single_user_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/add_new_story.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_menu_model_sheet_data_widget.dart';

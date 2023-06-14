@@ -23,7 +23,9 @@ class GetUsersCubit extends Cubit<GetUsersState> {
 
       final streamResponse = getUsersUseCase.call(user);
       streamResponse.listen((users) {
-        emit(GetUsersLoaded(users: users));
+        if(users.isNotEmpty){
+          emit(GetUsersLoaded(users: users));
+        }
       });
 
     } on SocketException catch (_) {

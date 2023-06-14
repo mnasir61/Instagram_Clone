@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
                         label: "Profile",
                         activeIcon: Icon(FluentSystemIcons.ic_fluent_person_filled),
                       )
-                    : BottomNavigationBarItem(
+                    : _currentPageIndex==4?BottomNavigationBarItem(
                         label: "Profile",
                         icon: Container(
                           height: 27,
@@ -100,7 +100,20 @@ class _MainPageState extends State<MainPage> {
                             child: profileWidget(imageUrl: currentUser.profileUrl),
                           ),
                         ),
-                      ),
+                      ):BottomNavigationBarItem(
+                  label: "Profile",
+                  icon: Container(
+                    height: 27,
+                    width: 27,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: profileWidget(imageUrl: currentUser.profileUrl),
+                    ),
+                  ),
+                ),
               ],
             ),
             body: _switchPage(_currentPageIndex, currentUser),

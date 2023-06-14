@@ -7,10 +7,13 @@ import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/get_single_user_usecase.dart';
+import 'package:instagram_clone/features/user/presentation/cubit/user/get_single_user/get_single_user_cubit.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/add_new_story.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_menu_model_sheet_data_widget.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/story_widget.dart';
+import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class ProfilePage extends StatefulWidget {
   final UserEntity currentUser;
@@ -54,83 +57,100 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: profileWidget(imageUrl: widget.currentUser.profileUrl),
                     ),
                   ),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            "${widget.currentUser.totalPosts}",
-                            style: Styles.titleLine1.copyWith(
-                                color: Styles.colorBlack,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 19),
-                          ),
-                          verticalSize(2),
-                          Text(
-                            "Posts",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack.withOpacity(.9),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15),
-                          ),
-                        ],
-                      ),
-                      horizontalSize(30),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, PageConsts.followersPage,
-                              arguments: widget.currentUser);
-                        },
-                        child: Column(
+                  StreamBuilder<List<UserEntity>>(
+                      stream: di.sl<GetSingleUserUseCase>().call(widget.currentUser.uid!),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData == false) {
+                          return CircularProgressIndicator();
+                        }
+                        if (snapshot.data!.isEmpty) {
+                          return Container();
+                        }
+                        final singleUserData = snapshot.data!.first;
+                        return Row(
                           children: [
-                            Text(
-                              "${widget.currentUser.totalFollowers}",
-                              style: Styles.titleLine1.copyWith(
-                                  color: Styles.colorBlack,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 19),
+                            Column(
+                              children: [
+                                Text(
+                                  "${widget.currentUser.totalPosts}",
+                                  style: Styles.titleLine1.copyWith(
+                                      color: Styles.colorBlack,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 19),
+                                ),
+                                verticalSize(2),
+                                Text(
+                                  "Posts",
+                                  style: Styles.titleLine2.copyWith(
+                                      color: Styles.colorBlack.withOpacity(.9),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15),
+                                ),
+                              ],
                             ),
-                            verticalSize(2),
-                            Text(
-                              "Followers",
-                              style: Styles.titleLine2.copyWith(
-                                  color: Styles.colorBlack.withOpacity(.9),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15),
+                            horizontalSize(30),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, PageConsts.followersPage,
+                                    arguments: widget.currentUser);
+                              },
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "${singleUserData.totalFollowers}",
+                                    style: Styles.titleLine1.copyWith(
+                                        color: Styles.colorBlack,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 19),
+                                  ),
+                                  verticalSize(2),
+                                  Text(
+                                    "Followers",
+                                    style: Styles.titleLine2.copyWith(
+                                        color: Styles.colorBlack.withOpacity(.9),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15),
+                                  ),
+                                ],
+                              ),
                             ),
+                            horizontalSize(30),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, PageConsts.followingsPage,
+                                    arguments: widget.currentUser);
+                              },
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "${singleUserData.totalFollowings}",
+                                    style: Styles.titleLine1.copyWith(
+                                        color: Styles.colorBlack,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 19),
+                                  ),
+                                  verticalSize(2),
+                                  Text(
+                                    "Following",
+                                    style: Styles.titleLine2.copyWith(
+                                        color: Styles.colorBlack.withOpacity(.9),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            horizontalSize(15),
                           ],
-                        ),
-                      ),
-                      horizontalSize(30),
-                      Column(
-                        children: [
-                          Text(
-                            "${widget.currentUser.totalFollowings}",
-                            style: Styles.titleLine1.copyWith(
-                                color: Styles.colorBlack,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 19),
-                          ),
-                          verticalSize(2),
-                          Text(
-                            "Following",
-                            style: Styles.titleLine2.copyWith(
-                                color: Styles.colorBlack.withOpacity(.9),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15),
-                          ),
-                        ],
-                      ),
-                      horizontalSize(15),
-                    ],
-                  ),
+                        );
+                      }),
                 ],
               ),
               verticalSize(10),
               Text(
                 "${widget.currentUser.fullName!.isEmpty ? widget.currentUser.username : widget.currentUser.fullName}",
-                style: Styles.titleLine2
-                    .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
+                style:
+                    Styles.titleLine2.copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
               ),
               Text(
                 "${widget.currentUser.currentUserProfession}",

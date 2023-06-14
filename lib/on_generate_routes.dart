@@ -13,6 +13,7 @@ import 'package:instagram_clone/features/user/presentation/pages/sign_in_page.da
 import 'package:instagram_clone/features/user/presentation/pages/sign_up_page.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/screens/edit_profile_page.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/screens/followers_page.dart';
+import 'package:instagram_clone/features/user/profile_page/presentation/pages/screens/followings_page.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/single_user_profile_page.dart';
 
 import 'features/app/main_page/presentation/pages/main_page.dart';
@@ -81,6 +82,10 @@ class OnGenerateRoute {
       case PageConsts.followersPage:
         if(args is UserEntity){
           return routeBuilder(child: FollowersPage(user: args));
+        }else return routeBuilder(child: NoPageFound());
+      case PageConsts.followingsPage:
+        if(args is UserEntity){
+          return routeBuilder(child: FollowingsPage(user: args));
         }else return routeBuilder(child: NoPageFound());
       default:
         {
