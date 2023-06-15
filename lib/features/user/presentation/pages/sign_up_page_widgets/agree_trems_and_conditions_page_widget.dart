@@ -28,7 +28,7 @@ class _AgreeTermsAndConditionsPageWidgetState extends State<AgreeTermsAndConditi
                 Text(
                   "Agree to Instagram's terms and policies",
                   style: Styles.headLine
-                      .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.w500),
+                      .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.bold),
                 ),
                 verticalSize(10),
                 RichText(

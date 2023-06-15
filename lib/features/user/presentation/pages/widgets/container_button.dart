@@ -22,10 +22,10 @@ class _ContainerButtonState extends State<ContainerButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height:widget.height??50,
+      height:widget.height??45,
       width: widget.width??MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(30),
         color: widget.fillColor,
         border: widget.isBorder==true
             ? Border.all(

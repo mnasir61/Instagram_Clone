@@ -36,7 +36,7 @@ class _CreateFullNamePageWidgetState extends State<CreateFullNamePageWidget> {
                   Text(
                     "What's your name?",
                     style: Styles.headLine
-                        .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.w500),
+                        .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.bold),
                   ),
                   verticalSize(20),
                   TextFieldWidget(

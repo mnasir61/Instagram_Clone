@@ -131,11 +131,20 @@ class _SignInPageState extends State<SignInPage> {
                           textStyle: Styles.titleLine1,
                         ),
                       ),
-                      verticalSize(20),
-                      Text(
-                        "Forget password?",
-                        style: Styles.titleLine2
-                            .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
+                      // verticalSize(20),
+                      InkWell(
+                        onTap: (){
+                          //Replace pushNameAndRemoveUntil if necessary fixme
+                          Navigator.pushNamed(context, PageConsts.forgetPasswordPage);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            "Forget password?",
+                            style: Styles.titleLine2
+                                .copyWith(color: Styles.colorBlack, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
                     ],
                   ),

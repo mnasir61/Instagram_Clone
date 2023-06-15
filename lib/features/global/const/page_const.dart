@@ -16,4 +16,5 @@ class PageConsts{
   static const String followersPage = "followersPage";
   static const String followingsPage = "followingsPage";
   static const String followUnfollowSubPage= "followUnfollowSubPage";
+  static const String forgetPasswordPage= "forgetPasswordPage";
 }

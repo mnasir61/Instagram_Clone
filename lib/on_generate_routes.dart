@@ -9,6 +9,7 @@ import 'package:instagram_clone/features/post/presentation/pages/edit_post_page.
 import 'package:instagram_clone/features/post/presentation/pages/widgets/upload_post_main_widget.dart';
 import 'package:instagram_clone/features/search/presentation/pages/post_detail_page.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
+import 'package:instagram_clone/features/user/presentation/pages/forget_password_page.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_in_page.dart';
 import 'package:instagram_clone/features/user/presentation/pages/sign_up_page.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/follow_unfollow_main_page.dart';
@@ -92,6 +93,10 @@ class OnGenerateRoute {
         if(args is UserEntity){
           return routeBuilder(child: FollowUnfollowMainPage(user: args));
         }else return routeBuilder(child: NoPageFound());
+      case PageConsts.forgetPasswordPage:
+        {
+          return routeBuilder(child: ForgetPasswordPage());
+        }
       default:
         {
           NoPageFound();

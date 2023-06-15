@@ -38,7 +38,7 @@ class _CreatePasswordPageWidgetState extends State<CreatePasswordPageWidget> {
                   Text(
                     "Create a password",
                     style: Styles.headLine
-                        .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.w500),
+                        .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.bold),
                   ),
                   verticalSize(10),
                   Text(

@@ -32,7 +32,7 @@ class _DateOfBirthPageWidgetState extends State<DateOfBirthPageWidget> {
                   Text(
                     "What's your birthday?",
                     style: Styles.headLine
-                        .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.w500),
+                        .copyWith(fontSize: 23, color: Styles.colorBlack, fontWeight: FontWeight.bold),
                   ),
                   verticalSize(10),
                   Text(
