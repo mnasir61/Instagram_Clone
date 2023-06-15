@@ -86,34 +86,35 @@ class _MainPageState extends State<MainPage> {
                         label: "Profile",
                         activeIcon: Icon(FluentSystemIcons.ic_fluent_person_filled),
                       )
-                    : _currentPageIndex==4?BottomNavigationBarItem(
-                        label: "Profile",
-                        icon: Container(
-                          height: 27,
-                          width: 27,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                            border: Border.all(color: Colors.black,width: 2)
+                    : _currentPageIndex == 4
+                        ? BottomNavigationBarItem(
+                            label: "Profile",
+                            icon: Container(
+                              height: 27,
+                              width: 27,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(color: Colors.black, width: 2)),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: profileWidget(imageUrl: currentUser.profileUrl),
+                              ),
+                            ),
+                          )
+                        : BottomNavigationBarItem(
+                            label: "Profile",
+                            icon: Container(
+                              height: 27,
+                              width: 27,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: profileWidget(imageUrl: currentUser.profileUrl),
+                              ),
+                            ),
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: profileWidget(imageUrl: currentUser.profileUrl),
-                          ),
-                        ),
-                      ):BottomNavigationBarItem(
-                  label: "Profile",
-                  icon: Container(
-                    height: 27,
-                    width: 27,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: profileWidget(imageUrl: currentUser.profileUrl),
-                    ),
-                  ),
-                ),
               ],
             ),
             body: _switchPage(_currentPageIndex, currentUser),

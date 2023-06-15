@@ -17,18 +17,6 @@ class FollowersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(FontAwesomeIcons.arrowLeft, color: Colors.black, size: 20)),
-        title: Text(
-          "Followers",
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
         child: Column(
@@ -66,13 +54,22 @@ class FollowersPage extends StatelessWidget {
                                       ),
                                     ),
                                     horizontalSize(10),
-                                    Text(
-                                      "${singleUserData.username}",
-                                      style: TextStyle(
-                                          color: primaryColor,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600),
-                                    )
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${singleUserData.username}",
+                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                                        ),
+                                        Text(
+                                          "${singleUserData.fullName}",
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.grey,
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ],
                                 ),
                               );

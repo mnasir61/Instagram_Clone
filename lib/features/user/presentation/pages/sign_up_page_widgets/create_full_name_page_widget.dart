@@ -47,8 +47,8 @@ class _CreateFullNamePageWidgetState extends State<CreateFullNamePageWidget> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Field cannot be empty";
-                      } else if (value.length < 7) {
-                        return "Username must be at least 6 characters";
+                      } else if (value.length < 6) {
+                        return "Full name must be at least 6 characters";
                       } else {
                         return null;
                       }

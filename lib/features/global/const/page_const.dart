@@ -15,4 +15,5 @@ class PageConsts{
   static const String singleUserProfilePage = "singleUserProfilePage";
   static const String followersPage = "followersPage";
   static const String followingsPage = "followingsPage";
+  static const String followUnfollowSubPage= "followUnfollowSubPage";
 }

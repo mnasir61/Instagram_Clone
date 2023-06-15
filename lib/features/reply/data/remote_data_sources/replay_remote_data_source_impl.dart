@@ -110,7 +110,7 @@ class ReplyRemoteDataSourceImpl implements ReplyRemoteDataSource {
         .doc(reply.postId)
         .collection("comments")
         .doc(reply.commentId)
-        .collection("reply");
+        .collection("reply").orderBy("createdAt",descending: true);
     return replayCollection
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((e) => ReplyModel.fromSnapshot(e)).toList());

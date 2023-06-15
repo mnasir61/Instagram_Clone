@@ -91,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             horizontalSize(30),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, PageConsts.followersPage,
+                                Navigator.pushNamed(context, PageConsts.followUnfollowSubPage,
                                     arguments: widget.currentUser);
                               },
                               child: Column(
@@ -117,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             horizontalSize(30),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, PageConsts.followingsPage,
+                                Navigator.pushNamed(context, PageConsts.followUnfollowSubPage,
                                     arguments: widget.currentUser);
                               },
                               child: Column(

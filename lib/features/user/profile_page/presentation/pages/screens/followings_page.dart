@@ -17,18 +17,6 @@ class FollowingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(FontAwesomeIcons.arrowLeft, color: Colors.black, size: 20)),
-        title: Text(
-          "Following",
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
         child: Column(
@@ -37,46 +25,56 @@ class FollowingsPage extends StatelessWidget {
               child: user.followings!.isEmpty
                   ? _noFollowersWidget()
                   : ListView.builder(
-                  itemCount: user.followings!.length,
-                  itemBuilder: (context, index) {
-                    return StreamBuilder<List<UserEntity>>(
-                        stream: di.sl<GetSingleUserUseCase>().call(user.followings![index]),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData == false) {
-                            return CircularProgressIndicator();
-                          }
-                          if (snapshot.data!.isEmpty) {
-                            return Container();
-                          }
-                          final singleUserData = snapshot.data!.first;
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, PageConsts.singleUserProfilePage,
-                                  arguments: singleUserData.uid);
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.symmetric(vertical: 10),
-                                  width: 40,
-                                  height: 40,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: profileWidget(imageUrl: singleUserData.profileUrl),
-                                  ),
+                      itemCount: user.followings!.length,
+                      itemBuilder: (context, index) {
+                        return StreamBuilder<List<UserEntity>>(
+                            stream: di.sl<GetSingleUserUseCase>().call(user.followings![index]),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData == false) {
+                                return CircularProgressIndicator();
+                              }
+                              if (snapshot.data!.isEmpty) {
+                                return Container();
+                              }
+                              final singleUserData = snapshot.data!.first;
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(context, PageConsts.singleUserProfilePage,
+                                      arguments: singleUserData.uid);
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.symmetric(vertical: 10),
+                                      width: 40,
+                                      height: 40,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: profileWidget(imageUrl: singleUserData.profileUrl),
+                                      ),
+                                    ),
+                                    horizontalSize(10),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${singleUserData.username}",
+                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                                        ),
+                                        Text(
+                                          "${singleUserData.fullName}",
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.grey,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                horizontalSize(10),
-                                Text(
-                                  "${singleUserData.username}",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600),
-                                )
-                              ],
-                            ),
-                          );
-                        });
-                  }),
+                              );
+                            });
+                      }),
             )
           ],
         ),
