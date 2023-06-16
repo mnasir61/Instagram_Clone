@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/app/main_page/presentation/pages/main_page.dart';
+import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/comment/presentation/cubit/comment_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/read_single_post/read_single_post_cubit.dart';
@@ -51,6 +52,9 @@ class InstagramClone extends StatelessWidget {
         ),
         BlocProvider<GetOtherSingleUserCubit>(
           create: (context) => di.sl<GetOtherSingleUserCubit>(),
+        ),
+        BlocProvider<BookmarkCubit>(
+          create: (context) => di.sl<BookmarkCubit>(),
         ),
       ],
       child: _materialAppBuilder(),

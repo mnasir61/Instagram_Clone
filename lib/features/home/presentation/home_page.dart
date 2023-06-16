@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/core/error_message.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
+import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
+import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
 import 'widgets/add_new_story_home_widget.dart';
@@ -14,8 +17,11 @@ import 'widgets/single_post_widget.dart';
 import 'widgets/view_story_widget.dart';
 
 class HomePage extends StatefulWidget {
+  final UserEntity currentUser;
+
   const HomePage({
     Key? key,
+    required this.currentUser,
   }) : super(key: key);
 
   @override
@@ -26,11 +32,12 @@ class _HomePageState extends State<HomePage> {
   ScrollController _scrollController = ScrollController();
   double _elevation = 0;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _scrollController.addListener(_scrollListener);
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // _scrollController.addListener(_scrollListener);
+  }
+
   //
   // @override
   // void dispose() {
@@ -51,73 +58,75 @@ class _HomePageState extends State<HomePage> {
         appBar: _appBarWidget(),
         backgroundColor: Styles.colorWhite,
         body: BlocProvider<PostCubit>(
-          create: (context) => di.sl<PostCubit>()..getPosts(post: PostEntity()),
-          child: BlocBuilder<PostCubit, PostState>(
-            builder: (context, postState) {
-              if (postState is PostLoading) {
+            create: (context) => di.sl<PostCubit>()..getPosts(post: PostEntity()),
+            child: BlocBuilder<PostCubit, PostState>(
+              builder: (context, postState) {
+                if (postState is PostLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (postState is PostFailure) {
+                  toast("Some failures occurred while getting post");
+                }
+                if (postState is PostLoaded) {
+                  return ListView(
+                    controller: _scrollController,
+                    children: [
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                verticalSize(10),
+                                Row(
+                                  children: [
+                                    AddNewStoryHomeWidget(
+                                        imageUrl: "assets/local/default_profile.png", username: "New"),
+                                    horizontalSize(15),
+                                    ViewStoryWidget(
+                                        imageUrl: "assets/local/default_profile.png",
+                                        username: "M.Nasir"),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          verticalSize(5),
+                          Container(
+                            height: .25,
+                            width: MediaQuery.of(context).size.width,
+                            color: Styles.colorGray1.withOpacity(.5),
+                          ),
+                          postState.posts.isEmpty
+                              ? _noPostWidget()
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: ScrollPhysics(),
+                                  itemCount: postState.posts.length,
+                                  itemBuilder: (context, index) {
+                                    final posts = postState.posts[index];
+                                    return BlocProvider(
+                                      create: (context) => di.sl<PostCubit>(),
+                                      child: SinglePostWidget(
+                                        currentUser: widget.currentUser,
+                                        posts: posts,
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
                 return Center(
                   child: CircularProgressIndicator(),
                 );
-              }
-              if (postState is PostFailure) {
-                toast("Some failures occurred while getting post");
-              }
-              if (postState is PostLoaded) {
-                return ListView(
-                  controller: _scrollController,
-                  children: [
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              verticalSize(10),
-                              Row(
-                                children: [
-                                  AddNewStoryHomeWidget(
-                                      imageUrl: "assets/local/default_profile.png", username: "New"),
-                                  horizontalSize(15),
-                                  ViewStoryWidget(
-                                      imageUrl: "assets/local/default_profile.png",
-                                      username: "M.Nasir"),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        verticalSize(5),
-                        Container(
-                          height: .25,
-                          width: MediaQuery.of(context).size.width,
-                          color: Styles.colorGray1.withOpacity(.5),
-                        ),
-                        postState.posts.isEmpty?_noPostWidget():ListView.builder(
-                          shrinkWrap: true,
-                          physics: ScrollPhysics(),
-                          itemCount: postState.posts.length,
-                          itemBuilder: (context, index) {
-                              final posts = postState.posts[index];
-                              return BlocProvider(
-                                create: (context) => di.sl<PostCubit>(),
-                                child: SinglePostWidget(
-                                  posts: posts,
-                                ),
-                              );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              }
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
-        ));
+              },
+            )));
   }
 
   _noPostWidget() {

@@ -129,7 +129,7 @@ class _MainPageState extends State<MainPage> {
     switch (index) {
       case 0:
         {
-          return HomePage();
+          return HomePage(currentUser: currentUser,);
         }
       case 1:
         {

@@ -1,14 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_usecases/get_bookmark_usecase.dart';
+import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/pages/widgets/like_animation_widget.dart';
+import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -20,18 +25,15 @@ import 'show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widge
 
 class SinglePostWidget extends StatefulWidget {
   final PostEntity posts;
+  final UserEntity currentUser;
 
-  const SinglePostWidget({Key? key, required this.posts}) : super(key: key);
+  const SinglePostWidget({Key? key, required this.posts, required this.currentUser}) : super(key: key);
 
   @override
   State<SinglePostWidget> createState() => _SinglePostWidgetState();
 }
 
 class _SinglePostWidgetState extends State<SinglePostWidget> {
-  bool isExpanded = false;
-  final int maxLines = 2;
-  bool _isLike = false;
-
   bool _isLikeAnimating = false;
   String _currentUid = "";
 
@@ -43,6 +45,8 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
         _currentUid = value;
       });
     });
+    BlocProvider.of<BookmarkCubit>(context)
+        .getBookmarks(bookmark: BookmarkEntity(uid: widget.currentUser.uid));
   }
 
   @override
@@ -59,7 +63,8 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, PageConsts.singleUserProfilePage,arguments: widget.posts.creatorId);
+                      Navigator.pushNamed(context, PageConsts.singleUserProfilePage,
+                          arguments: widget.posts.creatorId);
                     },
                     child: Row(
                       children: [
@@ -89,8 +94,9 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      widget.posts.creatorId==_currentUid? _currentUserMoreOptionsShowBottomModelSheet(context):_moreOptionShowBottomModelSheetWidget(
-                          context);
+                      widget.posts.creatorId == _currentUid
+                          ? _currentUserMoreOptionsShowBottomModelSheet(context)
+                          : _moreOptionShowBottomModelSheetWidget(context);
                     },
                     child: Container(
                       height: 40,
@@ -188,13 +194,31 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                       horizontalSize(15),
                       GestureDetector(
                         onTap: () {
-                        _shareShowBottomModelSheet(context);
+                          _shareShowBottomModelSheet(context);
                         },
                         child: Icon(FontAwesomeIcons.paperPlane),
                       ),
                     ],
                   ),
-                  GestureDetector(onTap: () {}, child: Icon(FontAwesomeIcons.bookmark)),
+                  BlocBuilder<BookmarkCubit, BookmarkState>(
+                    builder: (context, bookmarkState) {
+                      if (bookmarkState is BookmarkLoaded) {
+                        final bookmarks = bookmarkState.bookmarks;
+                        final isBookmarked =
+                            bookmarks.any((bookmark) => bookmark.postId == widget.posts.postId);
+
+                        return GestureDetector(
+                          onTap: _bookMarkPost,
+                          child: isBookmarked
+                              ? Icon(FontAwesomeIcons.solidBookmark)
+                              : Icon(FontAwesomeIcons.bookmark),
+                        );
+                      }
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
                 ],
               ),
               verticalSize(10),
@@ -316,6 +340,15 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
   _likePost() {
     BlocProvider.of<PostCubit>(context).likePost(
         post: PostEntity(
+      postId: widget.posts.postId,
+    ));
+  }
+
+  _bookMarkPost() {
+    BlocProvider.of<BookmarkCubit>(context).addBookmark(
+        bookmark: BookmarkEntity(
+      createdAt: Timestamp.now(),
+      uid: widget.currentUser.uid,
       postId: widget.posts.postId,
     ));
   }
