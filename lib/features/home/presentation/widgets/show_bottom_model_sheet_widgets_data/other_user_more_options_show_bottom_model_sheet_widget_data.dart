@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/features/global/divider_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+class OtherUserMoreOptionsModelSheetData extends StatefulWidget {
+  const OtherUserMoreOptionsModelSheetData({Key? key}) : super(key: key);
 
-class MoreOptionsModelSheetData extends StatelessWidget {
-  const MoreOptionsModelSheetData({Key? key}) : super(key: key);
+  @override
+  State<OtherUserMoreOptionsModelSheetData> createState() => _OtherUserMoreOptionsModelSheetDataState();
+}
+
+class _OtherUserMoreOptionsModelSheetDataState extends State<OtherUserMoreOptionsModelSheetData> {
+
 
   @override
   Widget build(BuildContext context) {

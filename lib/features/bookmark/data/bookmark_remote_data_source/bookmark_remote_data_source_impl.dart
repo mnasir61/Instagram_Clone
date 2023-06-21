@@ -15,6 +15,7 @@ class BookmarkRemoteDataSourceImpl implements BookmarkRemoteDataSource {
       postId: bookmark.postId,
       uid: bookmark.uid,
       createdAt: bookmark.createdAt,
+      postImageUrl: bookmark.postImageUrl
     ).toDocument();
     try {
       bookmarkCollection.doc(bookmark.postId).get().then((docRef) {

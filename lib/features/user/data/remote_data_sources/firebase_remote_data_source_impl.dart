@@ -86,7 +86,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
   Stream<List<UserEntity>> getUsers(UserEntity user) {
     final userCollection = fireStore.collection("users");
 
-    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
+    return userCollection.where("uid",isNotEqualTo: user.uid).snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
   }
 
   @override
@@ -134,7 +134,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         likes: 0,
         totalLikes: 0,
         totalPosts: 0,
-        profileUrl: "",
+        profileUrl: information?.photoURL,
         accountType: "member",
       );
       await getCreateCurrentUser(newUser);
@@ -195,7 +195,6 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
 
   Future<String> uploadImageToStorage(File? file, bool isPost, String childName) async {
     Reference ref = firebaseStorage.ref().child(childName).child(firebaseAuth.currentUser!.uid);
-
     if (isPost) {
       String id = Uuid().v1();
       ref = ref.child(id);

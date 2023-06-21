@@ -12,6 +12,7 @@ import 'package:http/http.dart'as http;
 import 'package:instagram_clone/features/bookmark/bookmark_injection_container.dart';
 import 'package:instagram_clone/features/comment/comment_injection_container.dart';
 import 'package:instagram_clone/features/post/post_injection_container.dart';
+import 'package:instagram_clone/features/storage/storage_injection_container.dart';
 import 'package:instagram_clone/features/user/presentation/user_injection_container.dart';
 
 import 'features/reply/reply_injection_container.dart';
@@ -36,4 +37,5 @@ Future<void> init() async {
   await commentInjectionContainer();
   await replyInjectionContainer();
   await bookmarkInjectionContainer();
+  await storageInjectionContainer();
 }

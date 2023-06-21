@@ -2,13 +2,13 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_single_user_usecase.dart';
-import 'package:instagram_clone/features/user/presentation/cubit/user/get_single_user/get_single_user_cubit.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/add_new_story.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_menu_model_sheet_data_widget.dart';
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
@@ -30,15 +30,17 @@ class _ProfilePageState extends State<ProfilePage> {
     BlocProvider.of<PostCubit>(context).getPosts(post: PostEntity());
     super.initState();
   }
+  ValueNotifier<BookmarkEntity> bookmarkNotifier = ValueNotifier<BookmarkEntity>(BookmarkEntity());
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBarWidget(),
+      appBar: _appBarWidget(bookmarkNotifier),
       backgroundColor: Styles.colorWhite,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          padding: EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -267,7 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _appBarWidget() {
+  _appBarWidget(ValueNotifier<BookmarkEntity> bookmarkNotifier) {
     return AppBar(
       backgroundColor: Styles.colorWhite,
       elevation: 0,
@@ -286,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: const EdgeInsets.only(right: 15.0, left: 15),
           child: GestureDetector(
             onTap: () {
-              _profileMenuModelSheet(context);
+              _profileMenuModelSheet(context,bookmarkNotifier.value);
             },
             child: Icon(
               FontAwesomeIcons.bars,
@@ -299,7 +301,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _profileMenuModelSheet(BuildContext context) {
+  void _profileMenuModelSheet(BuildContext context,BookmarkEntity bookmark) {
     showModalBottomSheet(
       useSafeArea: true,
       showDragHandle: true,
@@ -310,6 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       builder: (BuildContext context) {
         return ProfileMenuModelSheetDataWidget(
+          bookmark: bookmarkNotifier.value,
           onTapToEditPost: () {
             Navigator.pushNamed(context, PageConsts.editPostPage);
           },

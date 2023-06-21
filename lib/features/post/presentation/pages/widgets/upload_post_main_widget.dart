@@ -9,6 +9,7 @@ import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
+import 'package:instagram_clone/features/storage/domain/usecases/upload_post_image_usecase.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/upload_image_to_storage_usecase.dart';
 import 'package:uuid/uuid.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
@@ -91,11 +92,11 @@ class _UploadPostMainWidgetState extends State<UploadPostMainWidget> {
       _isUpdating = true;
     });
 
-    final imageUrl = await di.sl<UploadImageToStorageUseCase>().call(imageFile, false, "posts");
-    _createSubmitPost(image: imageUrl);
+    final imageUrl = await di.sl<UploadPostImageUseCase>().call(file: imageFile);
+    _createSubmitPost(imageUrl: imageUrl);
   }
 
-  _createSubmitPost({required String image}) {
+  _createSubmitPost({required String imageUrl}) {
     final postCubit = BlocProvider.of<PostCubit>(context);
     final currentUser = widget.appEntity.currentUser;
 
@@ -105,7 +106,7 @@ class _UploadPostMainWidgetState extends State<UploadPostMainWidget> {
       creatorId: currentUser?.uid,
       likes: [],
       postId: Uuid().v1(),
-      postImageUrl: image,
+      postImageUrl: imageUrl,
       totalComments: 0,
       totalLikes: 0,
       username: currentUser?.username,

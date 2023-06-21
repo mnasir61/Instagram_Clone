@@ -1,13 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_usecases/get_bookmark_usecase.dart';
+import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/home/presentation/widgets/show_bottom_model_sheet_widgets_data/current_user_more_options_show_bottom_model_sheet_widget_data.dart';
-import 'package:instagram_clone/features/home/presentation/widgets/show_bottom_model_sheet_widgets_data/more_options_show_bottom_model_sheet_widget_data.dart';
+import 'package:instagram_clone/features/home/presentation/widgets/show_bottom_model_sheet_widgets_data/other_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'package:instagram_clone/features/home/presentation/widgets/show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
@@ -48,6 +52,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
         _currentUid = value;
       });
     });
+    // BlocProvider.of<BookmarkCubit>(context).getBookmarks(bookmark: BookmarkEntity());
   }
 
   @override
@@ -70,185 +75,157 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: BlocBuilder<ReadSinglePostCubit, ReadSinglePostState>(
-        builder: (context, singlePostState) {
-          if (singlePostState is ReadSinglePostLoaded) {
-            final singlePost = singlePostState.posts;
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: profileWidget(
-                                    imageUrl: "${singlePost.userProfileUrl}",
-                                  ),
-                                ),
-                              ),
-                              horizontalSize(10),
-                              Text(
-                                "${singlePost.username}",
-                                style: Styles.titleLine2.copyWith(
-                                  color: Styles.colorBlack,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              singlePost.creatorId == _currentUid
-                                  ? _currentUserMoreOptionsShowBottomModelSheet(context, singlePost)
-                                  : _moreOptionShowBottomModelSheetWidget(context);
-                            },
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              color: Colors.transparent,
-                              child: Icon(
-                                FontAwesomeIcons.ellipsisVertical,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                verticalSize(15),
-                Container(
-                  height: .25,
-                  width: MediaQuery.of(context).size.width,
-                  color: Styles.colorGray1.withOpacity(.5),
-                ),
-                GestureDetector(
-                  onDoubleTap: () {
-                    _likePost();
-                    setState(() {
-                      _isLikeAnimating = true;
-                    });
-                  },
-                  child: Stack(
-                    alignment: Alignment.center,
+      body: BlocBuilder<BookmarkCubit, BookmarkState>(
+        builder: (context, singleBookmarkState) {
+          if (singleBookmarkState is BookmarkLoaded) {
+            final isBookmarked =
+                singleBookmarkState.bookmarks.any((bookmark) => bookmark.postId == widget.postId);
+            return BlocBuilder<ReadSinglePostCubit, ReadSinglePostState>(
+              builder: (context, singlePostState) {
+                if (singlePostState is ReadSinglePostLoaded) {
+                  final singlePost = singlePostState.posts;
+                  return _bodyWidget(singlePost: singlePost,singleBookmarkPost: isBookmarked);
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            );
+          }
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+    );
+  }
+
+  _bodyWidget({required PostEntity singlePost,required bool singleBookmarkPost}) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
                       Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * .35,
-                        child: profileWidget(
-                          imageUrl: "${singlePost.postImageUrl}",
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(30),
+                          child: profileWidget(
+                            imageUrl: "${singlePost.userProfileUrl}",
+                          ),
                         ),
                       ),
-                      AnimatedOpacity(
-                        duration: Duration(milliseconds: 200),
-                        opacity: _isLikeAnimating ? 1 : 0,
-                        child: LikeAnimationWidget(
-                          duration: Duration(milliseconds: 300),
-                          isLikeAnimation: _isLikeAnimating,
-                          onLikeFinish: () {
-                            setState(() {
-                              _isLikeAnimating = false;
-                            });
-                          },
-                          child: Icon(
-                            Icons.favorite,
-                            size: 75,
-                            color: Colors.white,
-                          ),
+                      horizontalSize(10),
+                      Text(
+                        "${singlePost.username}",
+                        style: Styles.titleLine2.copyWith(
+                          color: Styles.colorBlack,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      singlePost.creatorId == _currentUid
+                          ? _currentUserMoreOptionsShowBottomModelSheet(
+                              context, singlePost, BookmarkEntity())
+                          : _moreOptionShowBottomModelSheetWidget(context);
+                    },
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      color: Colors.transparent,
+                      child: Icon(
+                        FontAwesomeIcons.ellipsisVertical,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        verticalSize(15),
+        Container(
+          height: .25,
+          width: MediaQuery.of(context).size.width,
+          color: Styles.colorGray1.withOpacity(.5),
+        ),
+        GestureDetector(
+          onDoubleTap: () {
+            _likePost();
+            setState(() {
+              _isLikeAnimating = true;
+            });
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * .35,
+                child: profileWidget(
+                  imageUrl: "${singlePost.postImageUrl}",
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              AnimatedOpacity(
+                duration: Duration(milliseconds: 200),
+                opacity: _isLikeAnimating ? 1 : 0,
+                child: LikeAnimationWidget(
+                  duration: Duration(milliseconds: 300),
+                  isLikeAnimation: _isLikeAnimating,
+                  onLikeFinish: () {
+                    setState(() {
+                      _isLikeAnimating = false;
+                    });
+                  },
+                  child: Icon(
+                    Icons.favorite,
+                    size: 75,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              verticalSize(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      verticalSize(10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: _likePost,
-                                child: Icon(
-                                  singlePost.likes?.contains(_currentUid) == true
-                                      ? Icons.favorite
-                                      : Icons.favorite_outline,
-                                  color: singlePost.likes?.contains(_currentUid) == true
-                                      ? Colors.red
-                                      : Styles.colorBlack,
-                                  size: 28,
-                                ),
-                              ),
-                              horizontalSize(15),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    PageConsts.commentSectionPage,
-                                    arguments: AppEntity(uid: _currentUid, postId: singlePost.postId),
-                                  );
-                                },
-                                child: Icon(FontAwesomeIcons.comment),
-                              ),
-                              horizontalSize(15),
-                              GestureDetector(
-                                onTap: () {
-                                  _shareShowBottomModelSheet(context);
-                                },
-                                child: Icon(FontAwesomeIcons.paperPlane),
-                              ),
-                            ],
-                          ),
-                          GestureDetector(onTap: () {}, child: Icon(FontAwesomeIcons.bookmark)),
-                        ],
-                      ),
-                      verticalSize(10),
-                      Text(
-                        "${singlePost.totalLikes} Likes",
-                        style: Styles.titleLine2.copyWith(
-                          color: Styles.colorBlack,
-                          fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: _likePost,
+                        child: Icon(
+                          singlePost.likes?.contains(_currentUid) == true
+                              ? Icons.favorite
+                              : Icons.favorite_outline,
+                          color: singlePost.likes?.contains(_currentUid) == true
+                              ? Colors.red
+                              : Styles.colorBlack,
+                          size: 28,
                         ),
                       ),
-                      verticalSize(5),
-                      ExpandableText(
-                        "${singlePost.description}",
-                        expandText: 'more',
-                        collapseText: "less",
-                        maxLines: 2,
-                        linkColor: Styles.colorBlack.withOpacity(.5),
-                        animation: true,
-                        collapseOnTextTap: true,
-                        prefixText: singlePost.username,
-                        prefixStyle: TextStyle(fontWeight: FontWeight.bold),
-                        hashtagStyle: TextStyle(
-                          color: Color(0xFF066A9E),
-                        ),
-                        mentionStyle: TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        urlStyle: TextStyle(
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      verticalSize(5),
+                      horizontalSize(15),
                       GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(
@@ -257,28 +234,76 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
                             arguments: AppEntity(uid: _currentUid, postId: singlePost.postId),
                           );
                         },
-                        child: Text(
-                          "View all ${singlePost.totalComments} Comments",
-                          style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
-                        ),
+                        child: Icon(FontAwesomeIcons.comment),
                       ),
-                      verticalSize(5),
-                      Text(
-                        "${timeago.format(singlePost.createdAt?.toDate() ?? DateTime.now())}",
-                        style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
+                      horizontalSize(15),
+                      GestureDetector(
+                        onTap: () {
+                          _shareShowBottomModelSheet(context);
+                        },
+                        child: Icon(FontAwesomeIcons.paperPlane),
                       ),
                     ],
                   ),
+                  GestureDetector(
+                      onTap: () {
+                        _bookMarkPost();
+                      },
+                      child: Icon(singleBookmarkPost==true?FontAwesomeIcons.solidBookmark:FontAwesomeIcons.bookmark)),
+                ],
+              ),
+              verticalSize(10),
+              Text(
+                "${singlePost.totalLikes} Likes",
+                style: Styles.titleLine2.copyWith(
+                  color: Styles.colorBlack,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
+              ),
+              verticalSize(5),
+              ExpandableText(
+                "${singlePost.description}",
+                expandText: 'more',
+                collapseText: "less",
+                maxLines: 2,
+                linkColor: Styles.colorBlack.withOpacity(.5),
+                animation: true,
+                collapseOnTextTap: true,
+                prefixText: singlePost.username,
+                prefixStyle: TextStyle(fontWeight: FontWeight.bold),
+                hashtagStyle: TextStyle(
+                  color: Color(0xFF066A9E),
+                ),
+                mentionStyle: TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+                urlStyle: TextStyle(
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+              verticalSize(5),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    PageConsts.commentSectionPage,
+                    arguments: AppEntity(uid: _currentUid, postId: singlePost.postId),
+                  );
+                },
+                child: Text(
+                  "View all ${singlePost.totalComments} Comments",
+                  style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
+                ),
+              ),
+              verticalSize(5),
+              Text(
+                "${timeago.format(singlePost.createdAt?.toDate() ?? DateTime.now())}",
+                style: Styles.titleLine2.copyWith(color: Styles.colorGray1),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -291,7 +316,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
-        return MoreOptionsModelSheetData();
+        return OtherUserMoreOptionsModelSheetData();
       },
     );
   }
@@ -310,7 +335,8 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
     );
   }
 
-  void _currentUserMoreOptionsShowBottomModelSheet(BuildContext context, PostEntity posts) {
+  void _currentUserMoreOptionsShowBottomModelSheet(
+      BuildContext context, PostEntity posts, BookmarkEntity bookmarks) {
     showModalBottomSheet(
       useSafeArea: true,
       showDragHandle: true,
@@ -321,6 +347,8 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
       ),
       builder: (BuildContext context) {
         return CurrentUserMoreOptionsModelSheetData(
+          bookmarks: bookmarks,
+          posts: posts,
           onTapToEditPost: () {
             Navigator.pushNamed(context, PageConsts.editPostPage, arguments: posts).then((value) {
               Future.delayed(Duration(milliseconds: 300));
@@ -345,6 +373,15 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
   _likePost() {
     BlocProvider.of<PostCubit>(context).likePost(
         post: PostEntity(
+      postId: widget.postId,
+    ));
+  }
+
+  _bookMarkPost() {
+    BlocProvider.of<BookmarkCubit>(context).addBookmark(
+        bookmark: BookmarkEntity(
+      createdAt: Timestamp.now(),
+      uid: _currentUid,
       postId: widget.postId,
     ));
   }

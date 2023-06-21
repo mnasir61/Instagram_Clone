@@ -355,22 +355,22 @@ class _SingleUserProfileMainWidgetPage extends State<SingleUserProfileMainWidget
     );
   }
 
-  void _profileMenuModelSheet(BuildContext context, UserEntity currentUser) {
-    showModalBottomSheet(
-      useSafeArea: true,
-      showDragHandle: true,
-      isScrollControlled: true,
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (BuildContext context) {
-        return ProfileMenuModelSheetDataWidget(
-          onTapToEditPost: () {
-            Navigator.pushNamed(context, PageConsts.editPostPage, arguments: currentUser);
-          },
-        );
-      },
-    );
-  }
+  // void _profileMenuModelSheet(BuildContext context, UserEntity currentUser) {
+  //   showModalBottomSheet(
+  //     useSafeArea: true,
+  //     showDragHandle: true,
+  //     isScrollControlled: true,
+  //     context: context,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  //     ),
+  //     builder: (BuildContext context) {
+  //       return ProfileMenuModelSheetDataWidget(
+  //         onTapToEditPost: () {
+  //           Navigator.pushNamed(context, PageConsts.editPostPage, arguments: currentUser);
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 }

@@ -55,78 +55,79 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: _appBarWidget(),
-        backgroundColor: Styles.colorWhite,
-        body: BlocProvider<PostCubit>(
-            create: (context) => di.sl<PostCubit>()..getPosts(post: PostEntity()),
-            child: BlocBuilder<PostCubit, PostState>(
-              builder: (context, postState) {
-                if (postState is PostLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (postState is PostFailure) {
-                  toast("Some failures occurred while getting post");
-                }
-                if (postState is PostLoaded) {
-                  return ListView(
-                    controller: _scrollController,
+      appBar: _appBarWidget(),
+      backgroundColor: Styles.colorWhite,
+      body: BlocProvider<PostCubit>(
+        create: (context) => di.sl<PostCubit>()..getPosts(post: PostEntity()),
+        child: BlocBuilder<PostCubit, PostState>(
+          builder: (context, postState) {
+            if (postState is PostLoading) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (postState is PostFailure) {
+              toast("Some failures occurred while getting post");
+            }
+            if (postState is PostLoaded) {
+              return ListView(
+                controller: _scrollController,
+                children: [
+                  Column(
                     children: [
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            verticalSize(10),
+                            Row(
                               children: [
-                                verticalSize(10),
-                                Row(
-                                  children: [
-                                    AddNewStoryHomeWidget(
-                                        imageUrl: "assets/local/default_profile.png", username: "New"),
-                                    horizontalSize(15),
-                                    ViewStoryWidget(
-                                        imageUrl: "assets/local/default_profile.png",
-                                        username: "M.Nasir"),
-                                  ],
-                                ),
+                                AddNewStoryHomeWidget(
+                                    imageUrl: "assets/local/default_profile.png", username: "New"),
+                                horizontalSize(15),
+                                ViewStoryWidget(
+                                    imageUrl: "assets/local/default_profile.png", username: "M.Nasir"),
                               ],
                             ),
-                          ),
-                          verticalSize(5),
-                          Container(
-                            height: .25,
-                            width: MediaQuery.of(context).size.width,
-                            color: Styles.colorGray1.withOpacity(.5),
-                          ),
-                          postState.posts.isEmpty
-                              ? _noPostWidget()
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: ScrollPhysics(),
-                                  itemCount: postState.posts.length,
-                                  itemBuilder: (context, index) {
-                                    final posts = postState.posts[index];
-                                    return BlocProvider(
-                                      create: (context) => di.sl<PostCubit>(),
-                                      child: SinglePostWidget(
-                                        currentUser: widget.currentUser,
-                                        posts: posts,
-                                      ),
-                                    );
-                                  },
-                                ),
-                        ],
+                          ],
+                        ),
                       ),
+                      verticalSize(5),
+                      Container(
+                        height: .25,
+                        width: MediaQuery.of(context).size.width,
+                        color: Styles.colorGray1.withOpacity(.5),
+                      ),
+                      postState.posts.isEmpty
+                          ? _noPostWidget()
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              physics: ScrollPhysics(),
+                              itemCount: postState.posts.length,
+                              itemBuilder: (context, index) {
+                                final posts = postState.posts[index];
+                                return BlocProvider<PostCubit>(
+                                  create: (context) => di.sl<PostCubit>(),
+                                  child: SinglePostWidget(
+                                    currentUser: widget.currentUser,
+                                    posts: posts,
+                                  ),
+                                );
+                              },
+                            ),
                     ],
-                  );
-                }
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-            )));
+                  ),
+                ],
+              );
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   _noPostWidget() {
@@ -164,10 +165,15 @@ class _HomePageState extends State<HomePage> {
         ),
         Padding(
           padding: const EdgeInsets.only(right: 15.0, left: 15),
-          child: Icon(
-            FontAwesomeIcons.facebookMessenger,
-            color: Styles.colorBlack,
-            size: 22,
+          child: GestureDetector(
+            onTap: (){
+              Navigator.pushNamed(context, PageConsts.chatMainPage);
+            },
+            child: Icon(
+              FontAwesomeIcons.facebookMessenger,
+              color: Styles.colorBlack,
+              size: 22,
+            ),
           ),
         )
       ],

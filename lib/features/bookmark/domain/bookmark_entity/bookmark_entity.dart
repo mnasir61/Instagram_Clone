@@ -5,11 +5,13 @@ class BookmarkEntity extends Equatable {
   final String? postId;
   final String? uid;
   final Timestamp? createdAt;
+  final String? postImageUrl;
 
   BookmarkEntity({
     this.postId,
     this.uid,
     this.createdAt,
+    this.postImageUrl,
   });
 
   @override
@@ -17,5 +19,6 @@ class BookmarkEntity extends Equatable {
         postId,
         uid,
         createdAt,
+    postImageUrl,
       ];
 }

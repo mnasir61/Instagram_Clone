@@ -72,41 +72,47 @@ class _CommentSectionPageState extends State<CommentSectionPage> {
                       if (commentState is CommentLoaded) {
                         return Column(
                           children: [
-                            AuthorDescriptionForCommentWidget(
-                              post: singlePost,
-                            ),
-                            verticalSize(5),
-                            Container(
-                              height: .25,
-                              width: MediaQuery.of(context).size.width,
-                              color: Styles.colorGray1.withOpacity(.5),
-                            ),
-                            commentState.comments.length == 0
-                                ? _noCommentsWidget()
-                                : Expanded(
-                                    child: ListView.builder(
-                                      itemCount: commentState.comments.length,
-                                      shrinkWrap: true,
-                                      physics: ScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        final singleComment = commentState.comments[index];
-                                        return BlocProvider<ReplyCubit>(
-                                          create: (context) => di.sl<ReplyCubit>(),
-                                          child: CommentsAndRepliesWidget(
-                                            currentUser: singleUser,
-                                            comment: singleComment,
-                                            onTapReply: () {
-                                              setState(() {
-                                                _showReplyField = true;
-                                                selectedComment = singleComment;
-                                              });
-                                              _replyFocusNode.requestFocus();
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    AuthorDescriptionForCommentWidget(
+                                      post: singlePost,
+                                    ),
+                                    verticalSize(5),
+                                    Container(
+                                      height: .25,
+                                      width: MediaQuery.of(context).size.width,
+                                      color: Styles.colorGray1.withOpacity(.5),
+                                    ),
+                                    commentState.comments.length == 0
+                                        ? _noCommentsWidget()
+                                        : ListView.builder(
+                                            itemCount: commentState.comments.length,
+                                            shrinkWrap: true,
+                                            physics: ScrollPhysics(),
+                                            itemBuilder: (context, index) {
+                                              final singleComment = commentState.comments[index];
+                                              return BlocProvider<ReplyCubit>(
+                                                create: (context) => di.sl<ReplyCubit>(),
+                                                child: CommentsAndRepliesWidget(
+                                                  currentUser: singleUser,
+                                                  comment: singleComment,
+                                                  onTapReply: () {
+                                                    setState(() {
+                                                      _showReplyField = true;
+                                                      selectedComment = singleComment;
+                                                    });
+                                                    _replyFocusNode.requestFocus();
+                                                  },
+                                                ),
+                                              );
                                             },
                                           ),
-                                        );
-                                      },
-                                    ),
-                                  ),
+                                  ],
+                                ),
+                              ),
+                            ),
                             _showReplyField
                                 ? FocusScope(
                                     child: Form(

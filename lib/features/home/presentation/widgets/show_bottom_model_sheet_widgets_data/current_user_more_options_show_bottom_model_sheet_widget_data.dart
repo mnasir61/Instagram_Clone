@@ -1,15 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
+import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/divider_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
+import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class CurrentUserMoreOptionsModelSheetData extends StatefulWidget {
+  final PostEntity posts;
+  final BookmarkEntity bookmarks;
   final VoidCallback onTapToEditPost;
   final VoidCallback onTapToDeletePost;
 
-  const CurrentUserMoreOptionsModelSheetData({Key? key, required this.onTapToEditPost, required this.onTapToDeletePost})
+  // final VoidCallback onTapBookmarkPost;
+
+  const CurrentUserMoreOptionsModelSheetData(
+      {Key? key,
+      required this.onTapToEditPost,
+      required this.onTapToDeletePost,
+      required this.posts,
+      required this.bookmarks})
       : super(key: key);
 
   @override
@@ -18,6 +34,18 @@ class CurrentUserMoreOptionsModelSheetData extends StatefulWidget {
 }
 
 class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOptionsModelSheetData> {
+  String _currentUid = "";
+
+  @override
+  void initState() {
+    super.initState();
+    di.sl<GetCurrentUidUseCase>().call().then((value) {
+      setState(() {
+        _currentUid = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -34,16 +62,20 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
                     children: [
                       Column(
                         children: [
-                          Container(
-                            height: 70,
-                            width: 70,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(width: 1, color: Styles.colorBlack)),
-                            child: Icon(
-                              FontAwesomeIcons.bookmark,
-                              size: 28,
-                            ),
+                          GestureDetector(
+                            onTap: _bookMarkPost,
+                            child: Container(
+                                height: 70,
+                                width: 70,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(width: 1, color: Styles.colorBlack)),
+                                child: Icon(
+                                  widget.posts.postId == widget.bookmarks.postId
+                                      ? FontAwesomeIcons.solidBookmark
+                                      : FontAwesomeIcons.bookmark,
+                                  size: 28,
+                                )),
                           ),
                           verticalSize(5),
                           Text(
@@ -80,14 +112,11 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
                 verticalSize(20),
                 Column(
                   children: [
-                    _modelSheetButton(
-                        onTap: (){},
-                        icon: CupertinoIcons.archivebox,
-                        text: "Archive"),
+                    _modelSheetButton(onTap: () {}, icon: CupertinoIcons.archivebox, text: "Archive"),
                     _modelSheetButton(
                         onTap: () {}, icon: CupertinoIcons.heart_slash, text: "Hide likes count"),
                     _modelSheetButton(
-                        onTap: (){},
+                        onTap: () {},
                         icon: FontAwesomeIcons.commentSlash,
                         text: "Turn off commenting"),
                     _modelSheetButton(
@@ -99,7 +128,9 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
                     _modelSheetButton(
                         onTap: () {}, icon: Icons.share_outlined, text: "Post to other apps..."),
                     _modelSheetButton(
-                        onTap: widget.onTapToDeletePost, icon: CupertinoIcons.delete_simple, text: "Delete"),
+                        onTap: widget.onTapToDeletePost,
+                        icon: CupertinoIcons.delete_simple,
+                        text: "Delete"),
                     // Row(
                     //   children: [
                     //     Icon(
@@ -149,5 +180,17 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
         ),
       ),
     );
+  }
+
+  _bookMarkPost() {
+    BlocProvider.of<BookmarkCubit>(context)
+        .addBookmark(
+            bookmark: BookmarkEntity(
+          createdAt: Timestamp.now(),
+          uid: _currentUid,
+          postId: widget.posts.postId,
+          postImageUrl: widget.posts.postImageUrl,
+        ))
+        .then((value) => Navigator.pop(context));
   }
 }

@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/core/error_message.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/storage/domain/usecases/upload_profile_image_usecase.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/upload_image_to_storage_usecase.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
@@ -219,8 +220,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _updateUserProfile("");
       } else {
         di
-            .sl<UploadImageToStorageUseCase>()
-            .call(image!, false, "profileImage")
+            .sl<UploadProfileImageUseCase>().call(file: image!)
             .then((profileUrl) => _updateUserProfile(profileUrl));
       }
     }

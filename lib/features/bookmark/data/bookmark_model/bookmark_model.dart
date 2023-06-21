@@ -5,12 +5,14 @@ class BookmarkModel extends BookmarkEntity {
   final String? postId;
   final String? uid;
   final Timestamp? createdAt;
+  final String? postImageUrl;
 
-  BookmarkModel({this.postId, this.uid, this.createdAt})
+  BookmarkModel( {this.postImageUrl,this.postId, this.uid, this.createdAt})
       : super(
           postId: postId,
           uid: uid,
           createdAt: createdAt,
+    postImageUrl: postImageUrl
         );
 
   factory BookmarkModel.fromSnapshot(DocumentSnapshot snapshot) {
@@ -19,6 +21,7 @@ class BookmarkModel extends BookmarkEntity {
       postId: snap["postId"],
       uid: snap["uid"],
       createdAt: snap["createdAt"],
+      postImageUrl: snap["postImageUrl"],
     );
   }
 
@@ -26,5 +29,6 @@ class BookmarkModel extends BookmarkEntity {
         "postId": postId,
         "uid": uid,
         "createdAt": createdAt,
+        "postImageUrl": postImageUrl,
       };
 }

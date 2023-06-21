@@ -20,7 +20,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
 import 'show_bottom_model_sheet_widgets_data/current_user_more_options_show_bottom_model_sheet_widget_data.dart';
-import 'show_bottom_model_sheet_widgets_data/more_options_show_bottom_model_sheet_widget_data.dart';
+import 'show_bottom_model_sheet_widgets_data/other_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
 
 class SinglePostWidget extends StatefulWidget {
@@ -55,7 +55,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
       children: [
         verticalSize(10),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
             children: [
               Row(
@@ -95,7 +95,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   GestureDetector(
                     onTap: () {
                       widget.posts.creatorId == _currentUid
-                          ? _currentUserMoreOptionsShowBottomModelSheet(context)
+                          ? _currentUserMoreOptionsShowBottomModelSheet(context,BookmarkEntity())
                           : _moreOptionShowBottomModelSheetWidget(context);
                     },
                     child: Container(
@@ -202,21 +202,14 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   ),
                   BlocBuilder<BookmarkCubit, BookmarkState>(
                     builder: (context, bookmarkState) {
-                      if (bookmarkState is BookmarkLoaded) {
-                        final bookmarks = bookmarkState.bookmarks;
-                        final isBookmarked =
-                            bookmarks.any((bookmark) => bookmark.postId == widget.posts.postId);
-
+                        final isBookmarked = bookmarkState is BookmarkLoaded &&
+                            bookmarkState.bookmarks.any((bookmark) => bookmark.postId == widget.posts.postId);
                         return GestureDetector(
                           onTap: _bookMarkPost,
                           child: isBookmarked
                               ? Icon(FontAwesomeIcons.solidBookmark)
                               : Icon(FontAwesomeIcons.bookmark),
                         );
-                      }
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
                     },
                   ),
                 ],
@@ -285,7 +278,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
-        return MoreOptionsModelSheetData();
+        return OtherUserMoreOptionsModelSheetData();
       },
     );
   }
@@ -304,7 +297,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
     );
   }
 
-  void _currentUserMoreOptionsShowBottomModelSheet(BuildContext context) {
+  void _currentUserMoreOptionsShowBottomModelSheet(BuildContext context,BookmarkEntity bookmark) {
     showModalBottomSheet(
       useSafeArea: true,
       showDragHandle: true,
@@ -315,6 +308,8 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
       ),
       builder: (BuildContext context) {
         return CurrentUserMoreOptionsModelSheetData(
+          bookmarks: bookmark,
+          posts: widget.posts,
           onTapToEditPost: () {
             Navigator.pushNamed(context, PageConsts.editPostPage, arguments: widget.posts)
                 .then((value) {
@@ -350,6 +345,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
       createdAt: Timestamp.now(),
       uid: widget.currentUser.uid,
       postId: widget.posts.postId,
+          postImageUrl: widget.posts.postImageUrl,
     ));
   }
 }
