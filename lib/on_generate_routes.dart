@@ -140,21 +140,21 @@ class OnGenerateRoute {
 
       //Chat Routes ------------------------------------------------------------------
       case PageConsts.chatMainPage:
-        {
-          return routeBuilder(child: ChatMainPage());
-        }
+        if(args is String){
+          return routeBuilder(child: ChatMainPage(uid: args,));
+        }else return routeBuilder(child: NoPageFound());
       case PageConsts.requestChatPage:
         {
           return routeBuilder(child: RequestChatPage());
         }
       case PageConsts.singleChatPage:
-        {
-          return routeBuilder(child: SingleChatPage());
-        }
+        if(args is AppEntity){
+          return routeBuilder(child: SingleChatPage(appEntity: args));
+        }else return routeBuilder(child: NoPageFound());
       case PageConsts.newChatPage:
-        {
-          return routeBuilder(child: NewChatPage());
-        }
+        if(args is String){
+          return routeBuilder(child: NewChatPage(uid: args,));
+        }else return routeBuilder(child: NoPageFound());
       default:
         {
           NoPageFound();

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/app/main_page/presentation/pages/main_page.dart';
 import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
+import 'package:instagram_clone/features/chat/presentation/cubit/communication/communication_cubit.dart';
+import 'package:instagram_clone/features/chat/presentation/cubit/my_chat/my_chat_cubit.dart';
 import 'package:instagram_clone/features/comment/presentation/cubit/comment_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/read_single_post/read_single_post_cubit.dart';
@@ -56,6 +58,13 @@ class InstagramClone extends StatelessWidget {
         BlocProvider<BookmarkCubit>(
           create: (context) => di.sl<BookmarkCubit>(),
         ),
+        BlocProvider<MyChatCubit>(
+          create: (context) => di.sl<MyChatCubit>(),
+        ),
+        BlocProvider<CommunicationCubit>(
+          create: (context) => di.sl<CommunicationCubit>(),
+        ),
+
       ],
       child: _materialAppBuilder(),
     );

@@ -1,5 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
 import 'package:instagram_clone/features/post/data/models/post_model.dart';
 import 'package:instagram_clone/features/post/data/remote_data_sources/post_remote_data_source.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
@@ -14,7 +20,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
 
   @override
   Future<void> createPost(PostEntity post) async {
-    final postCollectionRef = fireStore.collection("posts");
+    final postCollectionRef = fireStore.collection(FirebaseConst.posts);
     final newPost = PostModel(
       postId: post.postId,
       username: post.username,
@@ -32,7 +38,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
 
       if (!postDocRef.exists) {
         postCollectionRef.doc(post.postId).set(newPost).then((value) {
-          final userCollection = fireStore.collection("users").doc(post.creatorId);
+          final userCollection = fireStore.collection(FirebaseConst.users).doc(post.creatorId);
 
           userCollection.get().then((value) {
             if(value.exists){
@@ -51,10 +57,10 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
 
   @override
   Future<void> deletePost(PostEntity post) async {
-    final postCollectionRef = fireStore.collection("posts");
+    final postCollectionRef = fireStore.collection(FirebaseConst.posts);
     try {
       postCollectionRef.doc(post.postId).delete().then((value) {
-        final userCollection = fireStore.collection("users").doc(post.creatorId);
+        final userCollection = fireStore.collection(FirebaseConst.users).doc(post.creatorId);
 
         userCollection.get().then((value) {
           if(value.exists){
@@ -70,7 +76,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
 
   @override
   Future<void> likePost(PostEntity post) async {
-    final postCollectionRef = fireStore.collection("posts");
+    final postCollectionRef = fireStore.collection(FirebaseConst.posts);
     final currentUid = await di.sl<GetCurrentUidUseCase>().call();
     final postRef = await postCollectionRef.doc(post.postId).get();
     if (postRef.exists) {
@@ -92,7 +98,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
 
   @override
   Stream<List<PostEntity>> readPost(PostEntity post) {
-    final postCollectionRef = fireStore.collection("posts").orderBy("createdAt", descending: true);
+    final postCollectionRef = fireStore.collection(FirebaseConst.posts).orderBy("createdAt", descending: true);
     return postCollectionRef
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((e) => PostModel.fromSnapshot(e)).toList());
@@ -100,7 +106,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
 
   @override
   Future<void> updatePost(PostEntity post) async {
-    final postCollectionRef = fireStore.collection("posts");
+    final postCollectionRef = fireStore.collection(FirebaseConst.posts);
     Map<String, dynamic> postInfo = Map();
     if (post.description != "" && post.description != null) postInfo["description"] = post.description;
     if (post.postImageUrl != "" && post.postImageUrl != null)
@@ -112,7 +118,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
   @override
   Stream<List<PostEntity>> readSinglePost(String postId) {
     final postCollectionRef = fireStore
-        .collection("posts")
+        .collection(FirebaseConst.posts)
         .orderBy("createdAt", descending: true)
         .where("postId", isEqualTo: postId);
     return postCollectionRef

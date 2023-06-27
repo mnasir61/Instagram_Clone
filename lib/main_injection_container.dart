@@ -10,6 +10,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart'as http;
 import 'package:instagram_clone/features/bookmark/bookmark_injection_container.dart';
+import 'package:instagram_clone/features/chat/presentation/chat_injection_container.dart';
 import 'package:instagram_clone/features/comment/comment_injection_container.dart';
 import 'package:instagram_clone/features/post/post_injection_container.dart';
 import 'package:instagram_clone/features/storage/storage_injection_container.dart';
@@ -38,4 +39,5 @@ Future<void> init() async {
   await replyInjectionContainer();
   await bookmarkInjectionContainer();
   await storageInjectionContainer();
+  await chatInjectionContainer();
 }

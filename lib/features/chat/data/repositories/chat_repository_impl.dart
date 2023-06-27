@@ -1,4 +1,5 @@
 import 'package:instagram_clone/features/chat/data/data_sources/chat_remote_data_source.dart';
+import 'package:instagram_clone/features/chat/domain/entities/engaged_user_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/group_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/my_chat_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/text_message_entity.dart';
@@ -10,8 +11,8 @@ class ChatRepositoryImpl implements ChatRepository {
   ChatRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<void> createOneToOneChatChannel(MyChatEntity myChatEntity) async =>
-      remoteDataSource.createOneToOneChatChannel(myChatEntity);
+  Future<String> createOneToOneChatChannel(EngagedUserEntity engagedUserEntity) async =>
+      remoteDataSource.createOneToOneChatChannel(engagedUserEntity);
 
   @override
   Future<void> deleteGroupChatChannel(String channelId) async =>
@@ -26,7 +27,7 @@ class ChatRepositoryImpl implements ChatRepository {
       remoteDataSource.deleteSingleMessage(messageId);
 
   @override
-  Stream<List<MyChatEntity>> getChats() => remoteDataSource.getChats();
+  Stream<List<MyChatEntity>> getMyChats(String uid) => remoteDataSource.getMyChats(uid);
 
   @override
   Future<void> getCreateGroupChat(GroupEntity groupEntity) async =>
@@ -46,4 +47,10 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<void> updateGroupChat(GroupEntity groupEntity) async =>
       remoteDataSource.updateGroupChat(groupEntity);
+
+  @override
+  Future<String> getChannelId(EngagedUserEntity engagedUserEntity) async=>remoteDataSource.getChannelId(engagedUserEntity);
+
+  @override
+  Future<void> addToMyChat(MyChatEntity myChat)async=>remoteDataSource.addToMyChat(myChat);
 }

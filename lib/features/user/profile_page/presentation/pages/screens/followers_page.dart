@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
 import '../../../../domain/use_cases/get_single_user_usecase.dart';
-import '../widgets/profile_widget.dart';
 
 class FollowersPage extends StatelessWidget {
   final UserEntity user;

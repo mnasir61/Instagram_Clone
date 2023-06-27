@@ -23,6 +23,7 @@ class UserModel extends UserEntity {
   final List? followings;
   final String? currentUserBio;
   final String? currentUserProfession;
+  final String? lastActivity;
 
   UserModel(
       {this.uid,
@@ -43,7 +44,8 @@ class UserModel extends UserEntity {
       this.isOnline,
       this.totalNotifications,
       this.fullName,
-      this.accountType})
+      this.accountType,
+      this.lastActivity})
       : super(
             email: email,
             username: username,
@@ -63,7 +65,8 @@ class UserModel extends UserEntity {
             followers: followers,
             followings: followings,
             totalFollowers: totalFollowers,
-            totalFollowings: totalFollowings);
+            totalFollowings: totalFollowings,
+  lastActivity:lastActivity);
 
   factory UserModel.fromSnapshot(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
@@ -86,6 +89,7 @@ class UserModel extends UserEntity {
       totalFollowings: snapshot['totalFollowings'],
       currentUserProfession: snapshot['currentUserProfession'],
       currentUserBio: snapshot['currentUserBio'],
+      lastActivity: snapshot['lastActivity'],
       followers: List.from(snap.get("followers")),
       followings: List.from(snap.get("followings")),
     );
@@ -112,6 +116,7 @@ class UserModel extends UserEntity {
       "currentUserBio": currentUserBio,
       "followers": followers,
       "followings": followings,
+      "lastActivity": lastActivity,
     };
   }
 }

@@ -61,13 +61,16 @@ dependencies:
 
   expandable_text: ^2.3.0
 
+  #chat bubbles
+  bubble: ^1.2.1
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   #Social Icons
   cupertino_icons: ^1.0.5
   social_media_flutter: ^0.0.2
-  fluentui_system_icons: 1.1.200
+  fluentui_system_icons: ^1.1.203
   font_awesome_flutter: ^10.4.0
   fluentui_icons: ^1.0.0
 
@@ -77,7 +80,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.11.0
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -91,7 +94,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/instagram.png"
+  image_path: "assets/main/insta_logo.svg"
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -104,6 +107,7 @@ flutter:
   assets:
      - assets/main/.
      - assets/local/.
+     - assets/local/default_profile.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

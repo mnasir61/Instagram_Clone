@@ -1,5 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instagram_clone/features/app/consts/firebase_consts.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
 import 'package:instagram_clone/features/reply/data/models/replay_model.dart';
 import 'package:instagram_clone/features/reply/domain/entities/reply_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
@@ -15,11 +21,11 @@ class ReplyRemoteDataSourceImpl implements ReplyRemoteDataSource {
   @override
   Future<void> createReply(ReplyEntity reply) async {
     final replyCollection = fireStore
-        .collection("posts")
+        .collection(FirebaseConst.posts)
         .doc(reply.postId)
-        .collection("comments")
+        .collection(FirebaseConst.comments)
         .doc(reply.commentId)
-        .collection("reply");
+        .collection(FirebaseConst.reply);
     final newReply = ReplyModel(
       creatorUid: reply.creatorUid,
       commentId: reply.commentId,
@@ -36,7 +42,7 @@ class ReplyRemoteDataSourceImpl implements ReplyRemoteDataSource {
       final replyDocRef = await replyCollection.doc(reply.replyId).get();
       if (!replyDocRef.exists) {
         replyCollection.doc(reply.replyId).set(newReply).then((value) {
-          final commentCollection = fireStore.collection("posts").doc(reply.postId).collection("comments").doc(reply.commentId);
+          final commentCollection = fireStore.collection(FirebaseConst.posts).doc(reply.postId).collection(FirebaseConst.comments).doc(reply.commentId);
           commentCollection.get().then((value) {
             if(value.exists){
               final totalReplies = value.get("totalReplies");
@@ -57,14 +63,14 @@ class ReplyRemoteDataSourceImpl implements ReplyRemoteDataSource {
   @override
   Future<void> deleteReply(ReplyEntity reply) async {
     final replyCollection = fireStore
-        .collection("posts")
+        .collection(FirebaseConst.posts)
         .doc(reply.postId)
-        .collection("comments")
+        .collection(FirebaseConst.comments)
         .doc(reply.commentId)
-        .collection("reply");
+        .collection(FirebaseConst.reply);
     try {
       await replyCollection.doc(reply.replyId).delete().then((value) {
-        final commentCollection = fireStore.collection("posts").doc(reply.postId).collection("comments").doc(reply.commentId);
+        final commentCollection = fireStore.collection(FirebaseConst.posts).doc(reply.postId).collection(FirebaseConst.comments).doc(reply.commentId);
 
         commentCollection.get().then((value) {
           if (value.exists) {
@@ -82,11 +88,11 @@ class ReplyRemoteDataSourceImpl implements ReplyRemoteDataSource {
   @override
   Future<void> likeReply(ReplyEntity reply) async {
     final replyCollection = fireStore
-        .collection("posts")
+        .collection(FirebaseConst.posts)
         .doc(reply.postId)
-        .collection("comments")
+        .collection(FirebaseConst.comments)
         .doc(reply.commentId)
-        .collection("reply");
+        .collection(FirebaseConst.reply);
     final currentUid = await di.sl<GetCurrentUidUseCase>().call();
     final replyDocRef = await replyCollection.doc(reply.replyId).get();
     if (replyDocRef.exists) {
@@ -106,11 +112,11 @@ class ReplyRemoteDataSourceImpl implements ReplyRemoteDataSource {
   @override
   Stream<List<ReplyEntity>> readReply(ReplyEntity reply) {
     final replayCollection = fireStore
-        .collection("posts")
+        .collection(FirebaseConst.posts)
         .doc(reply.postId)
-        .collection("comments")
+        .collection(FirebaseConst.comments)
         .doc(reply.commentId)
-        .collection("reply").orderBy("createdAt",descending: true);
+        .collection(FirebaseConst.reply).orderBy("createdAt",descending: true);
     return replayCollection
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((e) => ReplyModel.fromSnapshot(e)).toList());
@@ -119,11 +125,11 @@ class ReplyRemoteDataSourceImpl implements ReplyRemoteDataSource {
   @override
   Future<void> updateReply(ReplyEntity reply) async {
     final replyCollection = fireStore
-        .collection("posts")
+        .collection(FirebaseConst.posts)
         .doc(reply.postId)
-        .collection("comments")
+        .collection(FirebaseConst.comments)
         .doc(reply.commentId)
-        .collection("reply");
+        .collection(FirebaseConst.reply);
     Map<String, dynamic> replyInfo = Map();
     if (reply.description != "" && reply.description != null)
       replyInfo["description"] = reply.description;

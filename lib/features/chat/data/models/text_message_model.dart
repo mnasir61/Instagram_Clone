@@ -19,7 +19,7 @@ class TextMessageModel extends TextMessageEntity {
 
   final String? messageType;
   final String? content;
-  final Timestamp? time;
+  final Timestamp? createdAt;
   final String? messageId;
   final bool? isSeen;
 
@@ -35,7 +35,7 @@ class TextMessageModel extends TextMessageEntity {
       this.repliedMessageType,
       this.messageType,
       this.content,
-      this.time,
+      this.createdAt,
       this.messageId,
       this.isSeen})
       : super(
@@ -50,7 +50,7 @@ class TextMessageModel extends TextMessageEntity {
           repliedMessageType: repliedMessageType,
           messageType: messageType,
           content: content,
-          time: time,
+    createdAt: createdAt,
           messageId: messageId,
           isSeen: isSeen,
         );
@@ -69,7 +69,7 @@ class TextMessageModel extends TextMessageEntity {
       repliedMessageType: snap["repliedMessageType"],
       messageType: snap["messageType"],
       content: snap["content"],
-      time: snap["time"],
+      createdAt: snap["createdAt"],
       messageId: snap["messageId"],
       isSeen: snap["isSeen"],
     );
@@ -88,7 +88,7 @@ class TextMessageModel extends TextMessageEntity {
       "repliedMessage": repliedMessage,
       "messageType": messageType,
       "content": content,
-      "time": time,
+      "createdAt": createdAt,
       "messageId": messageId,
       "isSeen": isSeen,
     };

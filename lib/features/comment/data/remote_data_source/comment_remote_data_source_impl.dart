@@ -2,6 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram_clone/features/comment/data/models/comment_models.dart';
 import 'package:instagram_clone/features/comment/data/remote_data_source/comment_remote_data_source.dart';
 import 'package:instagram_clone/features/comment/domain/entity/comment_entity.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
@@ -12,7 +19,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
 
   @override
   Future<void> createComment(CommentEntity comment) async {
-    final commentCollection = fireStore.collection("posts").doc(comment.postId).collection("comments");
+    final commentCollection = fireStore.collection(FirebaseConst.posts).doc(comment.postId).collection(FirebaseConst.comments);
     final newComment = CommentModel(
       description: comment.description,
       username: comment.username,
@@ -29,7 +36,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       final commentDocRef = await commentCollection.doc(comment.commentId).get();
       if (!commentDocRef.exists) {
         commentCollection.doc(comment.commentId).set(newComment).then((value) {
-          final postCollection = fireStore.collection("posts").doc(comment.postId);
+          final postCollection = fireStore.collection(FirebaseConst.posts).doc(comment.postId);
           postCollection.get().then((value) {
             if (value.exists) {
               final totalComments = value.get("totalComments");
@@ -47,10 +54,10 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
 
   @override
   Future<void> deleteComment(CommentEntity comment) async {
-    final commentCollection = fireStore.collection("posts").doc(comment.postId).collection("comments");
+    final commentCollection = fireStore.collection(FirebaseConst.posts).doc(comment.postId).collection(FirebaseConst.comments);
     try {
       commentCollection.doc(comment.commentId).delete().then((value) {
-        final postCollection = fireStore.collection("posts").doc(comment.postId);
+        final postCollection = fireStore.collection(FirebaseConst.posts).doc(comment.postId);
         postCollection.get().then((value) {
           if (value.exists) {
             final totalComments = value.get("totalComments");
@@ -65,7 +72,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
 
   @override
   Future<void> likeComment(CommentEntity comment) async {
-    final commentCollection = fireStore.collection("posts").doc(comment.postId).collection("comments");
+    final commentCollection = fireStore.collection(FirebaseConst.posts).doc(comment.postId).collection(FirebaseConst.comments);
     final currentUid = await di.sl<GetCurrentUidUseCase>().call();
     final commentDocRef = await commentCollection.doc(comment.commentId).get();
     if (commentDocRef.exists) {
@@ -85,9 +92,9 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   @override
   Stream<List<CommentEntity>> readComments(String postId) {
     final commentCollection = fireStore
-        .collection("posts")
+        .collection(FirebaseConst.posts)
         .doc(postId)
-        .collection("comments")
+        .collection(FirebaseConst.comments)
         .orderBy("createdAt", descending: true);
     return commentCollection
         .snapshots()
@@ -96,7 +103,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
 
   @override
   Future<void> updateComment(CommentEntity comment) async {
-    final commentCollection = fireStore.collection("posts").doc(comment.postId).collection("comments");
+    final commentCollection = fireStore.collection(FirebaseConst.posts).doc(comment.postId).collection(FirebaseConst.comments);
     Map<String, dynamic> commentInfo = Map();
 
     if (comment.description != "" && comment.description != null)

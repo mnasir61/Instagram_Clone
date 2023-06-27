@@ -1,93 +1,151 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagram_clone/core/app_entity.dart';
+import 'package:instagram_clone/features/chat/domain/entities/engaged_user_entity.dart';
+import 'package:instagram_clone/features/chat/domain/entities/my_chat_entity.dart';
+import 'package:instagram_clone/features/chat/domain/use_cases/create_one_to_one_chat_usecase.dart';
+import 'package:instagram_clone/features/chat/presentation/cubit/my_chat/my_chat_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/divider_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
+import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
+import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
+import 'package:instagram_clone/main_injection_container.dart'as di;
+import 'package:timeago/timeago.dart' as timeago;
 
-class PrimaryChatPage extends StatelessWidget {
-  const PrimaryChatPage({super.key});
+class PrimaryChatPage extends StatefulWidget {
+  final String uid;
+  const PrimaryChatPage({super.key, required this.uid});
 
   @override
+  State<PrimaryChatPage> createState() => _PrimaryChatPageState();
+}
+
+class _PrimaryChatPageState extends State<PrimaryChatPage> {
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 12,
-      shrinkWrap: true,
-      physics: ScrollPhysics(),
-      itemBuilder: (context, index) {
-        return InkWell(
-          onLongPress: () {
-            _userOptionPage(context);
-          },
-          onTap: () {
-            Navigator.pushNamed(context, PageConsts.singleChatPage);
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
-                          height: 50,
-                          width: 50,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(40),
-                            child: profileWidget(imageUrl: "assets/local/default_profile"),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            maxRadius: 6,
-                            minRadius: 6,
+    return BlocBuilder<GetUsersCubit, GetUsersState>(
+      builder: (context, getAllUsersState) {
+        if (getAllUsersState is GetUsersLoaded) {
+          final allUsers = getAllUsersState.users;
+          return BlocBuilder<MyChatCubit, MyChatState>(
+            builder: (context, myChatState) {
+              if (myChatState is MyChatLoaded) {
+                final chats = myChatState.myChat;
+                return chats.isEmpty
+                    ? _noChatChannels()
+                    : ListView.builder(
+                        itemCount: chats.length,
+                        shrinkWrap: true,
+                        physics: ScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final singleChat = chats[index];
+                          final singleUser  = allUsers[index];
+                          final activeStatus = getActiveStatus(singleUser);
+                          return InkWell(
+                            onLongPress: () {
+                              _userOptionPage(context, singleChat);
+                            },
+                            onTap: () {
+                              Navigator.pushNamed(context, PageConsts.singleChatPage,
+                              arguments: AppEntity(
+                              senderUid: singleChat.senderUid,
+                              senderName: singleChat.senderName,
+                              senderProfileUrl: singleChat.senderProfileUrl,
+                              recipientUid: singleChat.recipientUid,
+                              recipientProfileUrl: singleChat.recipientProfileUrl,
+                              recipientName: singleChat.recipientName,
+                              ));
+
+                            },
                             child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Stack(
+                                        children: [
+                                          Container(
+                                            height: 50,
+                                            width: 50,
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(40),
+                                              child: profileWidget(
+                                                  imageUrl: "${singleChat.recipientProfileUrl}"),
+                                            ),
+                                          ),
+                                          if(singleUser.isOnline==true)
+                                          Positioned(
+                                            bottom: 0,
+                                            right: 0,
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.white,
+                                              maxRadius: 6,
+                                              minRadius: 6,
+                                              child: Container(
+                                                width: 8,
+                                                height: 8,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      horizontalSize(15),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${singleChat.recipientName}",
+                                            style: TextStyle(fontWeight: FontWeight.w500),
+                                          ),
+                                          verticalSize(2),
+                                          Text(
+                                            "$activeStatus",
+                                            style: TextStyle(color: Colors.black.withOpacity(.5)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Icon(
+                                    CupertinoIcons.camera,
+                                    color: Colors.black.withOpacity(.5),
+                                  )
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    horizontalSize(15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Muhammad Nasir",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        verticalSize(2),
-                        Text(
-                          "Active 5h ago",
-                          style: TextStyle(color: Colors.black.withOpacity(.5)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Icon(
-                  CupertinoIcons.camera,
-                  color: Colors.black.withOpacity(.5),
-                )
-              ],
-            ),
-          ),
+                          );
+                        },
+                      );
+              } else
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+            },
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
         );
       },
     );
   }
 
-  void _userOptionPage(BuildContext context) {
+  void _userOptionPage(BuildContext context, MyChatEntity myChatSelectedUser) {
     showModalBottomSheet(
       useSafeArea: true,
       showDragHandle: true,
@@ -108,7 +166,7 @@ class PrimaryChatPage extends StatelessWidget {
                     Container(
                         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                         child: Text(
-                          "Selected Username",
+                          "${myChatSelectedUser.recipientName}",
                           style: TextStyle(fontWeight: FontWeight.w800),
                         )),
                     DividerWidget(),
@@ -180,6 +238,47 @@ class PrimaryChatPage extends StatelessWidget {
           },
         );
       },
+    );
+  }
+  String getActiveStatus(UserEntity user) {
+    final now = DateTime.now();
+    final lastActivity = user.lastActivity ?? now;
+    final lastActivityDateTime = DateTime.parse(lastActivity.toString());
+    final difference = now.difference(lastActivityDateTime);
+
+    if (user.isOnline!) {
+      return 'Active Now';
+    } else if (difference.inMinutes <= 4) {
+      return 'Active a moment ago';
+    } else if (difference.inMinutes < 60) {
+      return 'Active ${difference.inMinutes} minutes ago';
+    } else if (difference.inHours < 24) {
+      return 'Active ${difference.inHours} hours ago';
+    } else if (difference.inDays == 1) {
+      return 'Active yesterday';
+    } else {
+      return 'Active ${timeago.format(now.subtract(difference), locale: 'en')} ago';
+    }
+  }
+
+
+
+  _noChatChannels() {
+    return Column(
+      children: [
+        Center(
+          child: Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(color: Colors.black.withOpacity(.1), shape: BoxShape.circle),
+            child: Icon(
+              Icons.message,
+              size: 110,
+              color: Colors.black.withOpacity(.5),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

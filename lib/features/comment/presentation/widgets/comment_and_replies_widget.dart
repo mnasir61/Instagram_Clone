@@ -185,96 +185,99 @@ class _CommentsAndRepliesWidgetState extends State<CommentsAndRepliesWidget> {
                                       ? _deleteReplyBottomModelSheet(reply: replies)
                                       : SizedBox();
                                 },
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: 60.0, top: 10, right: 15),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            height: 40,
-                                            width: 40,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
+                                child: Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 60.0, right: 14, top: 10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              height: 40,
+                                              width: 40,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(30),
+                                                child: profileWidget(imageUrl: replies.userProfileUrl),
+                                              ),
                                             ),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(30),
-                                              child: profileWidget(imageUrl: replies.userProfileUrl),
-                                            ),
-                                          ),
-                                          horizontalSize(10),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    "${replies.username}",
-                                                    style: Styles.titleLine2.copyWith(
-                                                      color: Styles.colorBlack,
-                                                      fontWeight: FontWeight.w800,
+                                            horizontalSize(10),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "${replies.username}",
+                                                      style: Styles.titleLine2.copyWith(
+                                                        color: Styles.colorBlack,
+                                                        fontWeight: FontWeight.w800,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  horizontalSize(5),
-                                                  Text(
-                                                    "${timeago.format(replies.createdAt!.toDate())}",
+                                                    horizontalSize(5),
+                                                    Text(
+                                                      "${timeago.format(replies.createdAt!.toDate())}",
+                                                      style: Styles.titleLine2.copyWith(
+                                                        color: Styles.colorBlack.withOpacity(.5),
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                verticalSize(5),
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width * .6,
+                                                  child: Text("${replies.description}"),
+                                                ),
+                                                verticalSize(5),
+                                                GestureDetector(
+                                                  onTap: widget.onTapReply,
+                                                  child: Text(
+                                                    "Reply",
                                                     style: Styles.titleLine2.copyWith(
                                                       color: Styles.colorBlack.withOpacity(.5),
                                                       fontWeight: FontWeight.w500,
                                                     ),
-                                                  )
-                                                ],
-                                              ),
-                                              verticalSize(5),
-                                              Container(
-                                                width: MediaQuery.of(context).size.width * .6,
-                                                child: Text("${replies.description}"),
-                                              ),
-                                              verticalSize(5),
-                                              GestureDetector(
-                                                onTap: widget.onTapReply,
-                                                child: Text(
-                                                  "Reply",
-                                                  style: Styles.titleLine2.copyWith(
-                                                    color: Styles.colorBlack.withOpacity(.5),
-                                                    fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
+                                                verticalSize(10),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                _likeReply(reply: replies);
+                                              },
+                                              child: Icon(
+                                                replies.likes!.contains(_currentUid)
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_border,
+                                                color: replies.likes!.contains(_currentUid)
+                                                    ? Colors.red
+                                                    : Styles.colorBlack.withOpacity(.5),
+                                                size: 20,
                                               ),
-                                            ],
-                                          ),
-                                          Spacer(),
-                                          Column(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  _likeReply(reply: replies);
-                                                },
-                                                child: Icon(
-                                                  replies.likes!.contains(_currentUid)
-                                                      ? Icons.favorite
-                                                      : Icons.favorite_border,
-                                                  color: replies.likes!.contains(_currentUid)
-                                                      ? Colors.red
-                                                      : Styles.colorBlack.withOpacity(.5),
-                                                  size: 20,
-                                                ),
+                                            ),
+                                            Text(
+                                              "${replies.likes?.length}",
+                                              style: Styles.titleLine2.copyWith(
+                                                color: Styles.colorBlack.withOpacity(.5),
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14,
                                               ),
-                                              Text(
-                                                "${replies.likes?.length}",
-                                                style: Styles.titleLine2.copyWith(
-                                                  color: Styles.colorBlack.withOpacity(.5),
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      verticalSize(15),
-                                    ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -441,15 +444,15 @@ class _CommentsAndRepliesWidgetState extends State<CommentsAndRepliesWidget> {
   }
 
   _likeComment({required CommentEntity comment}) {
-    BlocProvider.of<CommentCubit>(context).likeComment(
+    BlocProvider.of<CommentCubit>(context)
+        .likeComment(
       comment: CommentEntity(
         commentId: comment.commentId,
         postId: comment.postId,
       ),
-    ).then((value) {
-      setState(() {
-
-      });
+    )
+        .then((value) {
+      setState(() {});
     });
   }
 }

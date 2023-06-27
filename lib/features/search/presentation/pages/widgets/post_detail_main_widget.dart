@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable_text/expandable_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
-import 'package:instagram_clone/features/bookmark/domain/bookmark_usecases/get_bookmark_usecase.dart';
 import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
-import 'package:instagram_clone/core/app_entity.dart';
+import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/home/presentation/widgets/show_bottom_model_sheet_widgets_data/current_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'package:instagram_clone/features/home/presentation/widgets/show_bottom_model_sheet_widgets_data/other_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'package:instagram_clone/features/home/presentation/widgets/show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
@@ -18,9 +17,8 @@ import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart
 import 'package:instagram_clone/features/post/presentation/cubit/read_single_post/read_single_post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/pages/widgets/like_animation_widget.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
-import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:instagram_clone/main_injection_container.dart' as di;
+import 'package:timeago/timeago.dart' as timeago;
 
 class PostDetailMainWidget extends StatefulWidget {
   final String postId;
@@ -84,7 +82,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
               builder: (context, singlePostState) {
                 if (singlePostState is ReadSinglePostLoaded) {
                   final singlePost = singlePostState.posts;
-                  return _bodyWidget(singlePost: singlePost,singleBookmarkPost: isBookmarked);
+                  return _bodyWidget(singlePost: singlePost, singleBookmarkPost: isBookmarked);
                 } else {
                   return Center(
                     child: CircularProgressIndicator(),
@@ -101,7 +99,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
     );
   }
 
-  _bodyWidget({required PostEntity singlePost,required bool singleBookmarkPost}) {
+  _bodyWidget({required PostEntity singlePost, required bool singleBookmarkPost}) {
     return Column(
       children: [
         Padding(
@@ -249,7 +247,9 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
                       onTap: () {
                         _bookMarkPost();
                       },
-                      child: Icon(singleBookmarkPost==true?FontAwesomeIcons.solidBookmark:FontAwesomeIcons.bookmark)),
+                      child: Icon(singleBookmarkPost == true
+                          ? FontAwesomeIcons.solidBookmark
+                          : FontAwesomeIcons.bookmark)),
                 ],
               ),
               verticalSize(10),

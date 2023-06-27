@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
-import 'package:instagram_clone/features/bookmark/domain/bookmark_usecases/get_bookmark_usecase.dart';
 import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
-import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
+import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 
 class BookmarkPostsPage extends StatefulWidget {

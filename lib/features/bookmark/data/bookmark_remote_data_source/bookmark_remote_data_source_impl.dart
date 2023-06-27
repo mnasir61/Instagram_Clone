@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram_clone/features/bookmark/data/bookmark_model/bookmark_model.dart';
 import 'package:instagram_clone/features/bookmark/data/bookmark_remote_data_source/bookmark_remote_data_source.dart';
 import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
+import 'package:instagram_clone/features/global/const/firebase_const.dart';
 
 class BookmarkRemoteDataSourceImpl implements BookmarkRemoteDataSource {
   final FirebaseFirestore fireStore;
@@ -10,7 +11,7 @@ class BookmarkRemoteDataSourceImpl implements BookmarkRemoteDataSource {
 
   @override
   Future<void> addBookmark(BookmarkEntity bookmark) async {
-    final bookmarkCollection = fireStore.collection("users").doc(bookmark.uid).collection("bookmarks");
+    final bookmarkCollection = fireStore.collection(FirebaseConst.users).doc(bookmark.uid).collection(FirebaseConst.bookmarks);
     final newBookmark = BookmarkModel(
       postId: bookmark.postId,
       uid: bookmark.uid,
@@ -33,9 +34,9 @@ class BookmarkRemoteDataSourceImpl implements BookmarkRemoteDataSource {
   @override
   Stream<List<BookmarkEntity>> getBookmark(BookmarkEntity bookmark) {
     final bookmarkCollection = fireStore
-        .collection("users")
+        .collection(FirebaseConst.users)
         .doc(bookmark.uid)
-        .collection("bookmarks")
+        .collection(FirebaseConst.bookmarks)
         .orderBy("createdAt", descending: true);
     return bookmarkCollection
         .snapshots()
@@ -44,7 +45,7 @@ class BookmarkRemoteDataSourceImpl implements BookmarkRemoteDataSource {
 
   @override
   Future<void> removeBookmark(BookmarkEntity bookmark) async {
-    final bookmarkCollection = fireStore.collection("users").doc(bookmark.uid).collection("bookmarks");
+    final bookmarkCollection = fireStore.collection(FirebaseConst.users).doc(bookmark.uid).collection(FirebaseConst.bookmarks);
     try {
       await bookmarkCollection.doc(bookmark.postId).delete();
     } catch (e) {

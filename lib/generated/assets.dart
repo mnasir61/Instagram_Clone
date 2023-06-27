@@ -2,7 +2,9 @@
 class Assets {
   Assets._();
 
+  static const String assetsLocalDefaultProfile = 'assets/local/default_profile.png';
   static const String localDefaultProfile = 'assets/local/default_profile.png';
+  static const String localInstaAppLogo = 'assets/local/insta_app_logo.png';
   static const String localInstagramPost = 'assets/local/instagram_post.png';
   static const String mainInstaLogo = 'assets/main/insta_logo.svg';
   static const String mainInstaLogoOutline = 'assets/main/insta_logo_outline.svg';

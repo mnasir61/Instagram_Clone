@@ -19,7 +19,7 @@ class TextMessageEntity extends Equatable {
 
   final String? messageType;
   final String? content;
-  final Timestamp? time;
+  final Timestamp? createdAt;
   final String? messageId;
   final bool? isSeen;
 
@@ -32,7 +32,7 @@ class TextMessageEntity extends Equatable {
       this.recipientImageUrl,
       this.messageType,
       this.content,
-      this.time,
+      this.createdAt,
       this.messageId,
       this.isSeen,
       this.repliedTo,
@@ -49,7 +49,7 @@ class TextMessageEntity extends Equatable {
         recipientImageUrl,
         messageType,
         content,
-        time,
+    createdAt,
         messageId,
         isSeen,
         repliedTo,

@@ -1,24 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable_text/expandable_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
-import 'package:instagram_clone/features/bookmark/domain/bookmark_usecases/get_bookmark_usecase.dart';
 import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
-import 'package:instagram_clone/core/app_entity.dart';
+import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/pages/widgets/like_animation_widget.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
-import 'package:instagram_clone/features/user/profile_page/presentation/pages/widgets/profile_widget.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:instagram_clone/main_injection_container.dart' as di;
-
+import 'package:timeago/timeago.dart' as timeago;
 import 'show_bottom_model_sheet_widgets_data/current_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'show_bottom_model_sheet_widgets_data/other_user_more_options_show_bottom_model_sheet_widget_data.dart';
 import 'show_bottom_model_sheet_widgets_data/share_show_bottom_model_sheet_widget.dart';
@@ -95,7 +92,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   GestureDetector(
                     onTap: () {
                       widget.posts.creatorId == _currentUid
-                          ? _currentUserMoreOptionsShowBottomModelSheet(context,BookmarkEntity())
+                          ? _currentUserMoreOptionsShowBottomModelSheet(context, BookmarkEntity())
                           : _moreOptionShowBottomModelSheetWidget(context);
                     },
                     child: Container(
@@ -202,14 +199,15 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                   ),
                   BlocBuilder<BookmarkCubit, BookmarkState>(
                     builder: (context, bookmarkState) {
-                        final isBookmarked = bookmarkState is BookmarkLoaded &&
-                            bookmarkState.bookmarks.any((bookmark) => bookmark.postId == widget.posts.postId);
-                        return GestureDetector(
-                          onTap: _bookMarkPost,
-                          child: isBookmarked
-                              ? Icon(FontAwesomeIcons.solidBookmark)
-                              : Icon(FontAwesomeIcons.bookmark),
-                        );
+                      final isBookmarked = bookmarkState is BookmarkLoaded &&
+                          bookmarkState.bookmarks
+                              .any((bookmark) => bookmark.postId == widget.posts.postId);
+                      return GestureDetector(
+                        onTap: _bookMarkPost,
+                        child: isBookmarked
+                            ? Icon(FontAwesomeIcons.solidBookmark)
+                            : Icon(FontAwesomeIcons.bookmark),
+                      );
                     },
                   ),
                 ],
@@ -297,7 +295,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
     );
   }
 
-  void _currentUserMoreOptionsShowBottomModelSheet(BuildContext context,BookmarkEntity bookmark) {
+  void _currentUserMoreOptionsShowBottomModelSheet(BuildContext context, BookmarkEntity bookmark) {
     showModalBottomSheet(
       useSafeArea: true,
       showDragHandle: true,
@@ -345,7 +343,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
       createdAt: Timestamp.now(),
       uid: widget.currentUser.uid,
       postId: widget.posts.postId,
-          postImageUrl: widget.posts.postImageUrl,
+      postImageUrl: widget.posts.postImageUrl,
     ));
   }
 }

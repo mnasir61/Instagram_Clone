@@ -11,9 +11,11 @@ class ChatTextFormWidget extends StatefulWidget {
   final FocusNode? focusNode;
   final bool? isHintText;
   final void Function(String)? onFieldSubmit;
+  final String? Function(String?)? validator;
+  final TextInputAction? textInputAction;
 
   const ChatTextFormWidget(
-      {Key? key, this.controller, this.focusNode, this.onFieldSubmit, this.isHintText = false})
+      {Key? key, this.controller, this.focusNode, this.onFieldSubmit, this.isHintText = false,  this.textInputAction, this.validator})
       : super(key: key);
 
   @override
@@ -48,13 +50,11 @@ class _CommentSectionFormWidgetState extends State<ChatTextFormWidget> {
               Expanded(
                 child: TextFormField(
                   textCapitalization: TextCapitalization.sentences,
-                  textInputAction: TextInputAction.send,
+                  textInputAction: widget.textInputAction,
                   focusNode: widget.focusNode,
                   controller: widget.controller,
                   onFieldSubmitted: widget.onFieldSubmit,
-                  onTapOutside: (PointerDownEvent event) {
-                    widget.focusNode!.unfocus();
-                  },
+                  validator: widget.validator,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                       border: InputBorder.none,

@@ -1,12 +1,15 @@
+import 'package:instagram_clone/features/chat/domain/entities/engaged_user_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/my_chat_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/group_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/text_message_entity.dart';
 
 abstract class ChatRepository {
   //SingleChat
-  Future<void> createOneToOneChatChannel(MyChatEntity myChatEntity);
 
-  Stream<List<MyChatEntity>> getChats();
+  Future<void> addToMyChat(MyChatEntity myChat);
+  Future<String> createOneToOneChatChannel(EngagedUserEntity engagedUserEntity);
+
+  Stream<List<MyChatEntity>> getMyChats(String uid);
 
   Future<void> deleteOneToOneChatChannel(String channelId);
 
@@ -25,4 +28,7 @@ abstract class ChatRepository {
   Future<void> deleteGroupChatChannel(String channelId);
 
   Stream<List<GroupEntity>> getGroups();
+
+  //
+  Future<String> getChannelId(EngagedUserEntity engagedUserEntity);
 }

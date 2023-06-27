@@ -22,6 +22,7 @@ class UserEntity extends Equatable {
   final List? followings;
   final String? currentUserBio;
   final String? currentUserProfession;
+  final String? lastActivity;
 
   final String? password;
   final String? confirmPassword;
@@ -49,7 +50,8 @@ class UserEntity extends Equatable {
       this.token,
       this.totalNotifications,
       this.fullName,
-      this.accountType});
+      this.accountType,
+        this.lastActivity, });
 
   @override
   List<Object?> get props => [
@@ -74,6 +76,7 @@ class UserEntity extends Equatable {
     followers,
     followings,
         currentUserBio,
-        currentUserProfession
+        currentUserProfession,
+    lastActivity
       ];
 }

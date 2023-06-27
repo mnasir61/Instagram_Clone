@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:instagram_clone/core/error_message.dart';
-import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
-import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
@@ -61,15 +58,8 @@ class _HomePageState extends State<HomePage> {
         create: (context) => di.sl<PostCubit>()..getPosts(post: PostEntity()),
         child: BlocBuilder<PostCubit, PostState>(
           builder: (context, postState) {
-            if (postState is PostLoading) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (postState is PostFailure) {
-              toast("Some failures occurred while getting post");
-            }
             if (postState is PostLoaded) {
+              final posts = postState.posts;
               return ListView(
                 controller: _scrollController,
                 children: [
@@ -106,12 +96,12 @@ class _HomePageState extends State<HomePage> {
                               physics: ScrollPhysics(),
                               itemCount: postState.posts.length,
                               itemBuilder: (context, index) {
-                                final posts = postState.posts[index];
+                                final singlePosts = posts[index];
                                 return BlocProvider<PostCubit>(
                                   create: (context) => di.sl<PostCubit>(),
                                   child: SinglePostWidget(
                                     currentUser: widget.currentUser,
-                                    posts: posts,
+                                    posts: singlePosts,
                                   ),
                                 );
                               },
@@ -166,8 +156,9 @@ class _HomePageState extends State<HomePage> {
         Padding(
           padding: const EdgeInsets.only(right: 15.0, left: 15),
           child: GestureDetector(
-            onTap: (){
-              Navigator.pushNamed(context, PageConsts.chatMainPage);
+            onTap: () {
+              Navigator.pushNamed(context, PageConsts.chatMainPage,
+                  arguments: widget.currentUser.uid);
             },
             child: Icon(
               FontAwesomeIcons.facebookMessenger,
