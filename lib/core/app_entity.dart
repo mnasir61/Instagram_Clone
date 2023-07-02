@@ -25,6 +25,8 @@ class AppEntity {
   final String? postId;
   final String? selectedImagePath;
 
+
+
   AppEntity(
       {this.channelId,
       this.senderUid,

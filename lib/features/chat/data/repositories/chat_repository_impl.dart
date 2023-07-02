@@ -53,4 +53,7 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<void> addToMyChat(MyChatEntity myChat)async=>remoteDataSource.addToMyChat(myChat);
+
+  @override
+  Future<void> updateMyChat(MyChatEntity myChatEntity) async=>remoteDataSource.updateMyChat(myChatEntity);
 }

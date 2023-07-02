@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/engaged_user_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/my_chat_entity.dart';
+import 'package:instagram_clone/features/chat/domain/entities/text_message_entity.dart';
 import 'package:instagram_clone/features/chat/domain/use_cases/create_one_to_one_chat_usecase.dart';
 import 'package:instagram_clone/features/chat/presentation/cubit/my_chat/my_chat_cubit.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
@@ -49,7 +51,7 @@ class _PrimaryChatPageState extends State<PrimaryChatPage> {
                         itemBuilder: (context, index) {
                           final singleChat = chats[index];
                           final singleUser  = allUsers[index];
-                          final activeStatus = getActiveStatus(singleUser);
+                          final activeStatus = getActiveStatus(singleUser,singleChat);
                           return InkWell(
                             onLongPress: () {
                               _userOptionPage(context, singleChat);
@@ -240,26 +242,28 @@ class _PrimaryChatPageState extends State<PrimaryChatPage> {
       },
     );
   }
-  String getActiveStatus(UserEntity user) {
-    final now = DateTime.now();
-    final lastActivity = user.lastActivity ?? now;
-    final lastActivityDateTime = DateTime.parse(lastActivity.toString());
-    final difference = now.difference(lastActivityDateTime);
 
-    if (user.isOnline!) {
-      return 'Active Now';
-    } else if (difference.inMinutes <= 4) {
-      return 'Active a moment ago';
-    } else if (difference.inMinutes < 60) {
-      return 'Active ${difference.inMinutes} minutes ago';
-    } else if (difference.inHours < 24) {
-      return 'Active ${difference.inHours} hours ago';
-    } else if (difference.inDays == 1) {
-      return 'Active yesterday';
-    } else {
-      return 'Active ${timeago.format(now.subtract(difference), locale: 'en')} ago';
+  String getActiveStatus(UserEntity user, MyChatEntity myChatEntity) {
+    if (user.isOnline == true) {
+      return 'Active now';
+    } else if (myChatEntity.createdAt != null) {
+      final lastActiveDateTime = (myChatEntity.createdAt as Timestamp).toDate();
+      final difference = DateTime.now().difference(lastActiveDateTime);
+      if (difference.inMinutes <= 10) {
+        return 'Active a moment ago';
+      } else if (difference.inMinutes <= 60) {
+        return 'Active ${difference.inMinutes}m ago';
+      } else if (difference.inHours <= 24) {
+        return 'Active ${difference.inHours}h ago';
+      } else if (difference.inDays == 1) {
+        return 'Active yesterday';
+      }
     }
+    return '${myChatEntity.recentTextMessage}';
   }
+
+
+
 
 
 

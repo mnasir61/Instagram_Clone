@@ -111,9 +111,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Future<void> deleteOneToOneChatChannel(String channelId) {
-    // TODO: implement deleteOneToOneChatChannel
-    throw UnimplementedError();
+  Future<void> deleteOneToOneChatChannel(String channelId) async{
+    final oneToOneChatChannel = fireStore.collection(FirebaseConst.oneToOneChatChannel);
+    await oneToOneChatChannel.doc(channelId).delete();
+
+    // final senderCollection = fireStore.collection(FirebaseConst.users).doc("senderUid");
+    // await senderCollection.collection(FirebaseConst.chatChannel).doc(channelId).delete();
   }
 
   @override
@@ -173,7 +176,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .collection(FirebaseConst.oneToOneChatChannel)
         .doc(channelId)
         .collection(FirebaseConst.messages);
-    return messageCollection.orderBy("createdAt")
+    return messageCollection.orderBy("createdAt",descending: false)
         .snapshots()
         .map((querySnap) => querySnap.docs.map((e) => TextMessageModel.fromSnapshot(e)).toList());
   }
@@ -214,4 +217,38 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     // TODO: implement updateGroupChat
     throw UnimplementedError();
   }
+  @override
+  Future<void> updateMyChat(MyChatEntity myChatEntity) async {
+    final myChatRef = fireStore
+        .collection(FirebaseConst.users)
+        .doc(myChatEntity.senderUid)
+        .collection(FirebaseConst.myChat)
+        .doc(myChatEntity.recipientUid);
+
+    final otherChatRef = fireStore
+        .collection(FirebaseConst.users)
+        .doc(myChatEntity.recipientUid)
+        .collection(FirebaseConst.myChat)
+        .doc(myChatEntity.senderUid);
+
+    final myChatData = {
+      'recentTextMessage': myChatEntity.recentTextMessage,
+      'isRead': myChatEntity.isRead,
+      'totalUnreadMessage': myChatEntity.totalUnreadMessage,
+    };
+
+    final otherChatData = {
+      'recentTextMessage': myChatEntity.recentTextMessage,
+      'isRead': myChatEntity.isRead,
+      'totalUnreadMessage': myChatEntity.totalUnreadMessage,
+    };
+
+    try {
+      await myChatRef.update(myChatData);
+      await otherChatRef.update(otherChatData);
+    } catch (e) {
+      print('Error updating my chat: $e');
+    }
+  }
+
 }

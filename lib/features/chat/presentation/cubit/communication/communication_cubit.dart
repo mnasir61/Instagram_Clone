@@ -14,6 +14,7 @@ import 'package:instagram_clone/features/chat/domain/use_cases/get_channel_id_us
 import 'package:instagram_clone/features/chat/domain/use_cases/get_messages_usecase.dart';
 import 'package:instagram_clone/features/chat/domain/use_cases/get_my_chats_usecase.dart';
 import 'package:instagram_clone/features/chat/domain/use_cases/send_text_message_usecase.dart';
+import 'package:instagram_clone/features/chat/domain/use_cases/update_my_chat_usecase.dart';
 
 part 'communication_state.dart';
 
@@ -27,6 +28,7 @@ class CommunicationCubit extends Cubit<CommunicationState> {
   final DeleteOneToOneChatChannelUseCase deleteOneToOneChatChannelUseCase;
   final GetChannelIdUseCase getChannelIdUseCase;
   final GetMyChatUseCase getMyChatUseCase;
+  final UpdateMyChatUseCase updateMyChatUseCase;
 
   CommunicationCubit(
       {required this.addToMyChatUseCase,
@@ -36,7 +38,8 @@ class CommunicationCubit extends Cubit<CommunicationState> {
       required this.getChannelIdUseCase,
       required this.getMessagesUseCase,
       required this.getMyChatUseCase,
-      required this.sendTextMessageUseCase})
+      required this.sendTextMessageUseCase,
+        required this.updateMyChatUseCase, })
       : super(CommunicationInitial());
 
   Future<void> sendTextMessage(
@@ -113,6 +116,16 @@ class CommunicationCubit extends Cubit<CommunicationState> {
     } on SocketException {
       emit(CommunicationFailure());
     } catch (e) {
+      emit(CommunicationFailure());
+    }
+  }
+
+  Future<void> updateMyChat({required MyChatEntity myChatEntity})async{
+    try{
+      await updateMyChatUseCase.call(myChatEntity);
+    }on SocketException{
+      emit(CommunicationFailure());
+    }catch(e){
       emit(CommunicationFailure());
     }
   }

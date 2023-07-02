@@ -10,6 +10,7 @@ import 'package:instagram_clone/features/chat/domain/use_cases/get_channel_id_us
 import 'package:instagram_clone/features/chat/domain/use_cases/get_messages_usecase.dart';
 import 'package:instagram_clone/features/chat/domain/use_cases/get_my_chats_usecase.dart';
 import 'package:instagram_clone/features/chat/domain/use_cases/send_text_message_usecase.dart';
+import 'package:instagram_clone/features/chat/domain/use_cases/update_my_chat_usecase.dart';
 import 'package:instagram_clone/features/chat/presentation/cubit/communication/communication_cubit.dart';
 import 'package:instagram_clone/features/chat/presentation/cubit/my_chat/my_chat_cubit.dart';
 import 'package:instagram_clone/main_injection_container.dart';
@@ -24,7 +25,8 @@ Future<void> chatInjectionContainer() async {
       getChannelIdUseCase: sl.call(),
       getMessagesUseCase: sl.call(),
       getMyChatUseCase: sl.call(),
-      sendTextMessageUseCase: sl.call()));
+      sendTextMessageUseCase: sl.call(),
+      updateMyChatUseCase: sl.call()));
 
   sl.registerFactory<MyChatCubit>(() => MyChatCubit(getMyChatUseCase: sl.call()));
   //UseCase
@@ -40,6 +42,7 @@ Future<void> chatInjectionContainer() async {
   sl.registerLazySingleton<GetMyChatUseCase>(() => GetMyChatUseCase(repository: sl.call()));
   sl.registerLazySingleton<SendTextMessageUseCase>(
       () => SendTextMessageUseCase(repository: sl.call()));
+  sl.registerLazySingleton<UpdateMyChatUseCase>(() => UpdateMyChatUseCase(repository: sl.call()));
 
   //Repository
   sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(remoteDataSource: sl.call()));

@@ -10,6 +10,8 @@ abstract class ChatRemoteDataSource {
   Future<String> createOneToOneChatChannel(EngagedUserEntity engagedUserEntity);
 
   Stream<List<MyChatEntity>> getMyChats(String uid);
+  Future<void> updateMyChat(MyChatEntity myChatEntity);
+
 
   Future<void> deleteOneToOneChatChannel(String channelId);
 
