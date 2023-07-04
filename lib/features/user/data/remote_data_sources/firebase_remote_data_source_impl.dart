@@ -90,7 +90,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
     final userCollection = fireStore.collection(FirebaseConst.users);
 
     return userCollection
-        // .where("uid", isNotEqualTo: user.uid)
+        .where("uid", isNotEqualTo: user.uid)
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
   }

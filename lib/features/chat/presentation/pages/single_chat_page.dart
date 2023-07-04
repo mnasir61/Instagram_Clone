@@ -13,6 +13,7 @@ import 'package:instagram_clone/features/chat/domain/use_cases/get_channel_id_us
 import 'package:instagram_clone/features/chat/presentation/cubit/communication/communication_cubit.dart';
 import 'package:instagram_clone/features/chat/presentation/cubit/my_chat/my_chat_cubit.dart';
 import 'package:instagram_clone/features/chat/presentation/widgets/chat_text_fom_widget.dart';
+import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/global/widgets/profile_widget.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
@@ -99,60 +100,65 @@ class _SingleChatPageState extends State<SingleChatPage> {
                         foregroundColor: Colors.black,
                         backgroundColor: Colors.white,
                         elevation: 0,
-                        title: Row(
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  height: 30,
-                                  width: 30,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(30),
-                                    child: profileWidget(imageUrl: "${otherUserData.profileUrl}"),
+                        title: GestureDetector(
+                          onTap: (){
+                            Navigator.pushNamed(context, PageConsts.singleUserProfilePage,arguments: otherUserData.uid);
+                          },
+                          child: Row(
+                            children: [
+                              Stack(
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    width: 30,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(30),
+                                      child: profileWidget(imageUrl: "${otherUserData.profileUrl}"),
+                                    ),
                                   ),
-                                ),
-                                if (otherUserData.isOnline == true)
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      maxRadius: 6,
-                                      minRadius: 6,
-                                      child: Container(
-                                        width: 8,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                          color: Colors.green,
-                                          shape: BoxShape.circle,
+                                  if (otherUserData.isOnline == true)
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        maxRadius: 6,
+                                        minRadius: 6,
+                                        child: Container(
+                                          width: 8,
+                                          height: 8,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            shape: BoxShape.circle,
+                                          ),
                                         ),
                                       ),
                                     ),
+                                ],
+                              ),
+                              horizontalSize(10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: MediaQuery.sizeOf(context).width * .3,
+                                    child: Text(
+                                      overflow: TextOverflow.ellipsis,
+                                      "${otherUserData.fullName}",
+                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                    ),
                                   ),
-                              ],
-                            ),
-                            horizontalSize(10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: MediaQuery.sizeOf(context).width * .3,
-                                  child: Text(
-                                    overflow: TextOverflow.ellipsis,
-                                    "${otherUserData.fullName}",
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                  Text(
+                                    "$activeStatus",
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black.withOpacity(.5)),
                                   ),
-                                ),
-                                Text(
-                                  "$activeStatus",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black.withOpacity(.5)),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         actions: [
                           GestureDetector(

@@ -7,7 +7,9 @@ import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/search/presentation/pages/widgets/search_field_widget.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/user/get_users_cubit.dart';
+import 'package:instagram_clone/main_injection_container.dart'as di;
 
 class SearchPageMainWidget extends StatefulWidget {
   const SearchPageMainWidget({Key? key}) : super(key: key);
@@ -18,13 +20,18 @@ class SearchPageMainWidget extends StatefulWidget {
 
 class _SearchPageMainWidgetState extends State<SearchPageMainWidget> {
   TextEditingController _searchController = TextEditingController();
-
+  String _currentUid = "";
   @override
   void initState() {
     BlocProvider.of<GetUsersCubit>(context).getAllUsers(user: UserEntity());
     BlocProvider.of<PostCubit>(context).getPosts(post: PostEntity());
     _searchController.addListener(() {
       setState(() {});
+    });
+    di.sl<GetCurrentUidUseCase>().call().then((value) {
+      setState(() {
+        _currentUid = value;
+      });
     });
     super.initState();
   }
@@ -34,6 +41,9 @@ class _SearchPageMainWidgetState extends State<SearchPageMainWidget> {
     _searchController.dispose();
     super.dispose();
   }
+
+
+
 
 
   @override
