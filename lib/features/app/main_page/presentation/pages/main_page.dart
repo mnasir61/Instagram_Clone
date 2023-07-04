@@ -41,83 +41,94 @@ class _MainPageState extends State<MainPage> {
       builder: (context, state) {
         if (state is GetSingleUserLoaded) {
           final currentUser = state.singleUser;
-          return Scaffold(
-            key: _scaffoldState,
-            bottomNavigationBar: BottomNavigationBar(
-              backgroundColor: Colors.white,
-              currentIndex: _currentPageIndex,
-              onTap: (index) {
+          return WillPopScope(
+            onWillPop: () async{
+              if(_currentPageIndex!=0){
                 setState(() {
-                  _currentPageIndex = index;
+                  _currentPageIndex=0;
                 });
-              },
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Styles.colorBlack,
-              selectedLabelStyle: TextStyle(color: Colors.black, fontSize: 12),
-              unselectedItemColor: Styles.colorBlack,
-              unselectedLabelStyle: TextStyle(color: Colors.grey, fontSize: 12),
-              showUnselectedLabels: false,
-              showSelectedLabels: false,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
-                  label: "Home",
-                  activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(FluentSystemIcons.ic_fluent_search_regular),
-                  label: "Search",
-                  activeIcon: Icon(FluentSystemIcons.ic_fluent_search_filled),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(FluentSystemIcons.ic_fluent_add_circle_regular),
-                  label: "Post",
-                  activeIcon: Icon(FluentSystemIcons.ic_fluent_add_circle_filled),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(FluentSystemIcons.ic_fluent_video_clip_regular),
-                  label: "Reels",
-                  activeIcon: Icon(FluentSystemIcons.ic_fluent_video_clip_filled),
-                ),
-                currentUser.profileUrl == "" || currentUser.profileUrl == null
-                    ? BottomNavigationBarItem(
-                        icon: Icon(FluentSystemIcons.ic_fluent_person_regular),
-                        label: "Profile",
-                        activeIcon: Icon(FluentSystemIcons.ic_fluent_person_filled),
-                      )
-                    : _currentPageIndex == 4
-                        ? BottomNavigationBarItem(
-                            label: "Profile",
-                            icon: Container(
-                              height: 27,
-                              width: 27,
-                              decoration: BoxDecoration(
+                return false;
+              }
+              return true;
+            },
+            child: Scaffold(
+              key: _scaffoldState,
+              bottomNavigationBar: BottomNavigationBar(
+                backgroundColor: Colors.white,
+                currentIndex: _currentPageIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentPageIndex = index;
+                  });
+                },
+                elevation: 0,
+                type: BottomNavigationBarType.fixed,
+                selectedItemColor: Styles.colorBlack,
+                selectedLabelStyle: TextStyle(color: Colors.black, fontSize: 12),
+                unselectedItemColor: Styles.colorBlack,
+                unselectedLabelStyle: TextStyle(color: Colors.grey, fontSize: 12),
+                showUnselectedLabels: false,
+                showSelectedLabels: false,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
+                    label: "Home",
+                    activeIcon: Icon(FluentSystemIcons.ic_fluent_home_filled),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(FluentSystemIcons.ic_fluent_search_regular),
+                    label: "Search",
+                    activeIcon: Icon(FluentSystemIcons.ic_fluent_search_filled),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(FluentSystemIcons.ic_fluent_add_circle_regular),
+                    label: "Post",
+                    activeIcon: Icon(FluentSystemIcons.ic_fluent_add_circle_filled),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(FluentSystemIcons.ic_fluent_video_clip_regular),
+                    label: "Reels",
+                    activeIcon: Icon(FluentSystemIcons.ic_fluent_video_clip_filled),
+                  ),
+                  currentUser.profileUrl == "" || currentUser.profileUrl == null
+                      ? BottomNavigationBarItem(
+                          icon: Icon(FluentSystemIcons.ic_fluent_person_regular),
+                          label: "Profile",
+                          activeIcon: Icon(FluentSystemIcons.ic_fluent_person_filled),
+                        )
+                      : _currentPageIndex == 4
+                          ? BottomNavigationBarItem(
+                              label: "Profile",
+                              icon: Container(
+                                height: 27,
+                                width: 27,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(color: Colors.black, width: 2)),
+                                child: ClipRRect(
                                   borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(color: Colors.black, width: 2)),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: profileWidget(imageUrl: currentUser.profileUrl),
+                                  child: profileWidget(imageUrl: currentUser.profileUrl),
+                                ),
+                              ),
+                            )
+                          : BottomNavigationBarItem(
+                              label: "Profile",
+                              icon: Container(
+                                height: 27,
+                                width: 27,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: profileWidget(imageUrl: currentUser.profileUrl),
+                                ),
                               ),
                             ),
-                          )
-                        : BottomNavigationBarItem(
-                            label: "Profile",
-                            icon: Container(
-                              height: 27,
-                              width: 27,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: profileWidget(imageUrl: currentUser.profileUrl),
-                              ),
-                            ),
-                          ),
-              ],
+                ],
+              ),
+              body: _switchPage(_currentPageIndex, currentUser),
             ),
-            body: _switchPage(_currentPageIndex, currentUser),
           );
         }
         return CircularProgressIndicatorWidget();

@@ -120,7 +120,8 @@ class _UploadPostMainWidgetState extends State<UploadPostMainWidget> {
     setState(() {
       _isUpdating = false;
       _descController.clear();
-      Navigator.pop(context);
+      Navigator.pushNamedAndRemoveUntil(context, PageConsts.mainPage, (route) => false,
+          arguments: widget.appEntity.currentUser!.uid);
     });
   }
 }

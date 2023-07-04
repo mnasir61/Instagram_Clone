@@ -1,16 +1,17 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_storage_path/flutter_storage_path.dart';
 import 'package:instagram_clone/features/global/const/firebase_const.dart';
-import 'package:instagram_clone/features/global/const/firebase_const.dart';
-import 'package:instagram_clone/features/global/const/firebase_const.dart';
-import 'package:instagram_clone/features/global/const/firebase_const.dart';
-import 'package:instagram_clone/features/global/const/firebase_const.dart';
-import 'package:instagram_clone/features/global/const/firebase_const.dart';
+import 'package:instagram_clone/features/post/data/models/file_model.dart';
 import 'package:instagram_clone/features/post/data/models/post_model.dart';
 import 'package:instagram_clone/features/post/data/remote_data_sources/post_remote_data_source.dart';
+import 'package:instagram_clone/features/post/domain/entities/file_entity.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
+
 
 class PostRemoteDataSourceImpl implements PostRemoteDataSource {
   final FirebaseFirestore fireStore;
@@ -41,9 +42,9 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
           final userCollection = fireStore.collection(FirebaseConst.users).doc(post.creatorId);
 
           userCollection.get().then((value) {
-            if(value.exists){
+            if (value.exists) {
               final totalPosts = value.get("totalPosts");
-              userCollection.update({"totalPosts":totalPosts+1});
+              userCollection.update({"totalPosts": totalPosts + 1});
             }
           });
         });
@@ -63,9 +64,9 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
         final userCollection = fireStore.collection(FirebaseConst.users).doc(post.creatorId);
 
         userCollection.get().then((value) {
-          if(value.exists){
+          if (value.exists) {
             final totalPosts = value.get("totalPosts");
-            userCollection.update({"totalPosts":totalPosts-1});
+            userCollection.update({"totalPosts": totalPosts - 1});
           }
         });
       });
@@ -98,7 +99,8 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
 
   @override
   Stream<List<PostEntity>> readPost(PostEntity post) {
-    final postCollectionRef = fireStore.collection(FirebaseConst.posts).orderBy("createdAt", descending: true);
+    final postCollectionRef =
+        fireStore.collection(FirebaseConst.posts).orderBy("createdAt", descending: true);
     return postCollectionRef
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((e) => PostModel.fromSnapshot(e)).toList());
@@ -124,5 +126,38 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
     return postCollectionRef
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((e) => PostModel.fromSnapshot(e)).toList());
+  }
+
+  @override
+  Future<List<FileEntity>> getFiles() async {
+    var imagePath = await StoragePath.imagesPath;
+    var videoPath = await StoragePath.videoPath;
+    var imageFiles = jsonDecode(imagePath!);
+    var videoFiles = jsonDecode(videoPath!);
+    var combinedFiles = [...imageFiles, ...videoFiles];
+
+    var fileModels = combinedFiles
+        .map<FileModel>((e) => FileModel.fromSnapshot(e))
+        .toList();
+
+    // Get the selected image path from the first file model
+    String? selectedImagePath = fileModels.isNotEmpty ? fileModels[0].imagePath : null;
+
+    // Create the selected image entity using the selected image path
+    FileModel selectedImage = FileModel(imagePath: selectedImagePath);
+
+    // Convert the file models to file entities
+    var fileEntities = fileModels.cast<FileEntity>();
+
+    // Add the selected image entity as the first element in the list
+    fileEntities.insert(0, selectedImage);
+
+    return fileEntities;
+  }
+
+
+  @override
+  Future<FileEntity> getSelectedImage(String imagePath) async {
+    return FileEntity(imagePath: imagePath);
   }
 }

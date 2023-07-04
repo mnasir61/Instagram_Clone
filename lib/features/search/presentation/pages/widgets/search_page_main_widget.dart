@@ -23,9 +23,9 @@ class _SearchPageMainWidgetState extends State<SearchPageMainWidget> {
   void initState() {
     BlocProvider.of<GetUsersCubit>(context).getAllUsers(user: UserEntity());
     BlocProvider.of<PostCubit>(context).getPosts(post: PostEntity());
-    _searchController.addListener(() { setState(() {
-
-    });});
+    _searchController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -35,106 +35,111 @@ class _SearchPageMainWidgetState extends State<SearchPageMainWidget> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Styles.colorWhite,
-        body: BlocBuilder<GetUsersCubit, GetUsersState>(
-          builder: (context, userState) {
-            if (userState is GetUsersLoaded) {
-              final filterAllUsers = userState.users
-                  .where((user) =>
-                      user.username!.startsWith(_searchController.text) ||
-                      user.username!.toLowerCase().startsWith(_searchController.text.toLowerCase()) ||
-                      user.username!.contains(_searchController.text) ||
-                      user.username!.toLowerCase().contains(_searchController.text.toLowerCase()))
-                  .toList();
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: SearchFieldWidget(
-                      controller: _searchController,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Styles.colorWhite,
+          body: BlocBuilder<GetUsersCubit, GetUsersState>(
+            builder: (context, userState) {
+              if (userState is GetUsersLoaded) {
+                final filterAllUsers = userState.users
+                    .where((user) =>
+                user.username!.startsWith(_searchController.text) ||
+                    user.username!.toLowerCase().startsWith(_searchController.text.toLowerCase()) ||
+                    user.username!.contains(_searchController.text) ||
+                    user.username!.toLowerCase().contains(_searchController.text.toLowerCase()))
+                    .toList();
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: SearchFieldWidget(
+                        controller: _searchController,
+                      ),
                     ),
-                  ),
-                  _searchController.text.isNotEmpty
-                      ? Expanded(
-                          child: ListView.builder(
-                          itemCount: filterAllUsers.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, PageConsts.singleUserProfilePage,
-                                    arguments: filterAllUsers[index].uid);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.symmetric(vertical: 10),
-                                      width: 40,
-                                      height: 40,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: profileWidget(imageUrl: filterAllUsers[index].profileUrl),
-                                      ),
-                                    ),
-                                    horizontalSize(10),
-                                    Text(
-                                      "${filterAllUsers[index].username}",
-                                      style: TextStyle(
-                                          color: Styles.colorBlack,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ))
-                      : Expanded(
-                          child: BlocBuilder<PostCubit, PostState>(
-                            builder: (context, postState) {
-                              if (postState is PostLoaded) {
-                                final posts = postState.posts;
-                                return GridView.builder(
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 5),
-                                  itemCount: posts.length,
-                                  shrinkWrap: true,
-                                  physics: ScrollPhysics(),
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(context, PageConsts.postDetailPage,
-                                            arguments: posts[index].postId);
-                                      },
-                                      child: Container(
-                                        height: 100,
-                                        width: MediaQuery.of(context).size.width * 45,
-                                        child: profileWidget(imageUrl: posts[index].postImageUrl),
-                                      ),
-                                    );
-                                  },
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
+                    _searchController.text.isNotEmpty
+                        ? Expanded(
+                      child: ListView.builder(
+                        itemCount: filterAllUsers.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, PageConsts.singleUserProfilePage,
+                                  arguments: filterAllUsers[index].uid);
                             },
-                          ),
-                        ),
-                ],
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.symmetric(vertical: 10),
+                                    width: 40,
+                                    height: 40,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: profileWidget(imageUrl: filterAllUsers[index].profileUrl),
+                                    ),
+                                  ),
+                                  horizontalSize(10),
+                                  Text(
+                                    "${filterAllUsers[index].username}",
+                                    style: TextStyle(
+                                        color: Styles.colorBlack,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                        : Expanded(
+                      child: BlocBuilder<PostCubit, PostState>(
+                        builder: (context, postState) {
+                          if (postState is PostLoaded) {
+                            final posts = postState.posts;
+                            return GridView.builder(
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 5),
+                              itemCount: posts.length,
+                              shrinkWrap: true,
+                              physics: ScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, PageConsts.postDetailPage,
+                                        arguments: posts[index].postId);
+                                  },
+                                  child: Container(
+                                    height: 100,
+                                    width: MediaQuery.of(context).size.width * 45,
+                                    child: profileWidget(imageUrl: posts[index].postImageUrl),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return Center(
+                child: CircularProgressIndicator(),
               );
-            }
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          },
+            },
+          ),
         ),
       ),
     );

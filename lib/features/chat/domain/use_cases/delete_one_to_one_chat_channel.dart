@@ -8,7 +8,7 @@ class DeleteOneToOneChatChannelUseCase {
 
   DeleteOneToOneChatChannelUseCase({required this.repository});
 
-  Future<void> call(String channelId) {
-    return repository.deleteOneToOneChatChannel(channelId);
+  Future<void> call(String channelId,MyChatEntity myChatEntity) {
+    return repository.deleteOneToOneChatChannel(channelId,myChatEntity);
   }
 }

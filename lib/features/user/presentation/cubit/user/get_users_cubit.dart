@@ -38,6 +38,7 @@ class GetUsersCubit extends Cubit<GetUsersState> {
     try {
       await updateUserUseCase.call(user);
     } on SocketException catch (_) {
+
       emit(GetUsersFailure());
     } catch (_) {
       emit(GetUsersFailure());
@@ -47,6 +48,7 @@ class GetUsersCubit extends Cubit<GetUsersState> {
   Future<void> followUnfollow({required UserEntity user}) async {
     try {
       await followUnfollowUserUseCase.call(user);
+
     } on SocketException catch (_) {
       emit(GetUsersFailure());
     } catch (_) {

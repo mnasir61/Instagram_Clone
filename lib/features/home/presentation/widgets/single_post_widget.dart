@@ -93,7 +93,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
                     onTap: () {
                       widget.posts.creatorId == _currentUid
                           ? _currentUserMoreOptionsShowBottomModelSheet(context, BookmarkEntity())
-                          : _moreOptionShowBottomModelSheetWidget(context);
+                          : _moreOptionShowBottomModelSheetWidget(context, BookmarkEntity());
                     },
                     child: Container(
                       height: 40,
@@ -267,7 +267,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
     );
   }
 
-  void _moreOptionShowBottomModelSheetWidget(BuildContext context) {
+  void _moreOptionShowBottomModelSheetWidget(BuildContext context, BookmarkEntity bookmark) {
     showModalBottomSheet(
       showDragHandle: true,
       isScrollControlled: true,
@@ -276,7 +276,7 @@ class _SinglePostWidgetState extends State<SinglePostWidget> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
-        return OtherUserMoreOptionsModelSheetData();
+        return OtherUserMoreOptionsModelSheetData(bookmarks: bookmark, posts: widget.posts);
       },
     );
   }

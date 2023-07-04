@@ -58,7 +58,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         totalFollowings: user.totalFollowings,
         totalFollowers: user.totalFollowers,
         dateOfBirth: user.dateOfBirth,
-        lastActivity:user.lastActivity,
+        lastActivity: user.lastActivity,
       ).toDocument();
       if (!userDoc.exists) {
         userCollection.doc(uid).set(newUser);
@@ -182,6 +182,8 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
 
     if (user.profileUrl != "" && user.profileUrl != null) userInfo['profileUrl'] = user.profileUrl;
     if (user.username != "" && user.username != null) userInfo['username'] = user.username;
+    if (user.lastActivity != "" && user.lastActivity != null)
+      userInfo['lastActivity'] = user.lastActivity;
     if (user.fullName != "" && user.fullName != null) userInfo['fullName'] = user.fullName;
     if (user.currentUserProfession != "" && user.currentUserProfession != null)
       userInfo['currentUserProfession'] = user.currentUserProfession;

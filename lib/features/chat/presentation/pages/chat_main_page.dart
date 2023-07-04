@@ -112,9 +112,7 @@ class _ChatMainPageState extends State<ChatMainPage> {
                   builder: (context, usersState) {
                     if (usersState is GetUsersLoaded) {
                       final users = usersState.users;
-
                       final onlineOtherUsers = users;
-
                       return LayoutBuilder(
                         builder: (BuildContext context, BoxConstraints constraints) {
                           final onlineUsers = onlineOtherUsers

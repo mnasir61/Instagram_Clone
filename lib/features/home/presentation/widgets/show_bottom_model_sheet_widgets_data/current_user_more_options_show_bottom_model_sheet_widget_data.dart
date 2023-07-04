@@ -20,12 +20,11 @@ class CurrentUserMoreOptionsModelSheetData extends StatefulWidget {
 
   // final VoidCallback onTapBookmarkPost;
 
-  const CurrentUserMoreOptionsModelSheetData(
-      {Key? key,
-      required this.onTapToEditPost,
-      required this.onTapToDeletePost,
-      required this.posts,
-      required this.bookmarks})
+  const CurrentUserMoreOptionsModelSheetData({Key? key,
+    required this.onTapToEditPost,
+    required this.onTapToDeletePost,
+    required this.posts,
+    required this.bookmarks})
       : super(key: key);
 
   @override
@@ -62,20 +61,27 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
                     children: [
                       Column(
                         children: [
-                          GestureDetector(
-                            onTap: _bookMarkPost,
-                            child: Container(
-                                height: 70,
-                                width: 70,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(width: 1, color: Styles.colorBlack)),
-                                child: Icon(
-                                  widget.posts.postId == widget.bookmarks.postId
-                                      ? FontAwesomeIcons.solidBookmark
-                                      : FontAwesomeIcons.bookmark,
-                                  size: 28,
-                                )),
+                          BlocBuilder<BookmarkCubit, BookmarkState>(
+                            builder: (context, bookmarkState) {
+                              final isBookmarked = bookmarkState is BookmarkLoaded &&
+                                  bookmarkState.bookmarks
+                                      .any((bookmark) => bookmark.postId == widget.posts.postId);
+                              return GestureDetector(
+                                onTap: _bookMarkPost,
+                                child: Container(
+                                    height: 70,
+                                    width: 70,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(width: 1, color: Styles.colorBlack)),
+                                    child: Icon(
+                                      isBookmarked
+                                          ? FontAwesomeIcons.solidBookmark
+                                          : FontAwesomeIcons.bookmark,
+                                      size: 28,
+                                    )),
+                              );
+                            },
                           ),
                           verticalSize(5),
                           Text(
@@ -185,7 +191,7 @@ class _CurrentUserMoreOptionsModelSheetDataState extends State<CurrentUserMoreOp
   _bookMarkPost() {
     BlocProvider.of<BookmarkCubit>(context)
         .addBookmark(
-            bookmark: BookmarkEntity(
+        bookmark: BookmarkEntity(
           createdAt: Timestamp.now(),
           uid: _currentUid,
           postId: widget.posts.postId,

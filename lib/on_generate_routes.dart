@@ -7,6 +7,7 @@ import 'package:instagram_clone/features/chat/presentation/pages/request_chat_pa
 import 'package:instagram_clone/features/chat/presentation/pages/single_chat_page.dart';
 import 'package:instagram_clone/features/comment/presentation/comment_section_page.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
+import 'package:instagram_clone/features/home/presentation/home_page.dart';
 import 'package:instagram_clone/features/notification/notification_page.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/pages/edit_post_page.dart';
@@ -47,6 +48,14 @@ class OnGenerateRoute {
       case PageConsts.mainPage:
         if (args is String) {
           return routeBuilder(child: MainPage(uid: args));
+        } else {
+          return routeBuilder(
+            child: NoPageFound(),
+          );
+        }
+      case PageConsts.homePage:
+        if(args is UserEntity){
+          return routeBuilder(child: HomePage(currentUser: args));
         } else {
           return routeBuilder(
             child: NoPageFound(),

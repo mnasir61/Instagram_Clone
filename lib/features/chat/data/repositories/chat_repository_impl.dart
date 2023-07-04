@@ -19,8 +19,8 @@ class ChatRepositoryImpl implements ChatRepository {
       remoteDataSource.deleteGroupChatChannel(channelId);
 
   @override
-  Future<void> deleteOneToOneChatChannel(String channelId) async =>
-      remoteDataSource.deleteOneToOneChatChannel(channelId);
+  Future<void> deleteOneToOneChatChannel(String channelId,MyChatEntity myChatEntity) async =>
+      remoteDataSource.deleteOneToOneChatChannel(channelId,myChatEntity);
 
   @override
   Future<void> deleteSingleMessage(String messageId) async =>

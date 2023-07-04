@@ -28,13 +28,21 @@ class NewChatPage extends StatefulWidget {
 class _NewChatPageState extends State<NewChatPage> {
   final List<UserEntity> selectedUsers = [];
   int selectedIndex = 0;
+  bool isCheckBox = false;
   TextEditingController _searchController = TextEditingController();
+  TextEditingController _groupNameController = TextEditingController();
 
   @override
   void initState() {
     BlocProvider.of<GetUsersCubit>(context).getAllUsers(user: UserEntity());
     BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
     super.initState();
+  }
+  @override
+  void dispose() {
+    _groupNameController.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,7 +62,13 @@ class _NewChatPageState extends State<NewChatPage> {
                       foregroundColor: Colors.black,
                       backgroundColor: Colors.white,
                       elevation: 0,
-                      title: Text(
+                      title: selectedUsers.length>1?TextFormField(
+                        controller: _groupNameController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Your group name"
+                        ),
+                      ):Text(
                         "New message",
                         style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                       ),
@@ -70,12 +84,15 @@ class _NewChatPageState extends State<NewChatPage> {
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                           ),
                         ),
-                        selectedUsers.isEmpty?TextFormField(
-                          controller: _searchController,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                            hintText: "Search user",
-                            border: InputBorder.none,
+                        selectedUsers.isEmpty?Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 3.7),
+                          child: TextFormField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                              hintText: "Search user",
+                              border: InputBorder.none,
+                            ),
                           ),
                         ):LayoutBuilder(
                           builder: (BuildContext context, BoxConstraints constraints) {
@@ -131,82 +148,90 @@ class _NewChatPageState extends State<NewChatPage> {
                                       final singleUser = users[index];
                                       return Container(
                                         padding: EdgeInsets.symmetric(vertical: 10),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Stack(
-                                                  children: [
-                                                    Container(
-                                                      height: 50,
-                                                      width: 50,
-                                                      child: ClipRRect(
-                                                        borderRadius: BorderRadius.circular(40),
-                                                        child: profileWidget(
-                                                            imageUrl: "${singleUser.profileUrl}"),
+                                        child: CupertinoButton(padding: EdgeInsets.all(0),
+
+                                          onPressed: (){
+                                            setState(() {
+                                              if(selectedUsers.contains(singleUser)){
+                                                selectedUsers.remove(singleUser);
+                                              }else{
+                                                selectedUsers.add(singleUser);
+                                              }
+                                            });
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Stack(
+                                                    children: [
+                                                      Container(
+                                                        height: 50,
+                                                        width: 50,
+                                                        child: ClipRRect(
+                                                          borderRadius: BorderRadius.circular(40),
+                                                          child: profileWidget(
+                                                              imageUrl: "${singleUser.profileUrl}"),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    if (singleUser.isOnline == true)
-                                                      Positioned(
-                                                        bottom: 0,
-                                                        right: 0,
-                                                        child: CircleAvatar(
-                                                          backgroundColor: Colors.white,
-                                                          maxRadius: 6,
-                                                          minRadius: 6,
-                                                          child: Container(
-                                                            width: 8,
-                                                            height: 8,
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.green,
-                                                              shape: BoxShape.circle,
+                                                      if (singleUser.isOnline == true)
+                                                        Positioned(
+                                                          bottom: 0,
+                                                          right: 0,
+                                                          child: CircleAvatar(
+                                                            backgroundColor: Colors.white,
+                                                            maxRadius: 6,
+                                                            minRadius: 6,
+                                                            child: Container(
+                                                              width: 8,
+                                                              height: 8,
+                                                              decoration: BoxDecoration(
+                                                                color: Colors.green,
+                                                                shape: BoxShape.circle,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
+                                                    ],
+                                                  ),
+                                                  horizontalSize(15),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        "${singleUser.fullName}",
+                                                        style: TextStyle(fontWeight: FontWeight.w500,fontSize: 14,color: Colors.black),
                                                       ),
-                                                  ],
-                                                ),
-                                                horizontalSize(15),
-                                                Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "${singleUser.fullName}",
-                                                      style: TextStyle(fontWeight: FontWeight.w500),
-                                                    ),
-                                                    verticalSize(2),
-                                                    Text(
-                                                      "${singleUser.username}",
-                                                      style:
-                                                          TextStyle(color: Colors.black.withOpacity(.5)),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            Transform.scale(
-                                              scale: 1.2,
-                                              child: Checkbox(
-                                                checkColor: Colors.white,
-                                                value: selectedUsers.contains(singleUser),
-                                                shape: CircleBorder(),
-                                                onChanged: (bool? value) {
-                                                  setState(() {
-                                                    if (value!) {
-                                                      selectedUsers.add(singleUser);
-                                                    } else {
-                                                      selectedUsers.remove(singleUser);
-                                                    }
-                                                  });
-                                                },
+                                                      verticalSize(2),
+                                                      Text(
+                                                        "${singleUser.username}",
+                                                        style:
+                                                            TextStyle(fontSize: 14,color: Colors.black.withOpacity(.5)),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                          ],
+                                              Container(
+                                                height: 24,
+                                                width: 24,
+                                                decoration: selectedUsers.contains(singleUser)?BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    color: Colors.blue
+                                                ):BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    border: Border.all(width: 2,color: Colors.grey)
+                                                ),
+                                                child: selectedUsers.contains(singleUser)?Icon(CupertinoIcons.checkmark_alt,color: Colors.white,size: 26,):SizedBox(),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       );
                                     },
                                   ),
+
                                 ],
                               ),
                             ),
@@ -326,3 +351,4 @@ class _NewChatPageState extends State<NewChatPage> {
     }
   }
 }
+

@@ -139,7 +139,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
                       singlePost.creatorId == _currentUid
                           ? _currentUserMoreOptionsShowBottomModelSheet(
                               context, singlePost, BookmarkEntity())
-                          : _moreOptionShowBottomModelSheetWidget(context);
+                          : _moreOptionShowBottomModelSheetWidget(context, singlePost, BookmarkEntity());
                     },
                     child: Container(
                       height: 40,
@@ -307,7 +307,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
     );
   }
 
-  void _moreOptionShowBottomModelSheetWidget(BuildContext context) {
+  void _moreOptionShowBottomModelSheetWidget(BuildContext context, PostEntity posts, BookmarkEntity bookmarks) {
     showModalBottomSheet(
       showDragHandle: true,
       isScrollControlled: true,
@@ -316,7 +316,7 @@ class _PostDetailMainWidgetState extends State<PostDetailMainWidget> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
-        return OtherUserMoreOptionsModelSheetData();
+        return OtherUserMoreOptionsModelSheetData(posts: posts, bookmarks: bookmarks,);
       },
     );
   }

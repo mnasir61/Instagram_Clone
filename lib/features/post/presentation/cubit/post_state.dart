@@ -23,4 +23,19 @@ class PostFailure extends PostState {
   @override
   List<Object> get props => [];
 }
+class PostSelectedImageLoaded extends PostState {
+  final FileEntity selectedImage;
+
+  PostSelectedImageLoaded({ required this.selectedImage}); // New property
+  @override
+  List<Object> get props => [selectedImage];
+}
+class PostLoadedImage extends PostState {
+  final List<FileEntity> files;
+
+  PostLoadedImage({required this.files}); // New property
+  @override
+  List<Object> get props => [files];
+}
+
 

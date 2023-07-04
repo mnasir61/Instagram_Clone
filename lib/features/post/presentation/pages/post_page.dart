@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_storage_path/flutter_storage_path.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:instagram_clone/core/app_entity.dart';
@@ -24,7 +26,7 @@ class _PostPageState extends State<PostPage> {
   String? selectedImage;
   BoxFit fitMode = BoxFit.contain;
 
-  final image2 = ValueNotifier<String?>("");
+  final image = ValueNotifier<String?>("");
 
   @override
   void initState() {
@@ -34,7 +36,7 @@ class _PostPageState extends State<PostPage> {
         files = directoryData;
         if (files != null && files!.isNotEmpty) {
           selectedModel = files![0];
-          image2.value = selectedModel!.files![0];
+          image.value = selectedModel!.files![0];
           selectedImage = selectedModel!.files![0];
         }
       });
@@ -66,10 +68,10 @@ class _PostPageState extends State<PostPage> {
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, PageConsts.uploadPostPage, arguments:AppEntity(currentUser: widget.currentUser,selectedImagePath: selectedImage,));
-              },
-              child: Icon(FontAwesomeIcons.arrowRight, color: colorBlue, size: 20)
+                onTap: () {
+                  Navigator.pushNamed(context, PageConsts.uploadPostPage, arguments:AppEntity(currentUser: widget.currentUser,selectedImagePath: selectedImage,));
+                },
+                child: Icon(FontAwesomeIcons.arrowRight, color: colorBlue, size: 20)
             ),
           ),
         ],
@@ -80,7 +82,7 @@ class _PostPageState extends State<PostPage> {
           Container(
             height: MediaQuery.of(context).size.height * 0.45,
             child: ValueListenableBuilder<String?>(
-              valueListenable: image2,
+              valueListenable: image,
               builder: (BuildContext context, String? image, Widget? child) {
                 if (image != null && image.isNotEmpty) {
                   return Stack(
@@ -115,7 +117,7 @@ class _PostPageState extends State<PostPage> {
                                 color: Colors.grey.withOpacity(.5),
                               ),
                               child: Icon(
-                                Icons.code_rounded,
+                                fitMode == BoxFit.cover ? Icons.fullscreen_exit : Icons.fullscreen,
                                 size: 30,
                                 color: Colors.white,
                               ),
@@ -137,7 +139,7 @@ class _PostPageState extends State<PostPage> {
               children: [
                 Expanded(
                   child: ValueListenableBuilder<String?>(
-                    valueListenable: image2,
+                    valueListenable: image,
                     builder: (context, value, child) {
                       if (files == null || files!.isEmpty) {
                         return CircularProgressIndicator();
@@ -149,8 +151,8 @@ class _PostPageState extends State<PostPage> {
                               setState(() {
                                 selectedModel = newValue;
                                 selectedImage =
-                                    newValue?.files?.isNotEmpty == true ? newValue!.files![0] : null;
-                                image2.value = selectedImage;
+                                newValue?.files?.isNotEmpty == true ? newValue!.files![0] : null;
+                                image.value = selectedImage;
                               });
                             },
                             items: getItems(),
@@ -181,7 +183,7 @@ class _PostPageState extends State<PostPage> {
                     ),
                     onTap: () {
                       selectedImage = file;
-                      image2.value = selectedImage;
+                      image.value = selectedImage;
                     },
                   );
                 },
@@ -194,17 +196,18 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
+
   List<DropdownMenuItem<FileModel>> getItems() {
     return files?.map((value) {
-          return DropdownMenuItem<FileModel>(
-            child: Text(
-              value.folder! ?? "",
-              style: Styles.titleLine1
-                  .copyWith(color: colorBlue, fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            value: value,
-          );
-        }).toList() ??
+      return DropdownMenuItem<FileModel>(
+        child: Text(
+          value.folder! ?? "",
+          style: Styles.titleLine1
+              .copyWith(color: colorBlue, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        value: value,
+      );
+    }).toList() ??
         [];
   }
 }

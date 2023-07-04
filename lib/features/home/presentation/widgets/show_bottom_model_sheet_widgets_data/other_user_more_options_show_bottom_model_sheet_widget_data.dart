@@ -1,17 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:instagram_clone/features/bookmark/domain/bookmark_entity/bookmark_entity.dart';
+import 'package:instagram_clone/features/bookmark/presentation/bookmark_cubit/bookmark_cubit.dart';
 import 'package:instagram_clone/features/global/divider_widget.dart';
 import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
+import 'package:instagram_clone/features/user/domain/use_cases/get_current_uid_usecase.dart';
+import 'package:instagram_clone/main_injection_container.dart' as di;
+
 class OtherUserMoreOptionsModelSheetData extends StatefulWidget {
-  const OtherUserMoreOptionsModelSheetData({Key? key}) : super(key: key);
+  final PostEntity posts;
+  final BookmarkEntity bookmarks;
+
+  const OtherUserMoreOptionsModelSheetData({Key? key, required this.posts, required this.bookmarks})
+      : super(key: key);
 
   @override
-  State<OtherUserMoreOptionsModelSheetData> createState() => _OtherUserMoreOptionsModelSheetDataState();
+  State<OtherUserMoreOptionsModelSheetData> createState() =>
+      _OtherUserMoreOptionsModelSheetDataState();
 }
 
 class _OtherUserMoreOptionsModelSheetDataState extends State<OtherUserMoreOptionsModelSheetData> {
+  String _currentUid = "";
 
+  @override
+  void initState() {
+    super.initState();
+    di.sl<GetCurrentUidUseCase>().call().then((value) {
+      setState(() {
+        _currentUid = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,16 +52,28 @@ class _OtherUserMoreOptionsModelSheetDataState extends State<OtherUserMoreOption
                     children: [
                       Column(
                         children: [
-                          Container(
-                            height: 70,
-                            width: 70,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(width: 1, color: Styles.colorBlack)),
-                            child: Icon(
-                              FontAwesomeIcons.bookmark,
-                              size: 28,
-                            ),
+                          BlocBuilder<BookmarkCubit, BookmarkState>(
+                            builder: (context, bookmarkState) {
+                              final isBookmarked = bookmarkState is BookmarkLoaded &&
+                                  bookmarkState.bookmarks
+                                      .any((bookmark) => bookmark.postId == widget.posts.postId);
+                              return GestureDetector(
+                                onTap: _bookMarkPost,
+                                child: Container(
+                                  height: 70,
+                                  width: 70,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(width: 1, color: Styles.colorBlack)),
+                                  child: Icon(
+                                    isBookmarked
+                                        ? FontAwesomeIcons.solidBookmark
+                                        : FontAwesomeIcons.bookmark,
+                                    size: 28,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           verticalSize(5),
                           Text(
@@ -161,5 +196,17 @@ class _OtherUserMoreOptionsModelSheetDataState extends State<OtherUserMoreOption
         );
       },
     );
+  }
+
+  _bookMarkPost() {
+    BlocProvider.of<BookmarkCubit>(context)
+        .addBookmark(
+            bookmark: BookmarkEntity(
+          createdAt: Timestamp.now(),
+          uid: _currentUid,
+          postId: widget.posts.postId,
+          postImageUrl: widget.posts.postImageUrl,
+        ))
+        .then((value) => Navigator.pop(context));
   }
 }

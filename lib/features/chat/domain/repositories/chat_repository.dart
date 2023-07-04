@@ -12,7 +12,7 @@ abstract class ChatRepository {
   Stream<List<MyChatEntity>> getMyChats(String uid);
   Future<void> updateMyChat(MyChatEntity myChatEntity);
 
-  Future<void> deleteOneToOneChatChannel(String channelId);
+  Future<void> deleteOneToOneChatChannel(String channelId,MyChatEntity myChatEntity);
 
   //TextMessage
   Future<void> sendTextMessage(TextMessageEntity textMessageEntity, String channelId);

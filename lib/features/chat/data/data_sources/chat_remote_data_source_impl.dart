@@ -111,12 +111,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Future<void> deleteOneToOneChatChannel(String channelId) async{
+  Future<void> deleteOneToOneChatChannel(String channelId,MyChatEntity myChatEntity) async{
     final oneToOneChatChannel = fireStore.collection(FirebaseConst.oneToOneChatChannel);
     await oneToOneChatChannel.doc(channelId).delete();
 
-    // final senderCollection = fireStore.collection(FirebaseConst.users).doc("senderUid");
-    // await senderCollection.collection(FirebaseConst.chatChannel).doc(channelId).delete();
+    final senderCollection = fireStore.collection(FirebaseConst.users).doc(myChatEntity.senderUid);
+    await senderCollection.collection(FirebaseConst.chatChannel).doc(channelId).delete();
   }
 
   @override
