@@ -60,7 +60,8 @@ dependencies:
   modal_bottom_sheet: ^2.1.2
 
   expandable_text: ^2.3.0
-
+  camera: ^0.10.1
+  simple_circular_progress_bar: ^1.0.2
   #chat bubbles
   bubble: ^1.2.1
   #video player

@@ -12,6 +12,8 @@ import 'package:instagram_clone/features/notification/notification_page.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/pages/edit_post_page.dart';
 import 'package:instagram_clone/features/post/presentation/pages/widgets/upload_post_main_widget.dart';
+import 'package:instagram_clone/features/reels/presentation/pages/camera_page.dart';
+import 'package:instagram_clone/features/reels/presentation/pages/upload_reel_page.dart';
 import 'package:instagram_clone/features/search/presentation/pages/post_detail_page.dart';
 import 'package:instagram_clone/features/user/domain/entities/user_entity.dart';
 import 'package:instagram_clone/features/user/presentation/pages/forget_password_page.dart';
@@ -25,6 +27,7 @@ import 'package:instagram_clone/features/user/profile_page/presentation/pages/sc
 import 'package:instagram_clone/features/user/profile_page/presentation/pages/single_user_profile_page.dart';
 
 import 'features/app/main_page/presentation/pages/main_page.dart';
+import 'features/reels/presentation/pages/confirm_video_page.dart';
 
 class OnGenerateRoute {
   static Route<dynamic>? route(RouteSettings settings) {
@@ -163,6 +166,19 @@ class OnGenerateRoute {
       case PageConsts.newChatPage:
         if(args is String){
           return routeBuilder(child: NewChatPage(uid: args,));
+        }else return routeBuilder(child: NoPageFound());
+    //Reels Routes ------------------------------------------------------------------
+      case PageConsts.recordingVideoPage:
+        {
+          return routeBuilder(child: CameraPage());
+        }
+      case PageConsts.confirmVideoPage:
+       if(args is String){
+         return routeBuilder(child: ConfirmVideoPage(mediaFile: args,));
+       }else return routeBuilder(child: NoPageFound());
+      case PageConsts.uploadReelPage:
+        if(args is String){
+          return routeBuilder(child: UploadReelPage(mediaFile: args,));
         }else return routeBuilder(child: NoPageFound());
       default:
         {
