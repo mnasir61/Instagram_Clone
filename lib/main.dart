@@ -8,6 +8,7 @@ import 'package:instagram_clone/features/chat/presentation/cubit/my_chat/my_chat
 import 'package:instagram_clone/features/comment/presentation/cubit/comment_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/read_single_post/read_single_post_cubit.dart';
+import 'package:instagram_clone/features/reels/presentation/cubit/reel_cubit.dart';
 import 'package:instagram_clone/features/reply/presentation/cubit/reply_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/auth/auth_cubit.dart';
 import 'package:instagram_clone/features/user/presentation/cubit/credentials/credential_cubit.dart';
@@ -64,7 +65,9 @@ class InstagramClone extends StatelessWidget {
         BlocProvider<CommunicationCubit>(
           create: (context) => di.sl<CommunicationCubit>(),
         ),
-
+        BlocProvider<ReelCubit>(
+          create: (context) => di.sl<ReelCubit>(),
+        ),
       ],
       child: _materialAppBuilder(),
     );

@@ -59,6 +59,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         totalFollowers: user.totalFollowers,
         dateOfBirth: user.dateOfBirth,
         lastActivity: user.lastActivity,
+        totalShares: user.totalShares
       ).toDocument();
       if (!userDoc.exists) {
         userCollection.doc(uid).set(newUser);
@@ -142,6 +143,11 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         totalPosts: 0,
         profileUrl: information?.photoURL,
         accountType: "member",
+        totalShares: 0,
+        lastActivity: "",
+        totalFollowings: 0,
+        totalFollowers: 0,
+
       );
       await getCreateCurrentUser(newUser);
     } catch (e) {

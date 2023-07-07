@@ -10,4 +10,5 @@ class FirebaseConst {
   static const String oneToOneChatChannel = "oneToOneChatChannel";
   static const String chatChannel = "chatChannel";
   static const String messages = "messages";
+  static const String reels = "reels";
 }

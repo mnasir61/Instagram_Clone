@@ -4,6 +4,7 @@ import 'package:instagram_clone/features/storage/data/repository/could_storage_r
 import 'package:instagram_clone/features/storage/domain/repository/could_storage_repository.dart';
 import 'package:instagram_clone/features/storage/domain/usecases/upload_post_image_usecase.dart';
 import 'package:instagram_clone/features/storage/domain/usecases/upload_profile_image_usecase.dart';
+import 'package:instagram_clone/features/storage/domain/usecases/upload_reels_video_usecase.dart';
 import 'package:instagram_clone/main_injection_container.dart';
 
 Future<void> storageInjectionContainer() async {
@@ -12,6 +13,8 @@ Future<void> storageInjectionContainer() async {
       () => UploadProfileImageUseCase(repository: sl.call()));
   sl.registerLazySingleton<UploadPostImageUseCase>(
       () => UploadPostImageUseCase(repository: sl.call()));
+  sl.registerLazySingleton<UploadReelsVideoUseCase>(
+      () => UploadReelsVideoUseCase(repository: sl.call()));
   //RemoteDataSource
   sl.registerLazySingleton<CloudStorageRemoteDataSource>(
       () => CloudStorageRemoteDataSourceImpl(storage: sl.call()));

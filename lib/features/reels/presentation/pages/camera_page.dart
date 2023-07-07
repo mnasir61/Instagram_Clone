@@ -76,9 +76,6 @@ class _CameraPageState extends State<CameraPage> {
         });
 
         if (videoFile != null) {
-          // Navigator.pushNamed(context, PageConsts.confirmVideoPage, arguments: videoFile.path)
-          //     .then((value) {
-          // });
           Navigator.pushReplacementNamed(context, PageConsts.confirmVideoPage,arguments: videoFile.path);
         }
       } catch (e) {
@@ -89,7 +86,7 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   void _startTimer() {
-    const duration = Duration(seconds: 40);
+    const duration = Duration(seconds: 30);
     double step = 1.0 / (duration.inMilliseconds / 100);
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {

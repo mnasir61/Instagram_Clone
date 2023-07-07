@@ -45,32 +45,32 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CredentialCubit, CredentialState>(
-        listener: (context, credentialState) {
-          if (credentialState is CredentialLoaded) {
-            BlocProvider.of<AuthCubit>(context).loggedIn();
-          }
-          if (credentialState is CredentialFailure) {
-            print("Something went wrong");
-          }
-        },
-        builder: (context, credentialState) {
-          if (credentialState is CredentialLoading) {
-            return CircularProgressIndicatorWidget();
-          }
-          if (credentialState is CredentialLoaded) {
-            return BlocBuilder<AuthCubit, AuthState>(builder: (context, authState) {
-              if (authState is Authenticated) {
-                return MainPage(
-                  uid: authState.uid,
-                );
-              } else {
-                return _appBarWidget();
-              }
-            });
-          }
-          return _appBarWidget();
-        },
-      );
+      listener: (context, credentialState) {
+        if (credentialState is CredentialLoaded) {
+          BlocProvider.of<AuthCubit>(context).loggedIn();
+        }
+        if (credentialState is CredentialFailure) {
+          print("Something went wrong");
+        }
+      },
+      builder: (context, credentialState) {
+        if (credentialState is CredentialLoading) {
+          return CircularProgressIndicatorWidget();
+        }
+        if (credentialState is CredentialLoaded) {
+          return BlocBuilder<AuthCubit, AuthState>(builder: (context, authState) {
+            if (authState is Authenticated) {
+              return MainPage(
+                uid: authState.uid,
+              );
+            } else {
+              return _appBarWidget();
+            }
+          });
+        }
+        return _appBarWidget();
+      },
+    );
   }
 
   _appBarWidget() {
@@ -206,7 +206,8 @@ class _SignUpPageState extends State<SignUpPage> {
           likes: 0,
           currentUserBio: "",
           currentUserProfession: "",
-              lastActivity: ""
+          lastActivity: "",
+          totalShares: 0,
         ))
         .then((value) => _clear());
   }

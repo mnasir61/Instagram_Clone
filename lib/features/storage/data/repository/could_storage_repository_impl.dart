@@ -15,4 +15,8 @@ class CloudStorageRepositoryImpl implements CloudStorageRepository {
   @override
   Future<String> uploadProfileImage({required File file}) async =>
       remoteDataSource.uploadProfileImage(file: file);
+
+  @override
+  Future<String> uploadReelsVideo({required File file}) =>
+      remoteDataSource.uploadReelsVideo(file: file);
 }

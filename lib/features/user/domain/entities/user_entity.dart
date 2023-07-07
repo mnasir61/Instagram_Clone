@@ -23,35 +23,38 @@ class UserEntity extends Equatable {
   final String? currentUserBio;
   final String? currentUserProfession;
   final String? lastActivity;
+  final num? totalShares;
 
   final String? password;
   final String? confirmPassword;
   final String? otherUid;
 
-  UserEntity(
-      {this.confirmPassword,
-      this.likes,
-      this.currentUserBio,
-      this.currentUserProfession,
-      this.totalLikes,
-      this.totalPosts,
-        this.followings,
-        this.followers,
-      this.totalFollowers,
-      this.totalFollowings,
-      this.uid,
-      this.username,
-      this.password,
-      this.email,
-      this.profileUrl,
-      this.dateOfBirth,
-      this.isOnline,
-      this.otherUid,
-      this.token,
-      this.totalNotifications,
-      this.fullName,
-      this.accountType,
-        this.lastActivity, });
+  UserEntity({
+    this.totalShares,
+    this.confirmPassword,
+    this.likes,
+    this.currentUserBio,
+    this.currentUserProfession,
+    this.totalLikes,
+    this.totalPosts,
+    this.followings,
+    this.followers,
+    this.totalFollowers,
+    this.totalFollowings,
+    this.uid,
+    this.username,
+    this.password,
+    this.email,
+    this.profileUrl,
+    this.dateOfBirth,
+    this.isOnline,
+    this.otherUid,
+    this.token,
+    this.totalNotifications,
+    this.fullName,
+    this.accountType,
+    this.lastActivity,
+  });
 
   @override
   List<Object?> get props => [
@@ -73,10 +76,10 @@ class UserEntity extends Equatable {
         totalPosts,
         totalFollowers,
         totalFollowers,
-    followers,
-    followings,
+        followers,
+        followings,
         currentUserBio,
         currentUserProfession,
-    lastActivity
+        lastActivity
       ];
 }
