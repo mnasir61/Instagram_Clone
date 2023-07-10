@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:camera/camera.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
-import 'package:instagram_clone/features/reels/presentation/pages/confirm_video_page.dart';
 
 class CameraPage extends StatefulWidget {
+  final AppEntity appEntity;
+
+  const CameraPage({super.key, required this.appEntity});
+
   @override
   _CameraPageState createState() => _CameraPageState();
 }
@@ -19,7 +24,7 @@ class _CameraPageState extends State<CameraPage> {
   bool _isRecording = false;
   double _progress = 0.0;
   Timer? _timer;
-  XFile? _galleryMedia;
+  File? _galleryMedia;
   GlobalKey<_CameraPageState> _cameraPageKey = GlobalKey<_CameraPageState>();
 
   @override
@@ -43,13 +48,6 @@ class _CameraPageState extends State<CameraPage> {
     setState(() {});
   }
 
-  @override
-  void dispose() {
-    _cameraController?.dispose();
-    _timer?.cancel();
-    super.dispose();
-  }
-
   Future<void> _startRecording() async {
     if (_cameraController!.value.isInitialized && !_cameraController!.value.isRecordingVideo) {
       try {
@@ -59,7 +57,6 @@ class _CameraPageState extends State<CameraPage> {
           _isRecording = true;
         });
       } catch (e) {
-        // Handle the error
         print('Error starting video recording: $e');
       }
     }
@@ -76,10 +73,12 @@ class _CameraPageState extends State<CameraPage> {
         });
 
         if (videoFile != null) {
-          Navigator.pushReplacementNamed(context, PageConsts.confirmVideoPage,arguments: videoFile.path);
+          File file = File(videoFile.path);
+          Navigator.pushReplacementNamed(context, PageConsts.confirmVideoPage,
+              arguments:
+                  AppEntity(mediaFile: file, currentUser: widget.appEntity.currentUser));
         }
       } catch (e) {
-        // Handle the error
         print('Error stopping video recording: $e');
       }
     }
@@ -112,29 +111,36 @@ class _CameraPageState extends State<CameraPage> {
 
   Future<void> _openGallery() async {
     final picker = ImagePicker();
-    final pickedMedia = await picker.pickImage(source: ImageSource.gallery);
+    final pickedMedia = await picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedMedia != null) {
       setState(() {
-        _galleryMedia = pickedMedia;
+        _galleryMedia = File(pickedMedia.path);
       });
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ConfirmVideoPage(mediaFile: pickedMedia.path),
-        ),
-      );
+      if (_galleryMedia != null) {
+        Navigator.pushNamed(context, PageConsts.confirmVideoPage,
+            arguments: AppEntity(
+                selectedGalleryFile: _galleryMedia, currentUser: widget.appEntity.currentUser));
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _cameraPageKey,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
+          const SizedBox(height: 40,),
           Expanded(
             child: Stack(
               fit: StackFit.expand,
@@ -164,7 +170,7 @@ class _CameraPageState extends State<CameraPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
-                        onTap:(){
+                        onTap: () {
                           Navigator.pop(context);
                         },
                         child: Icon(

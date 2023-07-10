@@ -14,31 +14,31 @@ class ReelRemoteDataSourceImpl implements ReelRemoteDataSource {
   ReelRemoteDataSourceImpl({required this.fireStore, required this.firebaseStorage});
 
   @override
-  Future<void> createNewReel(ReelEntity reelEntity) async {
+  Future<void> createNewReel(ReelEntity reel) async {
     final reelCollection = fireStore.collection(FirebaseConst.reels);
     final newReel = ReelModel(
-      reelId: reelEntity.reelId,
-      creatorUsername: reelEntity.creatorUsername,
-      creatorProfileImage: reelEntity.creatorProfileImage,
-      hashTags: reelEntity.hashTags,
-      tags: reelEntity.tags,
-      reelDuration: reelEntity.reelDuration,
-      totalShares: 0,
+      creatorUsername:reel.creatorUsername,
+      creatorProfileImage: reel.creatorProfileImage,
+      hashTags: [],
+      tags: [],
       views: 0,
       totalComments: 0,
       totalLikes: 0,
+      totalShares: 0,
+      reelVideoUrl: reel.reelVideoUrl,
+      reelId: reel.reelId,
       likes: [],
-      description: reelEntity.description,
-      createdAt: reelEntity.createdAt,
-      reelVideoUrl: reelEntity.reelVideoUrl,
-      creatorId: reelEntity.creatorId,
+      creatorId: reel.creatorId,
+      createdAt: reel.createdAt,
+      description: reel.description,
+      reelDuration: reel.reelDuration,
     ).toDocument();
-
     try {
-      final reelDocRef = await reelCollection.doc(reelEntity.reelId).get();
+      final reelDocRef = await reelCollection.doc(reel.reelId).get();
+
       if (!reelDocRef.exists) {
-        reelCollection.doc(reelEntity.reelId).set(newReel).then((value) {
-          final userCollection = fireStore.collection(FirebaseConst.users).doc(reelEntity.creatorId);
+        reelCollection.doc(reel.reelId).set(newReel).then((value) {
+          final userCollection = fireStore.collection(FirebaseConst.users).doc(reel.creatorId);
 
           userCollection.get().then((value) {
             if (value.exists) {
@@ -48,10 +48,10 @@ class ReelRemoteDataSourceImpl implements ReelRemoteDataSource {
           });
         });
       } else {
-        reelCollection.doc(reelEntity.reelId).update(newReel);
+        reelCollection.doc(reel.reelId).update(newReel);
       }
     } catch (e) {
-      print("reel cannot create: $e");
+      print("User cannot created: $e");
     }
   }
 

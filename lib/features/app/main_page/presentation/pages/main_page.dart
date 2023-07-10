@@ -154,7 +154,7 @@ class _MainPageState extends State<MainPage> {
         }
       case 3:
         {
-          return ReelsPage();
+          return ReelsPage(currentUser: currentUser,);
         }
       case 4:
         {

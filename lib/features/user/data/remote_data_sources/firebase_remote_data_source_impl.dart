@@ -59,7 +59,8 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         totalFollowers: user.totalFollowers,
         dateOfBirth: user.dateOfBirth,
         lastActivity: user.lastActivity,
-        totalShares: user.totalShares
+        totalShares: user.totalShares,
+        totalReels: user.totalReels,
       ).toDocument();
       if (!userDoc.exists) {
         userCollection.doc(uid).set(newUser);
@@ -147,6 +148,7 @@ class FirebaseRemoteDataSourceImpl extends FirebaseRemoteDataSource {
         lastActivity: "",
         totalFollowings: 0,
         totalFollowers: 0,
+        totalReels: 0
 
       );
       await getCreateCurrentUser(newUser);

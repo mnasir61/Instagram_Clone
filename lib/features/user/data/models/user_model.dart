@@ -25,9 +25,11 @@ class UserModel extends UserEntity {
   final String? currentUserProfession;
   final String? lastActivity;
   final num? totalShares;
+  final num? totalReels;
 
-  UserModel(
-      {this.totalShares,
+  UserModel({
+    this.totalReels,
+        this.totalShares,
         this.uid,
       this.likes,
       this.currentUserProfession,
@@ -69,7 +71,9 @@ class UserModel extends UserEntity {
             totalFollowers: totalFollowers,
             totalFollowings: totalFollowings,
   lastActivity:lastActivity,
-  totalShares: totalShares);
+  totalShares: totalShares,
+      totalReels: totalReels
+  );
 
   factory UserModel.fromSnapshot(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
@@ -94,6 +98,7 @@ class UserModel extends UserEntity {
       currentUserBio: snapshot['currentUserBio'],
       lastActivity: snapshot['lastActivity'],
       totalShares: snapshot['totalShares'],
+      totalReels: snapshot['totalReels'],
       followers: List.from(snap.get("followers")),
       followings: List.from(snap.get("followings")),
     );
@@ -122,6 +127,7 @@ class UserModel extends UserEntity {
       "followings": followings,
       "lastActivity": lastActivity,
       "totalShares": totalShares,
+      "totalReels": totalReels,
     };
   }
 }

@@ -24,12 +24,14 @@ class UserEntity extends Equatable {
   final String? currentUserProfession;
   final String? lastActivity;
   final num? totalShares;
+  final num? totalReels;
 
   final String? password;
   final String? confirmPassword;
   final String? otherUid;
 
   UserEntity({
+    this.totalReels,
     this.totalShares,
     this.confirmPassword,
     this.likes,
@@ -80,6 +82,7 @@ class UserEntity extends Equatable {
         followings,
         currentUserBio,
         currentUserProfession,
-        lastActivity
+        lastActivity,
+        totalReels,
       ];
 }

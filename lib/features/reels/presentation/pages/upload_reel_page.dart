@@ -1,12 +1,23 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagram_clone/core/app_entity.dart';
+import 'package:instagram_clone/features/global/const/page_const.dart';
+import 'package:instagram_clone/features/global/styles/style.dart';
+import 'package:instagram_clone/features/reels/domain/entities/reel_entity.dart';
+import 'package:instagram_clone/features/reels/presentation/cubit/reel_cubit.dart';
+import 'package:instagram_clone/features/storage/domain/usecases/upload_reels_video_usecase.dart';
+import 'package:instagram_clone/main_injection_container.dart' as di;
+import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
 class UploadReelPage extends StatefulWidget {
-  final String mediaFile;
+  final AppEntity appEntity;
 
-  const UploadReelPage({super.key, required this.mediaFile});
+  const UploadReelPage({super.key, required this.appEntity});
 
   @override
   State<UploadReelPage> createState() => _UploadReelPageState();
@@ -15,21 +26,57 @@ class UploadReelPage extends StatefulWidget {
 class _UploadReelPageState extends State<UploadReelPage> {
   VideoPlayerController? _videoPlayerController;
   TextEditingController _captionController = TextEditingController();
+  bool _isUploading = false;
+  Timer? _iconTimer;
+  bool _showIcon = true;
 
   @override
   void initState() {
-    _videoPlayerController = VideoPlayerController.file(File(widget.mediaFile));
-    _videoPlayerController!.initialize().then((value) {
-      setState(() {});
-    });
     super.initState();
+    if (widget.appEntity.mediaFile != null &&
+        widget.appEntity.mediaFile!.path.endsWith('.mp4') &&
+        widget.appEntity.selectedGalleryFile == null) {
+      _videoPlayerController = VideoPlayerController.file(widget.appEntity.mediaFile!);
+      _videoPlayerController!.initialize().then((_) {
+        setState(() {});
+      });
+    } else if (widget.appEntity.selectedGalleryFile != null &&
+        widget.appEntity.selectedGalleryFile!.path.endsWith('.mp4') &&
+        widget.appEntity.mediaFileUrl == null) {
+      _videoPlayerController = VideoPlayerController.file(widget.appEntity.selectedGalleryFile!);
+      _videoPlayerController!.initialize().then((_) {
+        setState(() {});
+      });
+    }
   }
 
   @override
   void dispose() {
     _captionController.dispose();
     _videoPlayerController!.dispose();
+    // _iconTimer!.cancel();
     super.dispose();
+  }
+
+  void _toggleVideoPlayback() {
+    if (_videoPlayerController!.value.isPlaying) {
+      _videoPlayerController!.pause();
+    } else {
+      _videoPlayerController!.play();
+    }
+    setState(() {
+      _showIcon = !_showIcon;
+    });
+    _startIconTimer();
+  }
+
+  void _startIconTimer() {
+    _iconTimer?.cancel();
+    _iconTimer = Timer(const Duration(seconds: 2), () {
+      setState(() {
+        _showIcon = false;
+      });
+    });
   }
 
   @override
@@ -56,11 +103,42 @@ class _UploadReelPageState extends State<UploadReelPage> {
                           child: Container(
                             height: 300,
                             width: 200,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20)),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
                             child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: VideoPlayer(_videoPlayerController!)),
+                              borderRadius: BorderRadius.circular(20),
+                              child: GestureDetector(
+                                onTap: _toggleVideoPlayback,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    if (_videoPlayerController != null)
+                                      VideoPlayer(_videoPlayerController!)
+                                    else
+                                      Image.file(File(widget.appEntity.mediaFileUrl!)),
+                                    AnimatedOpacity(
+                                      opacity: _showIcon ? 1.0 : 0.0,
+                                      duration: const Duration(milliseconds: 500),
+                                      child: Container(
+                                        color: Colors.transparent,
+                                        child: Center(
+                                          child: _videoPlayerController!.value.isPlaying
+                                              ? Icon(
+                                                  Icons.play_arrow,
+                                                  size: 64,
+                                                  color: Colors.white,
+                                                )
+                                              : Icon(
+                                                  Icons.pause,
+                                                  size: 64,
+                                                  color: Colors.white,
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                         TextFormField(
@@ -147,6 +225,16 @@ class _UploadReelPageState extends State<UploadReelPage> {
               ),
             ),
           ),
+          _isUploading == true
+              ? Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              child: LinearProgressIndicator(
+                color: Colors.white,
+              ),
+            ),
+          )
+              :
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
@@ -159,7 +247,7 @@ class _UploadReelPageState extends State<UploadReelPage> {
                     borderColor: Colors.grey),
                 _containerButton(
                     onTap: () {
-                      _uploadModelSheet(context);
+                      _uploadModelSheet(context: context);
                     },
                     text: "Next",
                     backGroundColor: Colors.blue,
@@ -225,7 +313,7 @@ class _UploadReelPageState extends State<UploadReelPage> {
     );
   }
 
-  void _uploadModelSheet(BuildContext context) {
+  void _uploadModelSheet({required BuildContext context}) {
     showModalBottomSheet(
       showDragHandle: true,
       isScrollControlled: true,
@@ -267,34 +355,45 @@ class _UploadReelPageState extends State<UploadReelPage> {
                   icon: Icons.settings_outlined,
                   text:
                       "You can turn off remixing for each reel or change the default in your setting."),
-           const SizedBox(height: 10),
+              const SizedBox(height: 10),
             ],
           ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.symmetric(horizontal: 15),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(10),
+          GestureDetector(
+            onTap: () {
+              _submitReel();
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.symmetric(horizontal: 15),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                      child: Text(
+                      "Share",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                    )),
             ),
-            child: Center(
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
               child: Text(
-                "Share",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.white),
+                "Cancel",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.blue),
               ),
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-            padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-            child: Text(
-              "Cancel",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500,color: Colors.blue),
+            margin: EdgeInsets.symmetric(
+              horizontal: 5,
             ),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 5,),
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               "Learn more about Reels.",
@@ -327,5 +426,55 @@ class _UploadReelPageState extends State<UploadReelPage> {
         ],
       ),
     );
+  }
+
+  _submitReel() async {
+    setState(() {
+      _isUploading = true;
+      Navigator.pop(context);
+    });
+
+    if (widget.appEntity.selectedGalleryFile != null) {
+      // Video from gallery
+      final videoUrl =
+          await di.sl<UploadReelsVideoUseCase>().call(file: widget.appEntity.selectedGalleryFile!);
+      _createSubmitReel(reelVideoUrl: videoUrl);
+    } else if (widget.appEntity.mediaFile != null) {
+      // Video from camera
+      final videoUrl = await di.sl<UploadReelsVideoUseCase>().call(file: widget.appEntity.mediaFile!);
+      _createSubmitReel(reelVideoUrl: videoUrl);
+    }
+  }
+
+  _createSubmitReel({required String reelVideoUrl}) {
+    BlocProvider.of<ReelCubit>(context)
+        .createNewReel(
+            reelEntity: ReelEntity(
+          description: _captionController.text,
+          createdAt: Timestamp.now(),
+          creatorId: widget.appEntity.currentUser?.uid,
+          likes: [],
+          reelId: Uuid().v1(),
+          reelVideoUrl: reelVideoUrl,
+          totalShares: 0,
+          totalLikes: 0,
+          totalComments: 0,
+          // reelDuration: Duration(seconds: 0),
+          views: 0,
+          tags: [],
+          hashTags: [],
+          creatorProfileImage: widget.appEntity.currentUser?.profileUrl,
+          creatorUsername: widget.appEntity.currentUser?.username,
+        ))
+        .then((value) => _clear());
+  }
+
+  _clear() {
+    setState(() {
+      _isUploading = false;
+      _captionController.clear();
+      Navigator.pushNamedAndRemoveUntil(context, PageConsts.mainPage, (route) => false,
+          arguments: widget.appEntity.currentUser!.uid);
+    });
   }
 }

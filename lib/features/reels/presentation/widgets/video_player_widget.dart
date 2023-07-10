@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -20,7 +18,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void initState() {
     super.initState();
 
-    _playerController = VideoPlayerController.file(File(widget.videoPath));
+    _playerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoPath));
     _initializeVideoPlayerFuture = _playerController.initialize().then((_) {
       setState(() {});
     });
@@ -40,9 +38,18 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       future: _initializeVideoPlayerFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return VideoPlayer(_playerController);
+          return AspectRatio(
+            aspectRatio: _playerController.value.aspectRatio,
+            child: VideoPlayer(_playerController),
+          );
         } else {
-          return CircularProgressIndicator();
+          return Container(
+            height: 100,
+            width: 100,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );

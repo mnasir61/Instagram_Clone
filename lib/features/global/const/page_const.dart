@@ -36,8 +36,8 @@ class PageConsts {
   static const String newChatPage = "newChatPage";
   //Reels Consts -------------------------------------------------------------------
 
-  static const String recordingVideoPage = "recordingVideoPage";
+  static const String reelsPage = "reelsPage";
+  static const String cameraPage = "cameraPage";
   static const String confirmVideoPage = "confirmVideoPage";
-  static const String uploadVideoOrImagePage = "uploadVideoOrImagePage";
   static const String uploadReelPage = "uploadReelPage";
 }

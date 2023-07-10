@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "678817077437",
+    "project_id": "instgramclone-12f5c",
+    "storage_bucket": "instgramclone-12f5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678817077437:android:0a57fbbe0485d5df44bfd4",
+        "android_client_info": {
+          "package_name": "com.etechviral.instagram_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "678817077437-mlgpukta8fp8gd3682sd8usdtb3dkh2a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAtl41PfdIy3jJSpWOiOH4KVbRFMxeDXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "678817077437-mlgpukta8fp8gd3682sd8usdtb3dkh2a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

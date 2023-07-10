@@ -208,6 +208,7 @@ class _SignUpPageState extends State<SignUpPage> {
           currentUserProfession: "",
           lastActivity: "",
           totalShares: 0,
+              totalReels: 0,
         ))
         .then((value) => _clear());
   }

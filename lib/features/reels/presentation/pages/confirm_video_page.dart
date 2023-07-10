@@ -3,13 +3,14 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/core/app_entity.dart';
 import 'package:instagram_clone/features/global/const/page_const.dart';
 import 'package:video_player/video_player.dart';
 
 class ConfirmVideoPage extends StatefulWidget {
-  final String? mediaFile;
+  final AppEntity appEntity;
 
-  ConfirmVideoPage({required this.mediaFile});
+  ConfirmVideoPage({Key? key, required this.appEntity}) : super(key: key);
 
   @override
   State<ConfirmVideoPage> createState() => _ConfirmVideoPageState();
@@ -23,8 +24,19 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.mediaFile != null && widget.mediaFile!.endsWith('.mp4')) {
-      _videoPlayerController = VideoPlayerController.file(File(widget.mediaFile!));
+    if (widget.appEntity.mediaFile != null &&
+        widget.appEntity.mediaFile!.path.endsWith('.mp4') &&
+        widget.appEntity.selectedGalleryFile == null) {
+      print("Video path in ConfirmPage: ${widget.appEntity.mediaFile}");
+      _videoPlayerController = VideoPlayerController.file(widget.appEntity.mediaFile!);
+      _videoPlayerController!.initialize().then((_) {
+        setState(() {});
+      });
+    } else if (widget.appEntity.selectedGalleryFile != null &&
+        widget.appEntity.selectedGalleryFile!.path.endsWith('.mp4') &&
+        widget.appEntity.mediaFileUrl == null) {
+      print("Video path in ConfirmPage: ${widget.appEntity.selectedGalleryFile!.path}");
+      _videoPlayerController = VideoPlayerController.file(widget.appEntity.selectedGalleryFile!);
       _videoPlayerController!.initialize().then((_) {
         setState(() {});
       });
@@ -34,6 +46,9 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
   @override
   void dispose() {
     _videoPlayerController!.dispose();
+    _videoPlayerController!.pause();
+    _videoPlayerController!.setVolume(0);
+    _iconTimer?.cancel();
     super.dispose();
   }
 
@@ -49,22 +64,8 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
     _startIconTimer();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_videoPlayerController != null &&
-        widget.mediaFile != null &&
-        widget.mediaFile! != _videoPlayerController!.dataSource) {
-      _videoPlayerController!.dispose();
-      _videoPlayerController = VideoPlayerController.file(File(widget.mediaFile!));
-      _videoPlayerController!.initialize().then((_) {
-        setState(() {});
-      });
-    }
-  }
-
   void _startIconTimer() {
-    _iconTimer!.cancel();
+    _iconTimer?.cancel();
     _iconTimer = Timer(const Duration(seconds: 2), () {
       setState(() {
         _showIcon = false;
@@ -80,38 +81,40 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (widget.mediaFile != null && widget.mediaFile!.endsWith('.mp4'))
-              Container(
-                width: screenSize.width,
-                height: screenSize.width * 16 / 9,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+            Container(
+              width: screenSize.width,
+              height: screenSize.width * 16 / 9,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: GestureDetector(
+                  onTap: () {
+                    _toggleVideoPlayback();
+                    _startIconTimer();
+                  },
                   child: Stack(
                     children: [
-                      VideoPlayer(_videoPlayerController!),
-                      GestureDetector(
-                        onTap: () {
-                          _toggleVideoPlayback();
-                          _startIconTimer();
-                        },
-                        child: AnimatedOpacity(
-                          opacity: _showIcon ? 1.0 : 0.0,
-                          duration: const Duration(milliseconds: 500),
-                          child: Container(
-                            color: Colors.transparent,
-                            child: Center(
-                              child: _videoPlayerController!.value.isPlaying
-                                  ? Icon(
-                                      CupertinoIcons.play_arrow_solid,
-                                      size: 70,
-                                      color: Colors.white,
-                                    )
-                                  : Icon(
-                                      CupertinoIcons.stop_fill,
-                                      size: 70,
-                                      color: Colors.white,
-                                    ),
-                            ),
+                      if (_videoPlayerController != null)
+                        VideoPlayer(_videoPlayerController!)
+                      else
+                        //TODO
+                        Image.file(File(widget.appEntity.mediaFile!.path)),
+                      AnimatedOpacity(
+                        opacity: _showIcon ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 500),
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Center(
+                            child: _videoPlayerController!.value.isPlaying
+                                ? Icon(
+                                    Icons.play_arrow,
+                                    size: 64,
+                                    color: Colors.white,
+                                  )
+                                : Icon(
+                                    Icons.pause,
+                                    size: 64,
+                                    color: Colors.white,
+                                  ),
                           ),
                         ),
                       ),
@@ -121,18 +124,35 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _cameraButtons(
-                                icon: Icons.arrow_back_ios_rounded,
-                                onTap: () {
-                                  Navigator.pop(context);
-                                }),
+                            IconButton(
+                              icon: Icon(Icons.arrow_back_ios_rounded),
+                              color: Colors.white,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
                             Row(
                               children: [
-                                _cameraButtons(icon: CupertinoIcons.music_note_2, onTap: () {}),
-                                _cameraButtons(icon: CupertinoIcons.textformat, onTap: () {}),
-                                _cameraButtons(icon: Icons.face, onTap: () {}),
-                                _cameraButtons(icon: CupertinoIcons.wand_stars, onTap: () {}),
-                                _cameraButtons(icon: Icons.download, onTap: () {}),
+                                _cameraButtons(
+                                  icon: CupertinoIcons.music_note_2,
+                                  onTap: () {},
+                                ),
+                                _cameraButtons(
+                                  icon: CupertinoIcons.textformat,
+                                  onTap: () {},
+                                ),
+                                _cameraButtons(
+                                  icon: Icons.face,
+                                  onTap: () {},
+                                ),
+                                _cameraButtons(
+                                  icon: CupertinoIcons.wand_stars,
+                                  onTap: () {},
+                                ),
+                                _cameraButtons(
+                                  icon: Icons.download,
+                                  onTap: () {},
+                                ),
                               ],
                             ),
                           ],
@@ -141,9 +161,8 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
                     ],
                   ),
                 ),
-              )
-            else
-              Image.file(File(widget.mediaFile!)),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Row(
@@ -181,7 +200,10 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, PageConsts.uploadReelPage,
-                          arguments: widget.mediaFile);
+                          arguments: AppEntity(
+                            currentUser: widget.appEntity.currentUser,
+                              mediaFile: widget.appEntity.mediaFile,
+                              selectedGalleryFile: widget.appEntity.selectedGalleryFile));
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -216,9 +238,9 @@ class _ConfirmVideoPageState extends State<ConfirmVideoPage> {
     );
   }
 
-  _cameraButtons({
-    VoidCallback? onTap,
-    IconData? icon,
+  Widget _cameraButtons({
+    required IconData icon,
+    required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,

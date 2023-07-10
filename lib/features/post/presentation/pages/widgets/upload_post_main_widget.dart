@@ -10,7 +10,6 @@ import 'package:instagram_clone/features/global/styles/style.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
 import 'package:instagram_clone/features/post/presentation/cubit/post_cubit.dart';
 import 'package:instagram_clone/features/storage/domain/usecases/upload_post_image_usecase.dart';
-import 'package:instagram_clone/features/user/domain/use_cases/upload_image_to_storage_usecase.dart';
 import 'package:uuid/uuid.dart';
 import 'package:instagram_clone/main_injection_container.dart' as di;
 

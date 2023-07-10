@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:camera/camera.dart';
 import 'package:instagram_clone/features/chat/domain/entities/engaged_user_entity.dart';
 import 'package:instagram_clone/features/chat/domain/entities/text_message_entity.dart';
 import 'package:instagram_clone/features/post/domain/entities/post_entity.dart';
@@ -25,10 +28,17 @@ class AppEntity {
   final String? postId;
   final String? selectedImagePath;
 
-
+  final File? mediaFile;
+  final String? mediaFileUrl;
+  final File? selectedGalleryFile;
+  final File? selectedGalleryUrl;
 
   AppEntity(
-      {this.channelId,
+      {this.selectedGalleryUrl,
+      this.selectedGalleryFile,
+      this.mediaFile,
+      this.mediaFileUrl,
+      this.channelId,
       this.senderUid,
       this.recipientUid,
       this.recipientName,
